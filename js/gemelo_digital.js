@@ -1001,15 +1001,42 @@ function initSearchEngine() {
         resultsBox.style.display = 'block';
     });
 
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.search-wrapper')) {
+    const btnMobileSearch = document.getElementById('btn-mobile-search');
+    const btnCloseSearch = document.getElementById('btn-close-search');
+    const searchContainer = document.getElementById('search-container');
+
+    if (btnMobileSearch && searchContainer) {
+        btnMobileSearch.addEventListener('click', (e) => {
+            e.stopPropagation();
+            searchContainer.classList.toggle('mobile-active');
+            if (searchContainer.classList.contains('mobile-active')) {
+                input.focus();
+            }
+        });
+    }
+
+    if (btnCloseSearch && searchContainer) {
+        btnCloseSearch.addEventListener('click', (e) => {
+            e.stopPropagation();
+            searchContainer.classList.remove('mobile-active');
             resultsBox.style.display = 'none';
+        });
+    }
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search-wrapper') && !e.target.closest('#btn-mobile-search')) {
+            resultsBox.style.display = 'none';
+            if (searchContainer && window.innerWidth < 768) {
+                searchContainer.classList.remove('mobile-active');
+            }
         }
     });
 }
 
 function onSearchResultClick(type, propsEncoded, lng, lat) {
     const props = JSON.parse(decodeURIComponent(propsEncoded));
+    const searchContainer = document.getElementById('search-container');
+    if (searchContainer) searchContainer.classList.remove('mobile-active');
     document.getElementById('search-results').style.display = 'none';
     document.getElementById('search-input').value = '';
 

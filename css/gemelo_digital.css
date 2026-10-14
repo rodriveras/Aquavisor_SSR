@@ -24,6 +24,14 @@
     --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
+.desktop-only {
+    display: inline-flex;
+}
+
+.mobile-only {
+    display: none !important;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -106,7 +114,7 @@ header.app-header {
     color: var(--text-secondary);
 }
 
-.header-center-tools {
+.header-center-tools, .header-right-tools {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -950,14 +958,24 @@ header.app-header {
    DISPOSITIVOS MÓVILES (max-width: 768px) - EXPERIENCIA SMARTPHONE COMPLETA
    ------------------------------------------------------------------------------ */
 @media (max-width: 768px) {
+    .desktop-only {
+        display: none !important;
+    }
+
+    .mobile-only {
+        display: inline-flex !important;
+    }
+
     header.app-header {
-        height: 50px;
-        padding: 0 10px;
-        gap: 8px;
+        height: 48px;
+        padding: 0 8px;
+        gap: 6px;
+        justify-content: space-between;
+        position: relative;
     }
 
     .brand-section {
-        gap: 7px;
+        gap: 6px;
         flex-shrink: 0;
     }
 
@@ -968,83 +986,114 @@ header.app-header {
     }
 
     .brand-text h1 {
-        font-size: 12.5px;
+        font-size: 13px;
+        font-weight: 800;
+        white-space: nowrap;
+        letter-spacing: -0.3px;
     }
 
-    .brand-text h1 span.badge-system {
-        display: none;
+    .header-right-tools {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-shrink: 0;
     }
 
-    .brand-text p {
-        display: none;
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 4px;
     }
 
-    /* Buscador adaptativo */
-    .header-center-tools {
-        gap: 6px;
-        flex: 1;
-        justify-content: flex-end;
+    /* Botones táctiles compactos para la barra superior */
+    .btn-header-tool, .btn-emergency, .mobile-search-btn {
+        width: 34px;
+        height: 34px;
+        padding: 0;
+        min-height: 34px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        flex-shrink: 0;
     }
 
-    .search-wrapper {
-        width: 130px;
-        transition: width 0.3s ease;
-    }
-
-    .search-wrapper:focus-within {
-        width: 170px;
-    }
-
-    .search-wrapper input {
-        height: 29px;
-        font-size: 10.5px;
-        padding: 0 26px 0 9px;
-    }
-
-    .search-wrapper .search-icon {
-        right: 8px;
-        font-size: 11px;
-    }
-
-    /* Selector de perfil compacto */
     .profile-switcher {
-        padding: 1px;
+        display: inline-flex;
+        padding: 2px;
+        border-radius: 10px;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--border-color);
+        gap: 2px;
     }
 
     .profile-btn {
-        padding: 4px 6px;
-        font-size: 11px;
-    }
-
-    .profile-btn .prof-text {
-        display: none;
-    }
-
-    /* Botones de acción compactos */
-    .header-actions {
-        gap: 5px;
-    }
-
-    .btn-header-tool {
-        padding: 5px 8px;
+        width: 28px;
+        height: 28px;
+        padding: 0;
         font-size: 13px;
-        border-radius: 14px;
-        min-height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
     }
 
-    .btn-header-tool .btn-text {
+    /* Buscador desplegable flotante en móvil */
+    .search-wrapper {
         display: none;
     }
 
-    .btn-emergency {
-        padding: 5px 9px;
-        font-size: 12px;
-        border-radius: 14px;
-        min-height: 32px;
+    .search-wrapper.mobile-active {
+        display: flex !important;
+        position: absolute;
+        top: 50px;
+        left: 8px;
+        right: 8px;
+        width: calc(100vw - 16px);
+        background: rgba(11, 19, 41, 0.98);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--accent-cyan);
+        border-radius: 12px;
+        padding: 6px 10px;
+        z-index: 2500;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+        gap: 8px;
+        animation: slide-down 0.2s ease-out;
     }
 
-    .btn-emergency .btn-text {
-        display: none;
+    .search-wrapper.mobile-active input {
+        flex: 1;
+        height: 36px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        padding: 0 10px;
+        color: #fff;
+        font-size: 13px;
+        outline: none;
+    }
+
+    .btn-close-search {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-size: 18px;
+        padding: 4px 8px;
+        cursor: pointer;
+    }
+
+    .search-results {
+        top: 52px;
+        left: 0;
+        right: 0;
+        max-height: 50vh;
+    }
+
+    /* En móvil se oculta el botón flotante que tapaba el mapa porque el botón 🗺️ está siempre accesible */
+    .btn-floating-tab {
+        display: none !important;
     }
 
     /* PANELES LATERALES (DRAWER) EN FORMATO MÓVIL FULL-HEIGHT */

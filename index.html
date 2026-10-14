@@ -23,45 +23,49 @@
             <div class="brand-section">
                 <div class="brand-logo">🚰</div>
                 <div class="brand-text">
-                    <h1>AQUAVISOR SSR <span class="badge-system">Gemelo Digital</span></h1>
-                    <p>I. Municipalidad de San Ignacio | Piloto Santa Juana - El Calvario</p>
+                    <h1>AQUAVISOR <span class="badge-system desktop-only">Gemelo Digital</span></h1>
+                    <p class="brand-subtitle desktop-only">I. Municipalidad de San Ignacio | Piloto Santa Juana - El Calvario</p>
                 </div>
             </div>
 
-            <div class="header-center-tools">
-                <!-- Buscador Predictivo -->
-                <div class="search-wrapper">
-                    <input type="text" id="search-input" placeholder="Buscar por Socio, RUT, Medidor o Válvula..." autocomplete="off">
-                    <span class="search-icon">🔍</span>
-                    <div id="search-results" class="search-results"></div>
-                </div>
+            <!-- Buscador Predictivo (Inline en escritorio, desplegable en móvil) -->
+            <div id="search-container" class="search-wrapper">
+                <input type="text" id="search-input" placeholder="Buscar socio, RUT, medidor..." autocomplete="off">
+                <button id="btn-close-search" class="btn-close-search mobile-only" title="Cerrar búsqueda">✕</button>
+                <span class="search-icon desktop-only">🔍</span>
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <div class="header-right-tools">
+                <!-- Botón Lupa en Móvil -->
+                <button id="btn-mobile-search" class="btn-header-tool mobile-search-btn mobile-only" title="Buscar...">
+                    🔍
+                </button>
 
                 <!-- Selector de Perfil -->
                 <div class="profile-switcher">
-                    <button class="profile-btn active" data-profile="directivo" title="Vista para Alcalde y SECPLA (Inversión, Ley 20.998, ANF)">
-                        <span class="prof-icon">🏢</span> <span class="prof-text">SECPLA</span>
+                    <button class="profile-btn active" data-profile="directivo" title="Vista SECPLA">
+                        <span class="prof-icon">🏢</span><span class="prof-text desktop-only"> SECPLA</span>
                     </button>
-                    <button class="profile-btn" data-profile="operativo" title="Vista para Fontanero y Comité (Válvulas, Terreno, Fugas)">
-                        <span class="prof-icon">🔧</span> <span class="prof-text">Fontanero</span>
+                    <button class="profile-btn" data-profile="operativo" title="Vista Fontanero">
+                        <span class="prof-icon">🔧</span><span class="prof-text desktop-only"> Fontanero</span>
                     </button>
                 </div>
-            </div>
 
-            <div class="header-actions">
-                <!-- Botón Desplegable de Capas -->
-                <button id="btn-toggle-layers" class="btn-header-tool" title="Abrir / Cerrar Panel de Capas">
-                    <span class="btn-icon">🗺️</span> <span class="btn-text">Capas</span>
-                </button>
+                <!-- Botones de Acción -->
+                <div class="header-actions">
+                    <button id="btn-toggle-layers" class="btn-header-tool" title="Capas">
+                        <span class="btn-icon">🗺️</span><span class="btn-text desktop-only"> Capas</span>
+                    </button>
 
-                <!-- Botón Desplegable de Telemetría -->
-                <button id="btn-toggle-telemetry" class="btn-header-tool" title="Abrir / Cerrar Telemetría SCADA">
-                    <span class="btn-icon">📡</span> <span class="btn-text">Telemetría</span>
-                </button>
+                    <button id="btn-toggle-telemetry" class="btn-header-tool" title="Telemetría SCADA">
+                        <span class="btn-icon">📡</span><span class="btn-text desktop-only"> SCADA</span>
+                    </button>
 
-                <!-- Botón Simular Rotura -->
-                <button id="btn-emergency-mode" class="btn-emergency" title="Haga clic para simular una fuga o rotura de matriz">
-                    <span class="btn-icon">🚨</span> <span class="btn-text">Simular Rotura</span>
-                </button>
+                    <button id="btn-emergency-mode" class="btn-emergency" title="Simular Rotura">
+                        <span class="btn-icon">🚨</span><span class="btn-text desktop-only"> Rotura</span>
+                    </button>
+                </div>
             </div>
         </header>
 

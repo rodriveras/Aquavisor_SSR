@@ -1,0 +1,891 @@
+/* ==============================================================================
+   ESTILOS PREMIUM - GEOVISOR & GEMELO DIGITAL SSR GEOCONECTA (V2 - CLEAN MAP-FIRST)
+   ============================================================================== */
+
+:root {
+    --bg-primary: #0a0f1d;
+    --bg-secondary: #131b2e;
+    --bg-card: rgba(15, 23, 42, 0.92);
+    --border-color: rgba(255, 255, 255, 0.12);
+    --border-highlight: rgba(0, 168, 255, 0.4);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-blue: #0284c7;
+    --accent-cyan: #00d2ff;
+    --accent-green: #10b981;
+    --accent-yellow: #f59e0b;
+    --accent-red: #ef4444;
+    --accent-purple: #8b5cf6;
+    --shadow-main: 0 10px 30px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: var(--font-main);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+#app-container {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+/* ------------------------------------------------------------------------------
+   1. BARRA SUPERIOR SLIM (HEADER EJECUTIVO)
+   ------------------------------------------------------------------------------ */
+header.app-header {
+    height: 52px;
+    background: linear-gradient(90deg, #0b1329 0%, #111d3d 50%, #0b1329 100%);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.brand-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-logo {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #0284c7, #00d2ff);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 0 12px rgba(0, 210, 255, 0.5);
+}
+
+.brand-text h1 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.2;
+}
+
+.brand-text h1 span.badge-system {
+    font-size: 9.5px;
+    font-weight: 600;
+    background: rgba(0, 210, 255, 0.15);
+    color: var(--accent-cyan);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    padding: 1px 6px;
+    border-radius: 12px;
+    text-transform: uppercase;
+}
+
+.brand-text p {
+    font-size: 10px;
+    color: var(--text-secondary);
+}
+
+.header-center-tools {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Buscador Predictivo */
+.search-wrapper {
+    position: relative;
+    width: 270px;
+}
+
+.search-wrapper input {
+    width: 100%;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 0 32px 0 12px;
+    color: #fff;
+    font-size: 11.5px;
+    outline: none;
+    transition: all 0.25s ease;
+}
+
+.search-wrapper input:focus {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+}
+
+.search-wrapper .search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 12px;
+    pointer-events: none;
+}
+
+.search-results {
+    position: absolute;
+    top: 38px;
+    left: 0;
+    right: 0;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-highlight);
+    border-radius: var(--radius-md);
+    max-height: 260px;
+    overflow-y: auto;
+    z-index: 2000;
+    box-shadow: var(--shadow-main);
+    display: none;
+}
+
+.search-item {
+    padding: 7px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.15s;
+}
+
+.search-item:hover {
+    background: rgba(2, 132, 199, 0.2);
+}
+
+.search-item .item-title {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.search-item .item-sub {
+    font-size: 9.5px;
+    color: var(--text-secondary);
+}
+
+.search-item .item-tag {
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Modos de Perfil */
+.profile-switcher {
+    display: flex;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 16px;
+    padding: 2px;
+    border: 1px solid var(--border-color);
+}
+
+.profile-btn {
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    padding: 4px 10px;
+    font-size: 10.5px;
+    font-weight: 600;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.profile-btn.active {
+    background: var(--accent-blue);
+    color: #fff;
+    box-shadow: 0 1px 6px rgba(2, 132, 199, 0.5);
+}
+
+/* Botones de Barra Superior */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-header-tool {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-color);
+    color: #e2e8f0;
+    padding: 5px 11px;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+}
+
+.btn-header-tool:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--accent-cyan);
+}
+
+.btn-header-tool.active {
+    background: rgba(2, 132, 199, 0.25);
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+}
+
+.btn-emergency {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+    animation: pulse-red 2s infinite;
+    transition: transform 0.15s;
+}
+
+.btn-emergency:hover {
+    transform: scale(1.03);
+}
+
+.btn-emergency.active {
+    background: #ffffff;
+    color: #ef4444;
+    border: 2px solid #ef4444;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+}
+
+/* ------------------------------------------------------------------------------
+   2. MAPA A PANTALLA COMPLETA
+   ------------------------------------------------------------------------------ */
+.main-view {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 52px);
+    overflow: hidden;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background: #080d1a;
+}
+
+/* ------------------------------------------------------------------------------
+   3. PANELES LATERALES DESPLEGABLES (SLIDE-IN DRAWERS)
+   ------------------------------------------------------------------------------ */
+
+/* PANEL IZQUIERDO DESPLEGABLE: CAPAS Y MAPAS BASE */
+.drawer-left {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 290px;
+    max-height: calc(100vh - 80px);
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-highlight);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-main);
+    z-index: 600;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(-320px); /* Oculto por defecto */
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+}
+
+.drawer-left.open {
+    transform: translateX(0);
+}
+
+/* BOTÓN FLOTANTE RÁPIDO PARA ABRIR CAPAS SI ESTÁ CERRADO */
+.btn-floating-tab {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-highlight);
+    color: #fff;
+    padding: 7px 13px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--shadow-main);
+    z-index: 450;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.btn-floating-tab:hover {
+    background: rgba(2, 132, 199, 0.3);
+    border-color: var(--accent-cyan);
+}
+
+.drawer-header {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.drawer-header h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.drawer-close {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 15px;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.15s;
+}
+
+.drawer-close:hover {
+    color: #fff;
+}
+
+.drawer-body {
+    padding: 14px;
+    overflow-y: auto;
+    max-height: calc(100vh - 160px);
+}
+
+.layer-group {
+    margin-bottom: 14px;
+}
+
+.layer-group-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--accent-cyan);
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.layer-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 11.5px;
+    cursor: pointer;
+}
+
+.layer-item label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.layer-item input[type="checkbox"], .layer-item input[type="radio"] {
+    accent-color: var(--accent-cyan);
+    cursor: pointer;
+}
+
+.layer-icon-symbol {
+    width: 14px;
+    height: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+}
+
+.layer-item .count-badge {
+    font-size: 9.5px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+    padding: 1px 6px;
+    border-radius: 10px;
+}
+
+/* ------------------------------------------------------------------------------
+   PANEL DERECHO DESPLEGABLE (TELEMETRÍA + FICHA TÉCNICA UNIFICADAS)
+   ------------------------------------------------------------------------------ */
+.drawer-right {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 350px;
+    max-height: calc(100vh - 80px);
+    background: var(--bg-card);
+    backdrop-filter: blur(22px);
+    border: 1px solid var(--border-highlight);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-main);
+    z-index: 600;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(380px); /* Oculto por defecto para no saturar */
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+}
+
+.drawer-right.open {
+    transform: translateX(0);
+}
+
+/* Pestañas del Panel Derecho: Telemetría vs Ficha */
+.drawer-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.drawer-tab-btn {
+    flex: 1;
+    padding: 10px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+}
+
+.drawer-tab-btn.active {
+    color: var(--accent-cyan);
+    border-bottom-color: var(--accent-cyan);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Contenido de Telemetría SCADA */
+.telemetry-section {
+    padding: 12px;
+}
+
+.gauge-tank {
+    margin-bottom: 12px;
+}
+
+.gauge-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11.5px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.gauge-progress-bar {
+    width: 100%;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.gauge-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0284c7, #00d2ff);
+    width: 77%;
+    border-radius: 6px;
+    transition: width 0.8s ease, background 0.5s ease;
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+}
+
+.telemetry-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.telemetry-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-md);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-label {
+    font-size: 9px;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.card-val {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin-top: 2px;
+}
+
+.card-val small {
+    font-size: 9.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.card-state {
+    font-size: 9px;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+/* Ficha Técnica */
+.prop-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 6px;
+}
+
+.prop-table tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.prop-table td {
+    padding: 6px 4px;
+    font-size: 11px;
+}
+
+.prop-table td.prop-name {
+    color: var(--text-secondary);
+    font-weight: 600;
+    width: 40%;
+}
+
+.prop-table td.prop-val {
+    color: #fff;
+    font-weight: 500;
+}
+
+.valve-action-box {
+    margin-top: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    text-align: center;
+}
+
+.maneuver-direction {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--accent-cyan);
+    margin-bottom: 4px;
+}
+
+.maneuver-turns {
+    font-size: 12px;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.btn-toggle-valve {
+    width: 100%;
+    padding: 8px;
+    background: linear-gradient(135deg, #0284c7, #02649b);
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    font-size: 11.5px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-toggle-valve.closed {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+}
+
+.drawer-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.badge-valve {
+    background: rgba(2, 132, 199, 0.2);
+    color: var(--accent-cyan);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+}
+
+.badge-consumer {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--accent-green);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* ------------------------------------------------------------------------------
+   4. TIMELINE EPANET INFERIOR (COMPACTO Y COLAPSABLE)
+   ------------------------------------------------------------------------------ */
+.dock-timeline-container {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.btn-toggle-timeline {
+    background: var(--bg-card);
+    border: 1px solid var(--border-highlight);
+    color: var(--accent-cyan);
+    padding: 4px 12px;
+    border-radius: 12px 12px 0 0;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
+    margin-bottom: -1px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.dock-timeline {
+    width: 600px;
+    max-width: 90vw;
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border-highlight);
+    border-radius: 20px;
+    box-shadow: var(--shadow-main);
+    padding: 8px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: all 0.3s ease;
+}
+
+.dock-timeline.minimized {
+    display: none;
+}
+
+.btn-playback {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0284c7, #00d2ff);
+    border: none;
+    color: #fff;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.4);
+    transition: transform 0.15s;
+}
+
+.timeline-slider-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9.5px;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.slider-labels .cur-hour {
+    color: var(--accent-cyan);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.timeline-range {
+    width: 100%;
+    height: 5px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+}
+
+.timeline-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #00d2ff;
+    cursor: pointer;
+    box-shadow: 0 0 8px #00d2ff;
+    border: 2px solid #ffffff;
+}
+
+.timeline-stats {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-left: 1px solid var(--border-color);
+    padding-left: 12px;
+}
+
+.t-stat {
+    text-align: center;
+}
+
+.t-stat .stat-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.t-stat .stat-lbl {
+    font-size: 8.5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+/* ------------------------------------------------------------------------------
+   5. TARJETA COMPACTA DE EMERGENCIA (NO BLOQUEA EL MAPA)
+   ------------------------------------------------------------------------------ */
+.emergency-card-bottom {
+    position: absolute;
+    bottom: 25px;
+    left: 20px;
+    width: 380px;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(25px);
+    border: 2px solid var(--accent-red);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 0 35px rgba(239, 68, 68, 0.4);
+    z-index: 700;
+    padding: 14px 16px;
+    display: none; /* Activo solo en rotura */
+    animation: slide-up 0.3s ease;
+}
+
+.emergency-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.emergency-header h2 {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--accent-red);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.emergency-steps {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: var(--radius-md);
+    padding: 9px 12px;
+    margin: 8px 0;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.emergency-steps strong {
+    color: #fff;
+}
+
+.emergency-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.btn-act {
+    flex: 1;
+    padding: 7px;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 11px;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-act.btn-cut {
+    background: var(--accent-red);
+    color: #fff;
+}
+
+.btn-act.btn-repair {
+    background: var(--accent-green);
+    color: #fff;
+}
+
+.btn-act.btn-cancel {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+/* Animaciones */
+@keyframes pulse-red {
+    0%, 100% { box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+    50% { box-shadow: 0 0 18px rgba(239, 68, 68, 0.8); }
+}
+
+@keyframes slide-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

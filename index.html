@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <title>AquaVisor SSR | Gemelo Digital y Geovisor San Ignacio</title>
+    
+    <!-- Estilos Leaflet y Librerías -->
+    <link rel="stylesheet" href="css/leaflet.css">
+    <link rel="stylesheet" href="css/fontawesome-all.min.css">
+    
+    <!-- Estilo Premium Gemelo Digital (Map-First) -->
+    <link rel="stylesheet" href="css/gemelo_digital.css">
+</head>
+<body>
+    <div id="app-container">
+        
+        <!-- ====================================================================
+             1. BARRA SUPERIOR SLIM (HEADER EJECUTIVO)
+             ==================================================================== -->
+        <header class="app-header">
+            <div class="brand-section">
+                <div class="brand-logo">🚰</div>
+                <div class="brand-text">
+                    <h1>AQUAVISOR SSR <span class="badge-system">Gemelo Digital</span></h1>
+                    <p>I. Municipalidad de San Ignacio | Piloto Santa Juana - El Calvario</p>
+                </div>
+            </div>
+
+            <div class="header-center-tools">
+                <!-- Buscador Predictivo -->
+                <div class="search-wrapper">
+                    <input type="text" id="search-input" placeholder="Buscar por Socio, RUT, Medidor o Válvula..." autocomplete="off">
+                    <span class="search-icon">🔍</span>
+                    <div id="search-results" class="search-results"></div>
+                </div>
+
+                <!-- Selector de Perfil -->
+                <div class="profile-switcher">
+                    <button class="profile-btn active" data-profile="directivo" title="Vista para Alcalde y SECPLA (Inversión, Ley 20.998, ANF)">
+                        🏢 SECPLA
+                    </button>
+                    <button class="profile-btn" data-profile="operativo" title="Vista para Fontanero y Comité (Válvulas, Terreno, Fugas)">
+                        🔧 Fontanero
+                    </button>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <!-- Botón Desplegable de Capas -->
+                <button id="btn-toggle-layers" class="btn-header-tool" title="Abrir / Cerrar Panel de Capas">
+                    🗺️ Capas
+                </button>
+
+                <!-- Botón Desplegable de Telemetría -->
+                <button id="btn-toggle-telemetry" class="btn-header-tool" title="Abrir / Cerrar Telemetría SCADA">
+                    📡 Telemetría
+                </button>
+
+                <!-- Botón Simular Rotura -->
+                <button id="btn-emergency-mode" class="btn-emergency" title="Haga clic para simular una fuga o rotura de matriz">
+                    🚨 Simular Rotura
+                </button>
+            </div>
+        </header>
+
+        <!-- ====================================================================
+             2. VISTA PRINCIPAL (MAPA A PANTALLA COMPLETA + PANELES DESPLEGABLES)
+             ==================================================================== -->
+        <main class="main-view">
+            <!-- MAPA LEAFLET BASE -->
+            <div id="map"></div>
+
+            <!-- BOTÓN FLOTANTE DISCRETO PARA RE-ABRIR CAPAS -->
+            <button id="btn-floating-layers" class="btn-floating-tab" title="Desplegar Capas">
+                🗺️ Capas y Mapas
+            </button>
+
+            <!-- PANEL LATERAL IZQUIERDO DESPLEGABLE (CAPAS Y FONDOS) -->
+            <aside id="drawer-left" class="drawer-left">
+                <div class="drawer-header">
+                    <h3><span>🗺️</span> Capas y Cartografía</h3>
+                    <button id="btn-close-drawer-left" class="drawer-close" title="Ocultar Panel">✕</button>
+                </div>
+                <div class="drawer-body">
+                    <!-- Mapa Base -->
+                    <div class="layer-group">
+                        <div class="layer-group-title">Mapa de Fondo</div>
+                        <div class="layer-item">
+                            <label><input type="radio" name="basemap" value="google_sat" checked> 🛰️ Google Satélite</label>
+                        </div>
+                        <div class="layer-item">
+                            <label><input type="radio" name="basemap" value="google_hybrid"> 🗺️ Google Híbrido</label>
+                        </div>
+                        <div class="layer-item">
+                            <label><input type="radio" name="basemap" value="osm"> 🛣️ OpenStreetMap (OSM)</label>
+                        </div>
+                    </div>
+
+                    <!-- Red Hidráulica y Elementos -->
+                    <div class="layer-group">
+                        <div class="layer-group-title">Infraestructura y Redes</div>
+                        <div class="layer-item">
+                            <label><input type="checkbox" id="chk-redes" checked> <span class="layer-icon-symbol" style="color:#00d2ff;">━</span> Tuberías de Red (EPANET)</label>
+                            <span class="count-badge">14 tramos</span>
+                        </div>
+                        <div class="layer-item">
+                            <label><input type="checkbox" id="chk-valvulas" checked> <span class="layer-icon-symbol" style="color:#10b981;">●</span> Válvulas de Sectorización</label>
+                            <span class="count-badge">12 unid.</span>
+                        </div>
+                        <div class="layer-item">
+                            <label><input type="checkbox" id="chk-fuentes" checked> <span class="layer-icon-symbol" style="color:#0284c7;">🏢</span> Pozo y Estanque (50 m³)</label>
+                            <span class="count-badge">2 fuentes</span>
+                        </div>
+                        <div class="layer-item">
+                            <label><input type="checkbox" id="chk-accesorios" checked> <span class="layer-icon-symbol" style="color:#f97316;">🚒</span> Grifos, Ventosas y Purgas</label>
+                            <span class="count-badge">4 acces.</span>
+                        </div>
+                    </div>
+
+                    <!-- Clientes y Concesión -->
+                    <div class="layer-group">
+                        <div class="layer-group-title">Catastro de Socios y Legal</div>
+                        <div class="layer-item">
+                            <label><input type="checkbox" id="chk-arranques" checked> <span class="layer-icon-symbol" style="color:#10b981;">●</span> Arranques y Medidores</label>
+                            <span class="count-badge">140 socios</span>
+                        </div>
+                        <div class="layer-item">
+                            <label><input type="checkbox" id="chk-concesion" checked> <span class="layer-icon-symbol" style="color:#00d2ff;">⬚</span> Polígono Concesión (Ley 20.998)</label>
+                            <span class="count-badge">Oficial</span>
+                        </div>
+                        <div class="layer-item">
+                            <label><input type="checkbox" id="chk-censo"> <span class="layer-icon-symbol" style="color:#8b5cf6;">⬚</span> Límite Censal 2024</label>
+                            <span class="count-badge">INE</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- PANEL LATERAL DERECHO DESPLEGABLE (TELEMETRÍA + FICHA TÉCNICA) -->
+            <aside id="drawer-right" class="drawer-right">
+                <div class="drawer-header">
+                    <div class="drawer-tabs">
+                        <button id="tab-btn-telemetry" class="drawer-tab-btn active">📡 Telemetría SCADA</button>
+                        <button id="tab-btn-detail" class="drawer-tab-btn">ℹ️ Ficha Técnica</button>
+                    </div>
+                    <button id="btn-close-drawer-right" class="drawer-close" title="Ocultar Panel">✕</button>
+                </div>
+
+                <!-- CONTENIDO PESTAÑA 1: TELEMETRÍA EN VIVO -->
+                <div id="tab-content-telemetry" class="drawer-body telemetry-section">
+                    <!-- Estanque 50 m³ -->
+                    <div class="gauge-tank">
+                        <div class="gauge-info">
+                            <span>Estanque de Regulación 50 m³</span>
+                            <span id="tank-pct-val" style="color:var(--accent-cyan);">77%</span>
+                        </div>
+                        <div class="gauge-progress-bar">
+                            <div id="tank-fill-bar" class="gauge-fill"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-muted); margin-top:3px;">
+                            <span>Volumen Útil Actual:</span>
+                            <span id="tank-vol-val" style="color:#fff; font-weight:600;">38.5 m³ / 50 m³</span>
+                        </div>
+                    </div>
+
+                    <!-- Cuadrícula de Métricas Operativas -->
+                    <div class="telemetry-grid">
+                        <div class="telemetry-card">
+                            <span class="card-label">Bomba Pozo</span>
+                            <span id="pump-state-val" class="card-state" style="color:var(--accent-green);">ENCENDIDA</span>
+                            <span id="pump-flow-val" class="card-val">6.8 <small>L/s</small></span>
+                        </div>
+                        <div class="telemetry-card">
+                            <span class="card-label">Presión Crítica</span>
+                            <span class="card-state" style="color:var(--accent-cyan);">Pto. Escuela</span>
+                            <span id="min-press-val" class="card-val" style="color:var(--accent-green);">18.4 <small>mca</small></span>
+                        </div>
+                        <div class="telemetry-card">
+                            <span class="card-label">Pérdidas ANF</span>
+                            <span class="card-state" style="color:var(--accent-yellow);">Agua No Facturada</span>
+                            <span class="card-val" style="color:var(--accent-yellow);">27.4 <small>%</small></span>
+                        </div>
+                        <div class="telemetry-card">
+                            <span class="card-label">Cobertura</span>
+                            <span class="card-state" style="color:var(--accent-green);">140 Arranques</span>
+                            <span class="card-val">100 <small>%</small></span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:14px; padding:10px; background:rgba(255,255,255,0.03); border:1px solid var(--border-color); border-radius:var(--radius-md);">
+                        <div style="font-size:10.5px; font-weight:700; color:var(--accent-cyan); margin-bottom:4px;">📊 Resumen de Operación Diaria</div>
+                        <div style="font-size:10px; color:var(--text-secondary); line-height:1.4;">
+                            • Producción Acumulada: <strong>142.8 m³/día</strong><br>
+                            • Consumo Medido: <strong>103.6 m³/día</strong><br>
+                            • Estado Red: <strong>Régimen Continuo Normal</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTENIDO PESTAÑA 2: FICHA DE ELEMENTO SELECCIONADO -->
+                <div id="tab-content-detail" class="drawer-body" style="display:none;">
+                    <div id="drawer-badge-container"></div>
+                    <div id="drawer-content">
+                        <div style="text-align:center; padding:30px 10px; color:var(--text-muted); font-size:11.5px;">
+                            Seleccione una tubería, válvula, arranque o fuente en el mapa para inspeccionar su ficha técnica.
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- PANEL INFERIOR SLIM: GEMELO DIGITAL & TIMELINE 24H (COLAPSABLE) -->
+            <div class="dock-timeline-container">
+                <button id="btn-toggle-timeline" class="btn-toggle-timeline" title="Ocultar / Mostrar Barra de Tiempo">
+                    ⏱ Gemelo Digital 24h (EPANET) ▲
+                </button>
+                <div id="dock-timeline" class="dock-timeline">
+                    <button id="btn-play-pause" class="btn-playback" title="Iniciar / Detener Simulación Dinámica">▶</button>
+                    <div class="timeline-slider-box">
+                        <div class="slider-labels">
+                            <span>00:00 (Noche)</span>
+                            <span id="cur-hour-label" class="cur-hour">13:00 hrs - Pico Almuerzo</span>
+                            <span>23:00 (Noche)</span>
+                        </div>
+                        <input type="range" id="time-slider" class="timeline-range" min="0" max="23" step="1" value="13">
+                    </div>
+                    <div class="timeline-stats">
+                        <div class="t-stat">
+                            <div id="timeline-tank-vol" class="stat-num">38.5 m³</div>
+                            <div class="stat-lbl">Estanque</div>
+                        </div>
+                        <div class="t-stat">
+                            <div id="timeline-min-press" class="stat-num" style="color:var(--accent-green);">18.4 mca</div>
+                            <div class="stat-lbl">P. Mínima</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TARJETA COMPACTA DE EMERGENCIA (ESQUINA INFERIOR IZQUIERDA - NO TAPA EL MAPA) -->
+            <div id="emergency-card" class="emergency-card-bottom">
+                <div class="emergency-header">
+                    <h2><span>🚨</span> ALERTA DE ROTURA DE MATRIZ</h2>
+                    <button id="btn-close-emergency" class="drawer-close" title="Cerrar y Cancelar Alerta">✕</button>
+                </div>
+                <p style="font-size:11px; color:#cbd5e1; margin-bottom:6px;">
+                    Falla detectada en: <strong id="burst-pipe-id" style="color:#00d2ff;">TUB-12 Matriz Poniente</strong>
+                </p>
+                <div class="emergency-steps">
+                    <div style="font-weight:700; color:var(--accent-yellow); margin-bottom:3px;">
+                        🔧 AISLAMIENTO INMEDIATO PARA EL FONTANERO:
+                    </div>
+                    <ul id="burst-valves-rec" style="padding-left:14px; margin-bottom:4px;">
+                        <li>Cerrar <strong>VALV-02</strong> (Salida Estanque) 18 vueltas Horario.</li>
+                        <li>Cerrar <strong>VALV-08</strong> (KM 1.5) 17.5 vueltas Horario.</li>
+                    </ul>
+                    <div style="font-size:10px; color:#fca5a5;">
+                        Afectación: <strong id="burst-affected-count">38 viviendas</strong>
+                    </div>
+                </div>
+                <div class="emergency-actions">
+                    <button class="btn-act btn-cut" onclick="executeEmergencyCut()">🔒 Ejecutar Corte</button>
+                    <button class="btn-act btn-repair" onclick="repairAndRestore()">✅ Reparar y Normalizar</button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Librerías de Datos Geográficos (Archivos Reales y Enriquecidos) -->
+    <script src="js/leaflet.js"></script>
+    <script src="data/Santa_Juanacartografia_censo2024_pais__localidades_cpv24_3.js"></script>
+    <script src="data/Area_Servicio_4.js"></script>
+    <script src="data/Fuentefuente__output_point_layer_6.js"></script>
+    <script src="data/Redes_Enriquecidas.js"></script>
+    <script src="data/Valvulas_GeoConecta.js"></script>
+    <script src="data/Accesorios_GeoConecta.js"></script>
+    <script src="data/Arranques_GeoConecta.js"></script>
+
+    <!-- Controlador Principal del Gemelo Digital -->
+    <script src="js/gemelo_digital.js"></script>
+</body>
+</html>

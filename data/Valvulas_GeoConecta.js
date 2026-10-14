@@ -1,0 +1,384 @@
+﻿var json_Valvulas_GeoConecta = {
+    "features":  [
+                     {
+                         "properties":  {
+                                            "id":  "VALV-01",
+                                            "camara":  "Albañilería 80x80 cm con tapa de hormigón",
+                                            "vueltas_cierre":  12.5,
+                                            "fecha_instalacion":  "2018-04-12",
+                                            "sentido_giro":  "Horario (Cierre hacia la derecha)",
+                                            "nombre":  "Válvula Impulsión Pozo - Cabecera",
+                                            "diametro":  "75 mm (2 1/2\")",
+                                            "coordenadas":  [
+                                                                -71.901506,
+                                                                -36.846431
+                                                            ],
+                                            "sector_afectado":  "Alimentación general estanque elevado",
+                                            "tipo":  "Compuerta Elástica PN10",
+                                            "foto":  "camara_valv_01.jpg",
+                                            "ubicacion":  "Recinto Pozo Profundo - Salida a Estanque",
+                                            "ultima_mantencion":  "2026-08-15",
+                                            "estado_operativo":  "Abierta (Normal)",
+                                            "profundidad_m":  0.9,
+                                            "material":  "Fierro Dúctil / EPDM"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              -71.901506,
+                                                              -36.846431
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "id":  "VALV-02",
+                                            "camara":  "Hormigón armado con marco y tapa de fierro fundido",
+                                            "vueltas_cierre":  18,
+                                            "fecha_instalacion":  "2019-11-20",
+                                            "sentido_giro":  "Horario (Cierre hacia la derecha)",
+                                            "nombre":  "Válvula Principal Salida Estanque 50 m³",
+                                            "diametro":  "110 mm (4\")",
+                                            "coordenadas":  [
+                                                                -71.901726,
+                                                                -36.846381
+                                                            ],
+                                            "sector_afectado":  "Corte Total del Sistema SSR Santa Juana",
+                                            "tipo":  "Compuerta Elástica Bridada PN10",
+                                            "foto":  "camara_valv_02.jpg",
+                                            "ubicacion":  "Base Torre Estanque de Regulación",
+                                            "ultima_mantencion":  "2026-09-02",
+                                            "estado_operativo":  "Abierta (Normal)",
+                                            "profundidad_m":  1.1,
+                                            "material":  "Fierro Fundido Dúctil"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              -71.901726,
+                                                              -36.846381
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "id":  "VALV-03",
+                                            "camara":  "Cámara prefabricada 60x60 cm",
+                                            "vueltas_cierre":  15,
+                                            "fecha_instalacion":  "2016-03-10",
+                                            "sentido_giro":  "Horario",
+                                            "nombre":  "Válvula Sectorizadora Ramal Norte",
+                                            "diametro":  "90 mm (3\")",
+                                            "coordenadas":  [
+                                                                -71.901706,
+                                                                -36.846451
+                                                            ],
+                                            "sector_afectado":  "Sector Santa Juana Norte (38 arranques)",
+                                            "tipo":  "Compuerta Elástica Campana-Espiga",
+                                            "foto":  "camara_valv_03.jpg",
+                                            "ubicacion":  "Bifurcación Camino Vecinal Norte",
+                                            "ultima_mantencion":  "2026-06-20",
+                                            "estado_operativo":  "Abierta (Normal)",
+                                            "profundidad_m":  0.85,
+                                            "material":  "Fierro Dúctil"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              -71.901706,
+                                                              -36.846451
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "id":  "VALV-04",
+                                            "camara":  "Cámara albañilería estándar",
+                                            "vueltas_cierre":  14.5,
+                                            "fecha_instalacion":  "2016-03-10",
+                                            "sentido_giro":  "Horario",
+                                            "nombre":  "Válvula Sectorizadora Troncal Este",
+                                            "diametro":  "90 mm (3\")",
+                                            "coordenadas":  [
+                                                                -71.896773,
+                                                                -36.846877
+                                                            ],
+                                            "sector_afectado":  "Sector Este y Camino a San Ignacio (45 arranques)",
+                                            "tipo":  "Compuerta Elástica PN10",
+                                            "foto":  "camara_valv_04.jpg",
+                                            "ubicacion":  "Cruce de Caminos KM 0.6 Este",
+                                            "ultima_mantencion":  "2026-07-11",
+                                            "estado_operativo":  "Abierta (Normal)",
+                                            "profundidad_m":  0.95,
+                                            "material":  "Fierro Dúctil"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              -71.896773,
+                                                              -36.846877
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "id":  "VALV-05",
+                                            "camara":  "Cámara de hormigón en berma sur",
+                                            "vueltas_cierre":  11,
+                                            "fecha_instalacion":  "2017-09-05",
+                                            "sentido_giro":  "Horario",
+                                            "nombre":  "Válvula Ramal Escuela y Posta Rural",
+                                            "diametro":  "75 mm (2 1/2\")",
+                                            "coordenadas":  [
+                                                                -71.892555,
+                                                                -36.847137
+                                                            ],
+                                            "sector_afectado":  "Escuela Básica, Posta Rural y Sede Social (22 arranques)",
+                                            "tipo":  "Compuerta Asiento Resiliente",
+                                            "foto":  "camara_valv_05.jpg",
+                                            "ubicacion":  "Entrada Callejón Centro Cívico",
+                                            "ultima_mantencion":  "2026-05-18",
+                                            "estado_operativo":  "Abierta (Normal)",
+                                            "profundidad_m":  0.8,
+                                            "material":  "Fierro Dúctil"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              -71.892555,
+                                                              -36.847137
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "id":  "VALV-06",
+                                            "camara":  "Cámara cuadrada 50x50 cm",
+                                            "vueltas_cierre":  9,
+                                            "fecha_instalacion":  "2020-01-15",
+                                            "sentido_giro":  "Horario",
+                                            "nombre":  "Válvula Ramal Pasaje Los Aromos",
+                                            "diametro":  "63 mm (2\")",
+                                            "coordenadas":  [
+                                                                -71.886987,
+                                                                -36.846472
+                                                            ],
+                                            "sector_afectado":  "Callejón Los Aromos (12 arranques)",
+                                            "tipo":  "Compuerta Elástica",
+                                            "foto":  "camara_valv_06.jpg",
+                                            "ubicacion":  "Esquina Pasaje Los Aromos",
+                                            "ultima_mantencion":  "2026-08-01",
+                                            "estado_operativo":  "Abierta (Normal)",
+                                            "profundidad_m":  0.75,
+                                            "material":  "PVC / Bronce"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              -71.886987,
+                                                              -36.846472
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "id":  "VALV-07",
+                                            "camara":  "Cámara en acceso predial",
+                                            "vueltas_cierre":  8.5,
+                                            "fecha_instalacion":  "2020-01-15",
+                                            "sentido_giro":  "Horario",
+                                            "nombre":  "Válvula Derivación Norte Secundario",
+                                            "diametro":  "63 mm (2\")",
+                                            "coordenadas":  [
+                                                                -71.881894,
+                                                                -36.846191
+                                                            ],
+                                            "sector_afectado":  "Callejón El Manzano (15 arranques)",
+                                            "tipo":  "Compuerta Elástica",
+                                            "foto":  "camara_valv_07.jpg",
+                                            "ubicacion":  "Entrada Callejón El Manzano",
+                                            "ultima_mantencion":  "2026-08-01",
+                                            "estado_operativo":  "Abierta (Normal)",
+                                            "profundidad_m":  0.8,
+                                            "material":  "Fierro Dúctil"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              -71.881894,
+                                                              -36.846191
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "id":  "VALV-08",
+                                            "camara":  "Cámara estándar de hormigón en faja vial",
+                                            "vueltas_cierre":  17.5,
+                                            "fecha_instalacion":  "2018-05-10",
+                                            "sentido_giro":  "Horario",
+                                            "nombre":  "Válvula Troncal Oeste KM 1.5",
+                                            "diametro":  "110 mm (4\")",
+                                            "coordenadas":  [
+                                                                -71.916896,
+                                                                -36.847122
+                                                            ],
+                                            "sector_afectado":  "Sector Poniente y El Calvario (85 arranques)",
+                                            "tipo":  "Compuerta Bridada PN10",
+                                            "foto":  "camara_valv_08.jpg",
+                                            "ubicacion":  "Camino Principal frente a Parcela 8",
+                                            "ultima_mantencion":  "2026-07-30",
+                                            "estado_operativo":  "Abierta (Normal)",
+                                            "profundidad_m":  1.05,
+                                            "material":  "Fierro Dúctil"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              -71.916896,
+                                                              -36.847122
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "id":  "VALV-09",
+                                            "camara":  "Albañilería con tapa metálica estriada",
+                                            "vueltas_cierre":  13,
+                                            "fecha_instalacion":  "2014-11-03",
+                                            "sentido_giro":  "Antihorario (Válvula Histórica)",
+                                            "nombre":  "Válvula Sectorizadora El Calvario Centro",
+                                            "diametro":  "90 mm (3\")",
+                                            "coordenadas":  [
+                                                                -71.939756,
+                                                                -36.850784
+                                                            ],
+                                            "sector_afectado":  "El Calvario Centro y Extremo Poniente (52 arranques)",
+                                            "tipo":  "Compuerta Elástica",
+                                            "foto":  "camara_valv_09.jpg",
+                                            "ubicacion":  "Bifurcación Sede Comunitaria El Calvario",
+                                            "ultima_mantencion":  "2026-04-12",
+                                            "estado_operativo":  "Abierta (Normal)",
+                                            "profundidad_m":  0.9,
+                                            "material":  "Fierro Dúctil"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              -71.939756,
+                                                              -36.850784
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "id":  "VALV-10",
+                                            "camara":  "Cámara de polipropileno corrugado",
+                                            "vueltas_cierre":  10,
+                                            "fecha_instalacion":  "2022-02-14",
+                                            "sentido_giro":  "Horario",
+                                            "nombre":  "Válvula Ramal Loteo Los Boldos",
+                                            "diametro":  "75 mm (2 1/2\")",
+                                            "coordenadas":  [
+                                                                -71.960368,
+                                                                -36.851324
+                                                            ],
+                                            "sector_afectado":  "Loteo Los Boldos (26 arranques)",
+                                            "tipo":  "Compuerta Elástica",
+                                            "foto":  "camara_valv_10.jpg",
+                                            "ubicacion":  "Acceso Loteo Los Boldos",
+                                            "ultima_mantencion":  "2026-09-10",
+                                            "estado_operativo":  "Abierta (Normal)",
+                                            "profundidad_m":  0.85,
+                                            "material":  "PVC C-10 / Bronce"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              -71.960368,
+                                                              -36.851324
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "id":  "VALV-11",
+                                            "camara":  "Cámara con descarga lateral",
+                                            "vueltas_cierre":  8,
+                                            "fecha_instalacion":  "2022-02-14",
+                                            "sentido_giro":  "Horario",
+                                            "nombre":  "Válvula Terminal y Purga Extremo Poniente",
+                                            "diametro":  "63 mm (2\")",
+                                            "coordenadas":  [
+                                                                -71.96891,
+                                                                -36.849908
+                                                            ],
+                                            "sector_afectado":  "Extremo poniente final de red",
+                                            "tipo":  "Compuerta Elástica",
+                                            "foto":  "camara_valv_11.jpg",
+                                            "ubicacion":  "Fin de Red Pavimentada Poniente",
+                                            "ultima_mantencion":  "2026-09-10",
+                                            "estado_operativo":  "Abierta (Normal)",
+                                            "profundidad_m":  0.7,
+                                            "material":  "Fierro Dúctil"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              -71.96891,
+                                                              -36.849908
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "id":  "VALV-12",
+                                            "camara":  "Cámara de albañilería",
+                                            "vueltas_cierre":  11.5,
+                                            "fecha_instalacion":  "2019-06-25",
+                                            "sentido_giro":  "Horario",
+                                            "nombre":  "Válvula Sectorizadora Callejón Los Pinos",
+                                            "diametro":  "75 mm (2 1/2\")",
+                                            "coordenadas":  [
+                                                                -71.906977,
+                                                                -36.846433
+                                                            ],
+                                            "sector_afectado":  "Sector Los Pinos (19 arranques)",
+                                            "tipo":  "Compuerta Elástica",
+                                            "foto":  "camara_valv_12.jpg",
+                                            "ubicacion":  "Callejón Los Pinos KM 0.4",
+                                            "ultima_mantencion":  "2026-07-05",
+                                            "estado_operativo":  "Abierta (Normal)",
+                                            "profundidad_m":  0.85,
+                                            "material":  "Fierro Dúctil"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              -71.906977,
+                                                              -36.846433
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     }
+                 ],
+    "name":  "Valvulas_GeoConecta",
+    "crs":  {
+                "properties":  {
+                                   "name":  "urn:ogc:def:crs:OGC:1.3:CRS84"
+                               },
+                "type":  "name"
+            },
+    "type":  "FeatureCollection"
+};

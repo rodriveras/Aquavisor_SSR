@@ -532,9 +532,9 @@ function updateDigitalTwin(hour) {
     if (hourLabel) {
         let period = 'Consumo Normal';
         if (hour >= 2 && hour <= 5) period = 'Llenado Nocturno / Mínimo Consumo';
-        else if (hour >= 7 && hour <= 9) period = 'Pico Matinal';
-        else if (hour >= 12 && hour <= 14) period = 'Pico Almuerzo (Máxima Demanda)';
-        else if (hour >= 20 && hour <= 22) period = 'Pico Nocturno';
+        else if (hour >= 7 && hour <= 9) period = 'Punta Matinal';
+        else if (hour >= 12 && hour <= 14) period = 'Punta Almuerzo (Máxima Demanda)';
+        else if (hour >= 20 && hour <= 22) period = 'Punta Tarde-Noche';
         hourLabel.innerText = `${hourFormatted} - ${period}`;
     }
 
@@ -551,11 +551,11 @@ function updateDigitalTwin(hour) {
         AppState.pumpFlow = 6.8;
     } else if (hour >= 12 && hour <= 14) {
         tankVol = 31.0 - ((hour - 12) * 2.2);
-        AppState.pumpStatus = 'ENCENDIDA (Apoyo Pico)';
+        AppState.pumpStatus = 'ENCENDIDA (Apoyo Punta)';
         AppState.pumpFlow = 6.8;
     } else if (hour >= 20 && hour <= 22) {
         tankVol = 28.5 - ((hour - 20) * 1.8);
-        AppState.pumpStatus = 'ENCENDIDA (Apoyo Pico)';
+        AppState.pumpStatus = 'ENCENDIDA (Apoyo Punta)';
         AppState.pumpFlow = 6.8;
     } else {
         tankVol = 36.0 - (demandFactor * 1.5);
@@ -594,7 +594,10 @@ function updateDigitalTwin(hour) {
         minPressLabel.innerText = minPressure + ' m.c.a.';
         minPressLabel.style.color = minPressure < 14.0 ? 'var(--accent-yellow)' : 'var(--accent-green)';
     }
-    if (timelineMinPress) timelineMinPress.innerText = minPressure + ' m.c.a.';
+    if (timelineMinPress) {
+        timelineMinPress.innerText = minPressure + ' m.c.a.';
+        timelineMinPress.style.color = minPressure < 14.0 ? 'var(--accent-yellow)' : 'var(--accent-green)';
+    }
     if (timelineTankVol) timelineTankVol.innerText = AppState.tankCurrentVol + ' m³';
 }
 

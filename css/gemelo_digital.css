@@ -1195,20 +1195,82 @@ header.app-header {
     .dock-timeline {
         width: 100%;
         max-width: 100%;
-        padding: 8px 10px;
+        padding: 6px 10px;
         gap: 8px;
         border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
     .btn-playback {
-        width: 30px;
-        height: 30px;
-        font-size: 12px;
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        font-size: 11px;
         flex-shrink: 0;
     }
 
+    .timeline-slider-box {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .slider-labels {
+        justify-content: center;
+    }
+
+    .slider-labels .cur-hour {
+        font-size: 10px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        text-align: center;
+    }
+
+    .timeline-range {
+        height: 6px;
+    }
+
+    .timeline-range::-webkit-slider-thumb {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Indicadores de Estanque y Presión Mínima visibles en móvil */
     .timeline-stats {
-        display: none;
+        display: flex !important;
+        align-items: center;
+        gap: 6px;
+        border-left: 1px solid rgba(255, 255, 255, 0.15);
+        padding-left: 8px;
+        flex-shrink: 0;
+    }
+
+    .t-stat {
+        text-align: center;
+        min-width: 42px;
+    }
+
+    .t-stat .stat-num {
+        font-size: 11px;
+        font-weight: 800;
+        line-height: 1.1;
+        white-space: nowrap;
+        color: #fff;
+    }
+
+    .t-stat .stat-lbl {
+        font-size: 8px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        margin-top: 1px;
+        white-space: nowrap;
     }
 
     /* TARJETA DE EMERGENCIA EN MÓVILES */
@@ -1258,25 +1320,49 @@ header.app-header {
     }
 
     .brand-logo {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+    }
+
+    .btn-header-tool, .btn-emergency, .mobile-search-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+
+    .profile-btn {
+        width: 25px;
+        height: 25px;
+        font-size: 12px;
+    }
+
+    .dock-timeline {
+        padding: 4px 6px;
+        gap: 6px;
+    }
+
+    .btn-playback {
         width: 26px;
         height: 26px;
-        font-size: 13px;
+        min-width: 26px;
+        font-size: 10px;
     }
 
-    .search-wrapper {
-        width: 95px;
+    .timeline-stats {
+        gap: 4px;
+        padding-left: 6px;
     }
 
-    .search-wrapper:focus-within {
-        width: 140px;
+    .t-stat {
+        min-width: 38px;
     }
 
-    .search-wrapper input {
-        font-size: 9.5px;
-        padding-right: 20px;
+    .t-stat .stat-num {
+        font-size: 10px;
     }
 
-    .btn-header-tool, .btn-emergency {
-        padding: 4px 6px;
+    .t-stat .stat-lbl {
+        font-size: 7.5px;
     }
 }

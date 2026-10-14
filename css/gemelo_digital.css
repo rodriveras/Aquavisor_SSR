@@ -889,3 +889,345 @@ header.app-header {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* ==============================================================================
+   6. TELÓN DE FONDO (BACKDROP) & DISEÑO 100% RESPONSIVE PARA DISPOSITIVOS MÓVILES
+   ============================================================================== */
+
+/* Telón / Backdrop para móviles (cierra paneles laterales al tocar el mapa) */
+.drawer-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 550;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.drawer-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Soporte moderno para Dynamic Viewport Height (iOS/Android Safari & Chrome) */
+@supports (height: 100dvh) {
+    #app-container {
+        height: 100dvh;
+    }
+    .main-view {
+        height: calc(100dvh - 52px);
+    }
+}
+
+/* ------------------------------------------------------------------------------
+   PANTALLAS MEDIANAS Y TABLETS (max-width: 992px)
+   ------------------------------------------------------------------------------ */
+@media (max-width: 992px) {
+    .brand-text p {
+        font-size: 9.5px;
+        max-width: 220px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .search-wrapper {
+        width: 190px;
+    }
+
+    .dock-timeline {
+        width: 520px;
+    }
+}
+
+/* ------------------------------------------------------------------------------
+   DISPOSITIVOS MÓVILES (max-width: 768px) - EXPERIENCIA SMARTPHONE COMPLETA
+   ------------------------------------------------------------------------------ */
+@media (max-width: 768px) {
+    header.app-header {
+        height: 50px;
+        padding: 0 10px;
+        gap: 8px;
+    }
+
+    .brand-section {
+        gap: 7px;
+        flex-shrink: 0;
+    }
+
+    .brand-logo {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+
+    .brand-text h1 {
+        font-size: 12.5px;
+    }
+
+    .brand-text h1 span.badge-system {
+        display: none;
+    }
+
+    .brand-text p {
+        display: none;
+    }
+
+    /* Buscador adaptativo */
+    .header-center-tools {
+        gap: 6px;
+        flex: 1;
+        justify-content: flex-end;
+    }
+
+    .search-wrapper {
+        width: 130px;
+        transition: width 0.3s ease;
+    }
+
+    .search-wrapper:focus-within {
+        width: 170px;
+    }
+
+    .search-wrapper input {
+        height: 29px;
+        font-size: 10.5px;
+        padding: 0 26px 0 9px;
+    }
+
+    .search-wrapper .search-icon {
+        right: 8px;
+        font-size: 11px;
+    }
+
+    /* Selector de perfil compacto */
+    .profile-switcher {
+        padding: 1px;
+    }
+
+    .profile-btn {
+        padding: 4px 6px;
+        font-size: 11px;
+    }
+
+    .profile-btn .prof-text {
+        display: none;
+    }
+
+    /* Botones de acción compactos */
+    .header-actions {
+        gap: 5px;
+    }
+
+    .btn-header-tool {
+        padding: 5px 8px;
+        font-size: 13px;
+        border-radius: 14px;
+        min-height: 32px;
+    }
+
+    .btn-header-tool .btn-text {
+        display: none;
+    }
+
+    .btn-emergency {
+        padding: 5px 9px;
+        font-size: 12px;
+        border-radius: 14px;
+        min-height: 32px;
+    }
+
+    .btn-emergency .btn-text {
+        display: none;
+    }
+
+    /* PANELES LATERALES (DRAWER) EN FORMATO MÓVIL FULL-HEIGHT */
+    .drawer-left {
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: min(320px, 86vw);
+        max-height: 100%;
+        height: 100%;
+        border-radius: 0 18px 18px 0;
+        border-left: none;
+        z-index: 1200;
+        transform: translateX(-105%);
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.7);
+    }
+
+    .drawer-left.open {
+        transform: translateX(0);
+    }
+
+    .drawer-right {
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(350px, 92vw);
+        max-height: 100%;
+        height: 100%;
+        border-radius: 18px 0 0 18px;
+        border-right: none;
+        z-index: 1200;
+        transform: translateX(105%);
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.7);
+    }
+
+    .drawer-right.open {
+        transform: translateX(0);
+    }
+
+    .drawer-body {
+        max-height: calc(100vh - 110px);
+        padding: 12px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    @supports (height: 100dvh) {
+        .drawer-left, .drawer-right {
+            height: 100dvh;
+            max-height: 100dvh;
+        }
+        .drawer-body {
+            max-height: calc(100dvh - 110px);
+        }
+    }
+
+    .drawer-header {
+        padding: 12px 14px;
+    }
+
+    .drawer-header h3 {
+        font-size: 13.5px;
+    }
+
+    /* Área táctil ergonómica para dedos en lista de capas */
+    .layer-item {
+        min-height: 38px;
+        padding: 4px 0;
+        font-size: 12.5px;
+    }
+
+    .layer-item input[type="checkbox"], 
+    .layer-item input[type="radio"] {
+        width: 18px;
+        height: 18px;
+    }
+
+    /* BOTÓN FLOTANTE CAPAS */
+    .btn-floating-tab {
+        top: 10px;
+        left: 10px;
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+
+    /* TIMELINE EPANET INFERIOR EN MÓVILES */
+    .dock-timeline-container {
+        bottom: 8px;
+        width: calc(100vw - 16px);
+        left: 8px;
+        right: 8px;
+        transform: none;
+    }
+
+    .btn-toggle-timeline {
+        font-size: 9.5px;
+        padding: 3px 10px;
+    }
+
+    .dock-timeline {
+        width: 100%;
+        max-width: 100%;
+        padding: 8px 10px;
+        gap: 8px;
+        border-radius: 14px;
+    }
+
+    .btn-playback {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+        flex-shrink: 0;
+    }
+
+    .timeline-stats {
+        display: none;
+    }
+
+    /* TARJETA DE EMERGENCIA EN MÓVILES */
+    .emergency-card-bottom {
+        bottom: 8px;
+        left: 8px;
+        right: 8px;
+        width: auto;
+        max-width: calc(100vw - 16px);
+        padding: 12px;
+        border-radius: 14px;
+        z-index: 1300;
+    }
+
+    .emergency-header h2 {
+        font-size: 12px;
+    }
+
+    .emergency-steps {
+        font-size: 10.5px;
+        padding: 8px 10px;
+    }
+
+    .emergency-actions {
+        gap: 6px;
+    }
+
+    .btn-act {
+        padding: 10px 8px;
+        font-size: 11.5px;
+        min-height: 38px;
+    }
+
+    /* Zoom Leaflet adaptado */
+    .leaflet-control-zoom {
+        margin-bottom: 50px !important;
+        margin-right: 10px !important;
+    }
+}
+
+/* ------------------------------------------------------------------------------
+   TELÉFONOS ULTRA COMPACTOS (max-width: 400px - ej. iPhone SE / Android pequeño)
+   ------------------------------------------------------------------------------ */
+@media (max-width: 400px) {
+    .brand-text h1 {
+        font-size: 11.5px;
+    }
+
+    .brand-logo {
+        width: 26px;
+        height: 26px;
+        font-size: 13px;
+    }
+
+    .search-wrapper {
+        width: 95px;
+    }
+
+    .search-wrapper:focus-within {
+        width: 140px;
+    }
+
+    .search-wrapper input {
+        font-size: 9.5px;
+        padding-right: 20px;
+    }
+
+    .btn-header-tool, .btn-emergency {
+        padding: 4px 6px;
+    }
+}

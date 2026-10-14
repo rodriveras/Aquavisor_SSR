@@ -39,10 +39,10 @@
                 <!-- Selector de Perfil -->
                 <div class="profile-switcher">
                     <button class="profile-btn active" data-profile="directivo" title="Vista para Alcalde y SECPLA (Inversión, Ley 20.998, ANF)">
-                        🏢 SECPLA
+                        <span class="prof-icon">🏢</span> <span class="prof-text">SECPLA</span>
                     </button>
                     <button class="profile-btn" data-profile="operativo" title="Vista para Fontanero y Comité (Válvulas, Terreno, Fugas)">
-                        🔧 Fontanero
+                        <span class="prof-icon">🔧</span> <span class="prof-text">Fontanero</span>
                     </button>
                 </div>
             </div>
@@ -50,17 +50,17 @@
             <div class="header-actions">
                 <!-- Botón Desplegable de Capas -->
                 <button id="btn-toggle-layers" class="btn-header-tool" title="Abrir / Cerrar Panel de Capas">
-                    🗺️ Capas
+                    <span class="btn-icon">🗺️</span> <span class="btn-text">Capas</span>
                 </button>
 
                 <!-- Botón Desplegable de Telemetría -->
                 <button id="btn-toggle-telemetry" class="btn-header-tool" title="Abrir / Cerrar Telemetría SCADA">
-                    📡 Telemetría
+                    <span class="btn-icon">📡</span> <span class="btn-text">Telemetría</span>
                 </button>
 
                 <!-- Botón Simular Rotura -->
                 <button id="btn-emergency-mode" class="btn-emergency" title="Haga clic para simular una fuga o rotura de matriz">
-                    🚨 Simular Rotura
+                    <span class="btn-icon">🚨</span> <span class="btn-text">Simular Rotura</span>
                 </button>
             </div>
         </header>
@@ -71,6 +71,9 @@
         <main class="main-view">
             <!-- MAPA LEAFLET BASE -->
             <div id="map"></div>
+
+            <!-- TELÓN / BACKDROP DE CIERRE PARA PANTALLAS MÓVILES -->
+            <div id="drawer-backdrop" class="drawer-backdrop"></div>
 
             <!-- BOTÓN FLOTANTE DISCRETO PARA RE-ABRIR CAPAS -->
             <button id="btn-floating-layers" class="btn-floating-tab" title="Desplegar Capas">

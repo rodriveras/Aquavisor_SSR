@@ -143,22 +143,48 @@ function initDrawerControls() {
     const tabContentTelemetry = document.getElementById('tab-content-telemetry');
     const tabContentDetail = document.getElementById('tab-content-detail');
 
+    const backdrop = document.getElementById('drawer-backdrop');
+
+    function syncBackdrop() {
+        if (!backdrop) return;
+        const anyOpen = (drawerLeft && drawerLeft.classList.contains('open')) ||
+                        (drawerRight && drawerRight.classList.contains('open'));
+        backdrop.classList.toggle('active', anyOpen);
+    }
+
     // Panel Izquierdo (Capas)
     function toggleLeftDrawer() {
+        if (!drawerLeft.classList.contains('open') && window.innerWidth < 768 && drawerRight && drawerRight.classList.contains('open')) {
+            closeRightDrawer();
+        }
         drawerLeft.classList.toggle('open');
         btnToggleLayers.classList.toggle('active', drawerLeft.classList.contains('open'));
         btnFloatingLayers.style.display = drawerLeft.classList.contains('open') ? 'none' : 'flex';
+        syncBackdrop();
     }
 
     if (btnToggleLayers) btnToggleLayers.addEventListener('click', toggleLeftDrawer);
     if (btnFloatingLayers) btnFloatingLayers.addEventListener('click', toggleLeftDrawer);
     if (btnCloseLeft) btnCloseLeft.addEventListener('click', toggleLeftDrawer);
 
+    if (backdrop) {
+        backdrop.addEventListener('click', () => {
+            if (drawerLeft && drawerLeft.classList.contains('open')) toggleLeftDrawer();
+            if (drawerRight && drawerRight.classList.contains('open')) closeRightDrawer();
+        });
+    }
+
     // Panel Derecho (Telemetría / Ficha)
     function openRightDrawer(tabName = 'telemetry') {
+        if (window.innerWidth < 768 && drawerLeft && drawerLeft.classList.contains('open')) {
+            drawerLeft.classList.remove('open');
+            btnToggleLayers.classList.remove('active');
+            btnFloatingLayers.style.display = 'flex';
+        }
         drawerRight.classList.add('open');
         btnToggleTelemetry.classList.add('active');
         switchRightTab(tabName);
+        syncBackdrop();
     }
 
     function closeRightDrawer() {
@@ -168,6 +194,7 @@ function initDrawerControls() {
             layers.redes.resetStyle(selectedPipeLayer);
             selectedPipeLayer = null;
         }
+        syncBackdrop();
     }
 
     function switchRightTab(tabName) {

@@ -22,8 +22,10 @@ const AppState = {
 let map;
 let selectedPipeLayer = null;
 let activeBurstLayer = null;
+let lastDrawerActionTime = 0;
 let layers = {
     redes: null,
+    conexiones: null,
     valvulas: null,
     arranques: null,
     accesorios: null,
@@ -59,6 +61,10 @@ function initMap() {
     }).setView([-36.8480, -71.9180], 14);
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    // Pane dedicado para Arranques y Medidores (siempre prioritario al tacto sobre tuberías y polígonos)
+    map.createPane('arranquesPane');
+    map.getPane('arranquesPane').style.zIndex = '620';
 
     // 1. Google Satélite (Imágenes aéreas de alta resolución sin etiquetas)
     const googleSat = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
@@ -113,6 +119,7 @@ function initMap() {
 
     // Clic en fondo de mapa: deseleccionar tuberías activas y cerrar emergencia
     map.on('click', () => {
+        if (Date.now() - lastDrawerActionTime < 350) return;
         if (AppState.activeBurst) {
             clearBurstSimulation();
             if (AppState.emergencyMode) {
@@ -149,7 +156,16 @@ function initDrawerControls() {
         if (!backdrop) return;
         const anyOpen = (drawerLeft && drawerLeft.classList.contains('open')) ||
                         (drawerRight && drawerRight.classList.contains('open'));
-        backdrop.classList.toggle('active', anyOpen);
+        if (anyOpen) {
+            lastDrawerActionTime = Date.now();
+            setTimeout(() => {
+                const stillOpen = (drawerLeft && drawerLeft.classList.contains('open')) ||
+                                  (drawerRight && drawerRight.classList.contains('open'));
+                backdrop.classList.toggle('active', stillOpen);
+            }, 80);
+        } else {
+            backdrop.classList.remove('active');
+        }
     }
 
     // Panel Izquierdo (Capas)
@@ -157,6 +173,7 @@ function initDrawerControls() {
         if (!drawerLeft.classList.contains('open') && window.innerWidth < 768 && drawerRight && drawerRight.classList.contains('open')) {
             closeRightDrawer();
         }
+        lastDrawerActionTime = Date.now();
         drawerLeft.classList.toggle('open');
         btnToggleLayers.classList.toggle('active', drawerLeft.classList.contains('open'));
         btnFloatingLayers.style.display = drawerLeft.classList.contains('open') ? 'none' : 'flex';
@@ -169,6 +186,7 @@ function initDrawerControls() {
 
     if (backdrop) {
         backdrop.addEventListener('click', () => {
+            if (Date.now() - lastDrawerActionTime < 350) return;
             if (drawerLeft && drawerLeft.classList.contains('open')) toggleLeftDrawer();
             if (drawerRight && drawerRight.classList.contains('open')) closeRightDrawer();
         });
@@ -176,6 +194,7 @@ function initDrawerControls() {
 
     // Panel Derecho (Telemetría / Ficha)
     function openRightDrawer(tabName = 'telemetry') {
+        lastDrawerActionTime = Date.now();
         if (window.innerWidth < 768 && drawerLeft && drawerLeft.classList.contains('open')) {
             drawerLeft.classList.remove('open');
             btnToggleLayers.classList.remove('active');
@@ -229,20 +248,6 @@ function initDrawerControls() {
     window.openDetailTab = function() {
         openRightDrawer('detail');
     };
-
-    // Timeline Toggle (Colapsar / Expandir)
-    const btnToggleTimeline = document.getElementById('btn-toggle-timeline');
-    const dockTimeline = document.getElementById('dock-timeline');
-    if (btnToggleTimeline && dockTimeline) {
-        btnToggleTimeline.addEventListener('click', () => {
-            dockTimeline.classList.toggle('minimized');
-            if (dockTimeline.classList.contains('minimized')) {
-                btnToggleTimeline.innerHTML = '⏱ Gemelo 24h (EPANET) ▼';
-            } else {
-                btnToggleTimeline.innerHTML = '⏱ Gemelo 24h (EPANET) ▲';
-            }
-        });
-    }
 
     // Cerrar Emergencia
     const btnCloseEmergency = document.getElementById('btn-close-emergency');
@@ -318,7 +323,15 @@ function initLayers() {
         }).addTo(map);
     }
 
-    // G. Arranques y Medidores
+    // G. Conexiones Domiciliarias (Simulación de Acometidas a la Red)
+    if (typeof json_Conexiones_Domiciliarias !== 'undefined') {
+        layers.conexiones = L.geoJSON(json_Conexiones_Domiciliarias, {
+            style: styleConnection,
+            onEachFeature: onEachConnectionFeature
+        }).addTo(map);
+    }
+
+    // H. Arranques y Medidores
     if (typeof json_Arranques_GeoConecta !== 'undefined') {
         layers.arranques = L.geoJSON(json_Arranques_GeoConecta, {
             pointToLayer: createConsumerMarker
@@ -327,6 +340,7 @@ function initLayers() {
 
     // Checkboxes
     bindLayerCheckbox('chk-redes', layers.redes);
+    bindLayerCheckbox('chk-conexiones', layers.conexiones);
     bindLayerCheckbox('chk-valvulas', layers.valvulas);
     bindLayerCheckbox('chk-arranques', layers.arranques);
     bindLayerCheckbox('chk-fuentes', layers.fuentes);
@@ -413,6 +427,104 @@ function onEachPipeFeature(feature, layer) {
     `, { sticky: true });
 }
 
+// Estilo y comportamiento de las Conexiones Domiciliarias (Arranques a Red)
+function styleConnection(feature) {
+    return {
+        color: '#38bdf8',
+        weight: 2,
+        opacity: 0.85,
+        dashArray: '4, 4',
+        lineCap: 'round',
+        lineJoin: 'round'
+    };
+}
+
+function onEachConnectionFeature(feature, layer) {
+    const p = feature.properties;
+
+    layer.on('mouseover', function(e) {
+        layer.setStyle({
+            color: '#facc15',
+            weight: 3.5,
+            opacity: 1.0,
+            dashArray: null
+        });
+        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+            layer.bringToFront();
+        }
+    });
+
+    layer.on('mouseout', function(e) {
+        if (layers.conexiones) {
+            layers.conexiones.resetStyle(layer);
+        }
+    });
+
+    const popupHtml = `
+        <div class="popup-consumer">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px;">
+                <span style="font-size:10px; font-weight:800; color:#38bdf8; letter-spacing:0.4px;">🔌 ACOMETIDA / CONEXIÓN</span>
+                <span style="font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:10px; background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid #38bdf8;">
+                    ● ${p.estado || 'Operativa'}
+                </span>
+            </div>
+            <div style="font-size:13px; font-weight:800; color:#ffffff; margin-bottom:3px; line-height:1.2;">
+                ${p.socio || 'Socio'}
+            </div>
+            <div style="font-size:11px; color:#94a3b8; margin-bottom:8px;">
+                Arranque: <strong style="color:#f1f5f9;">${p.id_arranque}</strong> | Conexión: <strong style="color:#38bdf8;">${p.id_conexion}</strong>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; background:rgba(255,255,255,0.06); padding:7px 9px; border-radius:8px; margin-bottom:8px;">
+                <div>
+                    <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Long. Acometida</div>
+                    <div style="font-size:13px; font-weight:800; color:#38bdf8;">
+                        ${p.longitud_m || '-'} m
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Matriz Origen</div>
+                    <div style="font-size:13px; font-weight:800; color:#ffffff;">
+                        ${p.id_tramo_red || '-'}
+                    </div>
+                </div>
+            </div>
+            <div style="font-size:10px; color:#cbd5e1; margin-bottom:8px; line-height:1.4;">
+                • Diámetro: <strong style="color:#facc15;">${p.diametro}</strong><br>
+                • Material: <span>${p.material}</span>
+            </div>
+            <button class="btn-popup-view-detail" onclick="openConsumerDrawerFromPopup('${p.id_arranque}')" style="
+                width: 100%;
+                padding: 7px 10px;
+                background: linear-gradient(135deg, #0284c7, #00d2ff);
+                border: none;
+                border-radius: 8px;
+                color: #ffffff;
+                font-size: 11px;
+                font-weight: 700;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+                box-shadow: 0 2px 8px rgba(0, 210, 255, 0.4);
+            ">
+                <span>📋</span> Ver Ficha Técnica del Arranque
+            </button>
+        </div>
+    `;
+
+    layer.bindPopup(popupHtml, {
+        className: 'aquavisor-popup',
+        maxWidth: 290,
+        minWidth: 240
+    });
+
+    layer.on('click', function(e) {
+        if (e && e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
+        openConsumerDrawerFromPopup(p.id_arranque);
+    });
+}
+
 function createSourceMarker(feature, latlng) {
     const isTank = feature.properties.name.includes('50') || feature.properties.name.includes('SE');
     const customIcon = L.divIcon({
@@ -435,7 +547,13 @@ function createSourceMarker(feature, latlng) {
     });
 
     const marker = L.marker(latlng, { icon: customIcon });
-    marker.on('click', () => showSourceDetails(feature.properties, isTank));
+    marker.on('click', (e) => {
+        if (e) {
+            if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
+            L.DomEvent.stopPropagation(e);
+        }
+        showSourceDetails(feature.properties, isTank);
+    });
     return marker;
 }
 
@@ -448,24 +566,30 @@ function createValveMarker(feature, latlng) {
         html: `<div style="
             background: ${isOpen ? '#10b981' : '#ef4444'};
             color: #ffffff;
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 9.5px;
+            font-size: 10px;
             font-weight: 800;
             border: 1.5px solid #ffffff;
             box-shadow: 0 0 8px ${isOpen ? 'rgba(16,185,129,0.7)' : 'rgba(239,68,68,0.9)'};
             cursor: pointer;
         ">${isOpen ? 'V' : 'X'}</div>`,
-        iconSize: [20, 20],
-        iconAnchor: [10, 10]
+        iconSize: [22, 22],
+        iconAnchor: [11, 11]
     });
 
     const marker = L.marker(latlng, { icon: icon });
-    marker.on('click', () => showValveDetails(feature.properties));
+    marker.on('click', (e) => {
+        if (e) {
+            if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
+            L.DomEvent.stopPropagation(e);
+        }
+        showValveDetails(feature.properties);
+    });
     return marker;
 }
 
@@ -483,41 +607,127 @@ function createAccessoryMarker(feature, latlng) {
         html: `<div style="
             background: ${bgColor};
             color: #fff;
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
-            border: 1px solid #fff;
+            font-size: 10.5px;
+            border: 1.5px solid #fff;
             box-shadow: 0 0 6px ${bgColor};
+            cursor: pointer;
         ">${symbol}</div>`,
-        iconSize: [18, 18],
-        iconAnchor: [9, 9]
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
     });
 
     const marker = L.marker(latlng, { icon: icon });
-    marker.on('click', () => showAccessoryDetails(feature.properties));
+    marker.on('click', (e) => {
+        if (e) {
+            if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
+            L.DomEvent.stopPropagation(e);
+        }
+        showAccessoryDetails(feature.properties);
+    });
     return marker;
 }
 
 function createConsumerMarker(feature, latlng) {
-    const estado = feature.properties.estado_comercial || 'Al Día';
+    const p = feature.properties;
+    const estado = p.estado_comercial || 'Al Día';
     let color = '#10b981';
-    if (estado.includes('Moroso')) color = '#f59e0b';
-    if (estado.includes('Suspendido')) color = '#ef4444';
+    let badgeBg = 'rgba(16,185,129,0.2)';
+    let badgeColor = '#10b981';
 
+    if (estado.includes('Moroso')) {
+        color = '#f59e0b';
+        badgeBg = 'rgba(245,158,11,0.2)';
+        badgeColor = '#f59e0b';
+    } else if (estado.includes('Suspendido')) {
+        color = '#ef4444';
+        badgeBg = 'rgba(239,68,68,0.2)';
+        badgeColor = '#ef4444';
+    }
+
+    const isMobile = window.innerWidth < 768;
     const marker = L.circleMarker(latlng, {
-        radius: 4.0,
+        pane: 'arranquesPane',
+        radius: isMobile ? 7.5 : 5.5,
         fillColor: color,
         color: '#ffffff',
-        weight: 1,
-        opacity: 0.9,
-        fillOpacity: 0.85
+        weight: isMobile ? 2 : 1.5,
+        opacity: 1.0,
+        fillOpacity: 0.9,
+        bubblingMouseEvents: false
     });
 
-    marker.on('click', () => showConsumerDetails(feature.properties));
+    // Popup interactivo sobre el mapa (inmediato y accesible tanto en móvil como en PC)
+    const popupHtml = `
+        <div class="popup-consumer">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px;">
+                <span style="font-size:10px; font-weight:800; color:#00d2ff; letter-spacing:0.4px;">💧 ARRANQUE DOMICILIARIO</span>
+                <span style="font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:10px; background:${badgeBg}; color:${badgeColor}; border:1px solid ${color};">
+                    ● ${estado}
+                </span>
+            </div>
+            <div style="font-size:13px; font-weight:800; color:#ffffff; margin-bottom:3px; line-height:1.2;">
+                ${p.socio || 'Socio Sin Nombre'}
+            </div>
+            <div style="font-size:11px; color:#94a3b8; margin-bottom:8px;">
+                RUT: <strong style="color:#f1f5f9;">${p.rut || '-'}</strong> | Medidor: <strong style="color:#00d2ff;">${p.n_medidor || '-'}</strong>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; background:rgba(255,255,255,0.06); padding:7px 9px; border-radius:8px; margin-bottom:8px;">
+                <div>
+                    <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Presión Grifo</div>
+                    <div style="font-size:13px; font-weight:800; color:${(p.presion_servicio_mca || 20) < 14 ? '#f59e0b' : '#10b981'};">
+                        ${p.presion_servicio_mca || '-'} m.c.a.
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Consumo Prom.</div>
+                    <div style="font-size:13px; font-weight:800; color:#ffffff;">
+                        ${p.consumo_prom_m3 || '-'} <small style="font-size:9px; font-weight:500; color:#cbd5e1;">m³/mes</small>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-popup-view-detail" onclick="openConsumerDrawerFromPopup('${p.id_arranque}')" style="
+                width: 100%;
+                padding: 7px 10px;
+                background: linear-gradient(135deg, #0284c7, #00d2ff);
+                border: none;
+                border-radius: 8px;
+                color: #ffffff;
+                font-size: 11px;
+                font-weight: 700;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+                box-shadow: 0 2px 8px rgba(0, 210, 255, 0.4);
+            ">
+                <span>📋</span> Ver Ficha Técnica Completa
+            </button>
+        </div>
+    `;
+
+    marker.bindPopup(popupHtml, {
+        className: 'aquavisor-popup',
+        maxWidth: 290,
+        minWidth: 240,
+        autoPan: true,
+        autoPanPadding: [20, 20]
+    });
+
+    marker.on('click', (e) => {
+        if (e) {
+            if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
+            L.DomEvent.stopPropagation(e);
+        }
+        showConsumerDetails(feature.properties);
+    });
+
     return marker;
 }
 
@@ -767,22 +977,50 @@ function toggleValveState(valveId) {
 
 function showConsumerDetails(props) {
     const badge = `<span class="drawer-badge badge-consumer">ARRANQUE Y MEDIDOR</span>`;
+    const estado = props.estado_comercial || 'Al Día';
+    const isAlDia = estado.includes('Al Día');
+    const estadoColor = isAlDia ? 'var(--accent-green)' : (estado.includes('Moroso') ? 'var(--accent-yellow)' : 'var(--accent-red)');
+
+    let conexionHtml = '';
+    if (typeof json_Conexiones_Domiciliarias !== 'undefined') {
+        const con = json_Conexiones_Domiciliarias.features.find(f => f.properties.id_arranque === props.id_arranque);
+        if (con) {
+            conexionHtml = `
+                <tr><td class="prop-name">Empalme Red:</td><td class="prop-val"><strong style="color:var(--accent-cyan)">${con.properties.id_tramo_red}</strong> (${con.properties.longitud_m} m)</td></tr>
+                <tr><td class="prop-name">Acometida:</td><td class="prop-val">${con.properties.diametro} (${con.properties.material})</td></tr>
+            `;
+        }
+    }
 
     const html = `
         <table class="prop-table">
-            <tr><td class="prop-name">Arranque:</td><td class="prop-val"><strong>${props.id_arranque}</strong></td></tr>
-            <tr><td class="prop-name">Socio:</td><td class="prop-val" style="color:var(--accent-cyan)"><strong>${props.socio}</strong></td></tr>
-            <tr><td class="prop-name">RUT:</td><td class="prop-val">${props.rut}</td></tr>
-            <tr><td class="prop-name">Medidor:</td><td class="prop-val"><code>${props.n_medidor}</code></td></tr>
-            <tr><td class="prop-name">Estado:</td><td class="prop-val"><span style="color:${props.estado_comercial.includes('Al Día') ? 'var(--accent-green)' : 'var(--accent-red)'}">● ${props.estado_comercial}</span></td></tr>
-            <tr><td class="prop-name">Consumo Prom:</td><td class="prop-val">${props.consumo_prom_m3} m³/mes</td></tr>
-            <tr><td class="prop-name">Presión Grifo:</td><td class="prop-val" style="color:var(--accent-green)"><strong>${props.presion_servicio_mca} m.c.a.</strong></td></tr>
-            <tr><td class="prop-name">Cota Terreno:</td><td class="prop-val">${props.cota_terreno_m} m.s.n.m.</td></tr>
+            <tr><td class="prop-name">Arranque:</td><td class="prop-val"><strong>${props.id_arranque || '-'}</strong></td></tr>
+            <tr><td class="prop-name">Socio:</td><td class="prop-val" style="color:var(--accent-cyan)"><strong>${props.socio || '-'}</strong></td></tr>
+            <tr><td class="prop-name">RUT:</td><td class="prop-val">${props.rut || '-'}</td></tr>
+            <tr><td class="prop-name">Medidor:</td><td class="prop-val"><code>${props.n_medidor || '-'}</code></td></tr>
+            <tr><td class="prop-name">Estado:</td><td class="prop-val"><span style="color:${estadoColor}">● ${estado}</span></td></tr>
+            <tr><td class="prop-name">Consumo Prom:</td><td class="prop-val">${props.consumo_prom_m3 || '0'} m³/mes</td></tr>
+            <tr><td class="prop-name">Presión Grifo:</td><td class="prop-val" style="color:var(--accent-green)"><strong>${props.presion_servicio_mca || '-'} m.c.a.</strong></td></tr>
+            <tr><td class="prop-name">Cota Terreno:</td><td class="prop-val">${props.cota_terreno_m || '-'} m.s.n.m.</td></tr>
+            ${conexionHtml}
+            <tr><td class="prop-name">Tipo de Uso:</td><td class="prop-val">${props.tipo_uso || 'Residencial Rural'}</td></tr>
+            <tr><td class="prop-name">Diámetro:</td><td class="prop-val">${props.diametro || '1/2 pulgada'}</td></tr>
+            <tr><td class="prop-name">Instalación:</td><td class="prop-val">${props.fecha_instalacion || '-'}</td></tr>
         </table>
     `;
 
-    setDrawerDetail(props.socio, badge, html);
+    setDrawerDetail(props.socio || 'Arranque Domiciliario', badge, html);
 }
+
+window.openConsumerDrawerFromPopup = function(arranqueId) {
+    if (typeof json_Arranques_GeoConecta !== 'undefined') {
+        const item = json_Arranques_GeoConecta.features.find(f => f.properties.id_arranque === arranqueId);
+        if (item) {
+            map.closePopup();
+            showConsumerDetails(item.properties);
+        }
+    }
+};
 
 function showSourceDetails(props, isTank) {
     const badge = `<span class="drawer-badge" style="background:rgba(2,132,199,0.3); color:#00d2ff;">${isTank ? 'ESTANQUE DE REGULACIÓN' : 'CAPTACIÓN POZO'}</span>`;
@@ -894,26 +1132,6 @@ function printValveSheet(valveId) {
 // 7. EVENT LISTENERS
 // ------------------------------------------------------------------------------
 function initEventListeners() {
-    const slider = document.getElementById('time-slider');
-    if (slider) slider.addEventListener('input', (e) => updateDigitalTwin(parseInt(e.target.value)));
-
-    const playBtn = document.getElementById('btn-play-pause');
-    if (playBtn) {
-        playBtn.addEventListener('click', () => {
-            AppState.isPlaying = !AppState.isPlaying;
-            if (AppState.isPlaying) {
-                playBtn.innerHTML = '⏸';
-                AppState.playInterval = setInterval(() => {
-                    let nextHour = (AppState.currentHour + 1) % 24;
-                    updateDigitalTwin(nextHour);
-                }, 1200);
-            } else {
-                playBtn.innerHTML = '▶';
-                clearInterval(AppState.playInterval);
-            }
-        });
-    }
-
     document.querySelectorAll('.profile-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active'));

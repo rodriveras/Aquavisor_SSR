@@ -113,6 +113,10 @@
                             <span class="count-badge">14 tramos</span>
                         </div>
                         <div class="layer-item">
+                            <label><input type="checkbox" id="chk-conexiones" checked> <span class="layer-icon-symbol" style="color:#38bdf8;">┄</span> Conexiones Domiciliarias (Arranques)</label>
+                            <span class="count-badge">140 acomet.</span>
+                        </div>
+                        <div class="layer-item">
                             <label><input type="checkbox" id="chk-valvulas" checked> <span class="layer-icon-symbol" style="color:#10b981;">●</span> Válvulas de Sectorización</label>
                             <span class="count-badge">12 unid.</span>
                         </div>
@@ -217,34 +221,6 @@
                 </div>
             </aside>
 
-            <!-- PANEL INFERIOR SLIM: GEMELO DIGITAL & TIMELINE 24H (COLAPSABLE) -->
-            <div class="dock-timeline-container">
-                <button id="btn-toggle-timeline" class="btn-toggle-timeline" title="Ocultar / Mostrar Barra de Tiempo">
-                    ⏱ Gemelo Digital 24h (EPANET) ▲
-                </button>
-                <div id="dock-timeline" class="dock-timeline">
-                    <button id="btn-play-pause" class="btn-playback" title="Iniciar / Detener Simulación Dinámica">▶</button>
-                    <div class="timeline-slider-box">
-                        <div class="slider-labels">
-                            <span class="desktop-only">00:00 (Noche)</span>
-                            <span id="cur-hour-label" class="cur-hour">13:00 hrs - Punta Almuerzo</span>
-                            <span class="desktop-only">23:00 (Noche)</span>
-                        </div>
-                        <input type="range" id="time-slider" class="timeline-range" min="0" max="23" step="1" value="13">
-                    </div>
-                    <div class="timeline-stats">
-                        <div class="t-stat">
-                            <div id="timeline-tank-vol" class="stat-num">28.8 m³</div>
-                            <div class="stat-lbl">Estanque</div>
-                        </div>
-                        <div class="t-stat">
-                            <div id="timeline-min-press" class="stat-num" style="color:var(--accent-green);">14.4 m.c.a.</div>
-                            <div class="stat-lbl">P. Mínima</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- TARJETA COMPACTA DE EMERGENCIA (ESQUINA INFERIOR IZQUIERDA - NO TAPA EL MAPA) -->
             <div id="emergency-card" class="emergency-card-bottom">
                 <div class="emergency-header">
@@ -284,6 +260,7 @@
     <script src="data/Valvulas_GeoConecta.js"></script>
     <script src="data/Accesorios_GeoConecta.js"></script>
     <script src="data/Arranques_GeoConecta.js"></script>
+    <script src="data/Conexiones_Domiciliarias.js"></script>
 
     <!-- Controlador Principal del Gemelo Digital -->
     <script src="js/gemelo_digital.js"></script>

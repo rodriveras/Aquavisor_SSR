@@ -403,36 +403,125 @@ function onEachPipeFeature(feature, layer) {
     const isTroncal = diam.includes('110') || diam.includes('90');
     const isImpulsion = p.id_tramo === 'TUB-11' || (p.sector && p.sector.includes('Impulsión'));
     const tipoRed = isImpulsion ? 'Línea de Impulsión' : (isTroncal ? 'Matriz Principal Troncal' : 'Red Ramal Secundaria');
-    const tipoColor = isImpulsion ? '#818cf8' : (isTroncal ? '#60a5fa' : '#22d3ee');
+    const tipoColor = isImpulsion ? '#818cf8' : (isTroncal ? '#38bdf8' : '#00e5ff');
+    const tipoBadge = isImpulsion ? 'IMPULSIÓN' : (isTroncal ? 'MATRIZ TRONCAL' : 'RED RAMAL');
+    const badgeBg = isImpulsion ? 'rgba(99,102,241,0.2)' : (isTroncal ? 'rgba(2,132,199,0.25)' : 'rgba(0,229,255,0.18)');
+    const headerTitle = isImpulsion ? '🟣 LÍNEA DE IMPULSIÓN' : (isTroncal ? '🌊 MATRIZ TRONCAL (EPANET)' : '💧 RED RAMAL SECUNDARIA');
+
+    // Ficha resumida interactiva sobre el mapa (mismo principio que arranques para móviles y escritorio)
+    const popupHtml = `
+        <div class="popup-consumer">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px;">
+                <span style="font-size:10px; font-weight:800; color:${tipoColor}; letter-spacing:0.4px;">${headerTitle}</span>
+                <span style="font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:10px; background:${badgeBg}; color:${tipoColor}; border:1px solid ${tipoColor};">
+                    ● ${tipoBadge}
+                </span>
+            </div>
+            <div style="font-size:13px; font-weight:800; color:#ffffff; margin-bottom:3px; line-height:1.2;">
+                ${p.id_tramo || 'Tubería'} - ${p.sector || 'Red Distribución'}
+            </div>
+            <div style="font-size:11px; color:#94a3b8; margin-bottom:6px;">
+                Material: <strong style="color:#f1f5f9;">${p.material || 'PVC'}</strong> (${p.clase || 'Clase 10'})
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; background:rgba(255,255,255,0.06); padding:7px 9px; border-radius:8px; margin-bottom:8px;">
+                <div>
+                    <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Diámetro Nom.</div>
+                    <div style="font-size:13px; font-weight:800; color:${tipoColor};">
+                        ${p.diametro_nominal || '-'}
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Caudal Diseño</div>
+                    <div style="font-size:13px; font-weight:800; color:#ffffff;">
+                        ${p.caudal_diseno_lps || '-'} <small style="font-size:9px; font-weight:500; color:#cbd5e1;">L/s</small>
+                    </div>
+                </div>
+            </div>
+            <div style="font-size:10px; color:#cbd5e1; margin-bottom:8px; line-height:1.4;">
+                • D. Interior: <strong style="color:#f1f5f9;">${p.diametro_interior_mm ? p.diametro_interior_mm + ' mm' : '-'}</strong><br>
+                • Prof. Tapada: <strong style="color:#f1f5f9;">${p.profundidad_tapada_m ? p.profundidad_tapada_m + ' m' : '1.0 m'}</strong><br>
+                • Rugosidad: <span>C = ${p.rugosidad_hazen_williams || 145} (Hazen-Williams)</span><br>
+                • Estado Operativo: <strong style="color:var(--accent-green);">● ${p.estado_tuberia || 'Bueno / En Servicio'}</strong>
+            </div>
+            <button class="btn-popup-view-detail" onclick="openPipeDrawerFromPopup('${p.id_tramo}')" style="
+                width: 100%;
+                padding: 7px 10px;
+                background: linear-gradient(135deg, #0284c7, #00d2ff);
+                border: none;
+                border-radius: 8px;
+                color: #ffffff;
+                font-size: 11px;
+                font-weight: 700;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+                box-shadow: 0 2px 8px rgba(0, 210, 255, 0.4);
+            ">
+                <span>📋</span> Ver Ficha Técnica Completa
+            </button>
+        </div>
+    `;
+
+    layer.bindPopup(popupHtml, {
+        className: 'aquavisor-popup',
+        maxWidth: 290,
+        minWidth: 240,
+        autoPan: true,
+        autoPanPadding: [20, 20]
+    });
 
     layer.on('click', (e) => {
-        if (e && e.originalEvent) {
+        if (e) {
+            if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
             L.DomEvent.stopPropagation(e);
         }
 
         if (AppState.emergencyMode) {
             triggerBurstSimulation(feature, layer);
         } else {
-            // Modo normal: inspección y selección interactiva
-            if (selectedPipeLayer && layers.redes) {
-                layers.redes.resetStyle(selectedPipeLayer);
-            }
-
-            if (selectedPipeLayer === layer) {
-                selectedPipeLayer = null;
+            // Modo normal: aplicar principio de ficha resumida (popup en el mapa)
+            // Cerrar el drawer lateral derecho si estuviese abierto para despejar el mapa
+            if (window.closeRightDrawer) {
+                window.closeRightDrawer();
+            } else {
                 const drawerRight = document.getElementById('drawer-right');
                 if (drawerRight) drawerRight.classList.remove('open');
-                return;
+                const btnToggleTelemetry = document.getElementById('btn-toggle-telemetry');
+                if (btnToggleTelemetry) btnToggleTelemetry.classList.remove('active');
+                const backdrop = document.getElementById('drawer-backdrop');
+                if (backdrop) backdrop.classList.remove('active');
+            }
+
+            // Deseleccionar tubería previa si la hubiera
+            if (selectedPipeLayer && selectedPipeLayer !== layer && layers.redes) {
+                layers.redes.resetStyle(selectedPipeLayer);
             }
 
             selectedPipeLayer = layer;
             layer.setStyle({
                 color: '#fbbf24', // Dorado/amarillo brillante de selección técnica
-                weight: 6.5,
+                weight: isTroncal ? 7.0 : 5.5,
                 opacity: 1
             });
             layer.bringToFront();
-            showPipeDetails(feature.properties);
+
+            // Abrir SIEMPRE la ficha resumida (popup sobre el mapa) por defecto
+            if (e && e.latlng) {
+                layer.openPopup(e.latlng);
+            } else {
+                layer.openPopup();
+            }
+        }
+    });
+
+    layer.on('popupclose', () => {
+        const drawerRight = document.getElementById('drawer-right');
+        const isDrawerOpen = drawerRight && drawerRight.classList.contains('open');
+        if (!isDrawerOpen && selectedPipeLayer === layer && layers.redes && !AppState.activeBurst) {
+            layers.redes.resetStyle(layer);
+            selectedPipeLayer = null;
         }
     });
 
@@ -1111,15 +1200,29 @@ function showPipeDetails(props) {
             <tr><td class="prop-name">ID Tramo:</td><td class="prop-val"><strong>${props.id_tramo}</strong></td></tr>
             <tr><td class="prop-name">Jerarquía:</td><td class="prop-val"><strong style="color:${badgeColor}">${isImpulsion ? 'Línea de Impulsión' : (isTroncal ? 'Matriz Principal Troncal' : 'Red Ramal Secundaria')}</strong></td></tr>
             <tr><td class="prop-name">Sector:</td><td class="prop-val">${props.sector}</td></tr>
-            <tr><td class="prop-name">Diámetro:</td><td class="prop-val"><strong>${props.diametro_nominal}</strong></td></tr>
+            <tr><td class="prop-name">Diámetro Nom:</td><td class="prop-val"><strong>${props.diametro_nominal}</strong></td></tr>
+            <tr><td class="prop-name">Diámetro Int:</td><td class="prop-val">${props.diametro_interior_mm ? props.diametro_interior_mm + ' mm' : '-'}</td></tr>
             <tr><td class="prop-name">Material:</td><td class="prop-val">${props.material} (${props.clase})</td></tr>
+            <tr><td class="prop-name">Prof. Tapada:</td><td class="prop-val">${props.profundidad_tapada_m ? props.profundidad_tapada_m + ' m' : '1.0 m'}</td></tr>
+            <tr><td class="prop-name">Año Instal.:</td><td class="prop-val">${props.ano_instalacion || '-'}</td></tr>
+            <tr><td class="prop-name">Estado:</td><td class="prop-val"><span style="color:var(--accent-green)">● ${props.estado_tuberia || 'Bueno / En Servicio'}</span></td></tr>
             <tr><td class="prop-name">Rugosidad:</td><td class="prop-val">C = ${props.rugosidad_hazen_williams}</td></tr>
-            <tr><td class="prop-name">Caudal Diseño:</td><td class="prop-val">${props.caudal_diseno_lps} L/s</td></tr>
+            <tr><td class="prop-name">Caudal Diseño:</td><td class="prop-val" style="color:var(--accent-cyan); font-weight:700;">${props.caudal_diseno_lps} L/s</td></tr>
         </table>
     `;
 
     setDrawerDetail(props.id_tramo + ' - ' + props.sector, badge, html);
 }
+
+window.openPipeDrawerFromPopup = function(pipeId) {
+    if (typeof json_Redes_Enriquecidas !== 'undefined') {
+        const item = json_Redes_Enriquecidas.features.find(f => f.properties.id_tramo === pipeId);
+        if (item) {
+            map.closePopup();
+            showPipeDetails(item.properties);
+        }
+    }
+};
 
 function showAccessoryDetails(props) {
     const badge = `<span class="drawer-badge" style="background:rgba(249,115,22,0.2); color:#f97316;">ACCESORIO</span>`;
@@ -1245,6 +1348,32 @@ function initSearchEngine() {
             });
         }
 
+        if (typeof json_Redes_Enriquecidas !== 'undefined') {
+            json_Redes_Enriquecidas.features.forEach(f => {
+                const p = f.properties;
+                const matchId = p.id_tramo && p.id_tramo.toLowerCase().includes(query);
+                const matchSec = p.sector && p.sector.toLowerCase().includes(query);
+                const matchMat = p.material && p.material.toLowerCase().includes(query);
+                if (matchId || matchSec || matchMat) {
+                    let coords = [-71.9068, -36.8483];
+                    if (f.geometry && f.geometry.coordinates) {
+                        const line = f.geometry.type === 'MultiLineString' ? f.geometry.coordinates[0] : f.geometry.coordinates;
+                        if (line && line.length) {
+                            coords = line[Math.floor(line.length / 2)];
+                        }
+                    }
+                    matches.push({
+                        title: `${p.id_tramo} - ${p.sector}`,
+                        sub: `Diámetro: ${p.diametro_nominal} | Material: ${p.material}`,
+                        tag: 'TUBERÍA',
+                        coords: coords,
+                        type: 'pipe',
+                        props: p
+                    });
+                }
+            });
+        }
+
         if (matches.length === 0) {
             resultsBox.innerHTML = '<div style="padding:8px; font-size:11px; color:#888;">No se encontraron resultados</div>';
             resultsBox.style.display = 'block';
@@ -1313,6 +1442,27 @@ function onSearchResultClick(type, propsEncoded, lng, lat) {
                 layers.arranques.eachLayer(layer => {
                     if (layer.feature && layer.feature.properties.id_arranque === props.id_arranque) {
                         layer.openPopup();
+                    }
+                });
+            }
+            if (window.closeRightDrawer) window.closeRightDrawer();
+        } else if (type === 'pipe') {
+            if (layers.redes) {
+                layers.redes.eachLayer(layer => {
+                    if (layer.feature && layer.feature.properties.id_tramo === props.id_tramo) {
+                        if (selectedPipeLayer && layers.redes) {
+                            layers.redes.resetStyle(selectedPipeLayer);
+                        }
+                        selectedPipeLayer = layer;
+                        const diam = props.diametro_nominal || '';
+                        const isTroncal = diam.includes('110') || diam.includes('90');
+                        layer.setStyle({
+                            color: '#fbbf24',
+                            weight: isTroncal ? 7.0 : 5.5,
+                            opacity: 1
+                        });
+                        layer.bringToFront();
+                        layer.openPopup([lat, lng]);
                     }
                 });
             }

@@ -313,54 +313,53 @@ header.app-header {
    3. PANELES LATERALES DESPLEGABLES (SLIDE-IN DRAWERS)
    ------------------------------------------------------------------------------ */
 
-/* PANEL IZQUIERDO DESPLEGABLE: CAPAS Y MAPAS BASE */
+/* PANEL IZQUIERDO: CAJA DE CAPAS Y CARTOGRAFÍA (STANDALONE EN COSTADO IZQUIERDO) */
 .drawer-left {
     position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 290px;
-    max-height: calc(100vh - 80px);
+    top: 15px;
+    left: 15px;
+    width: 285px;
+    max-height: calc(100vh - 85px);
     background: var(--bg-card);
     backdrop-filter: blur(20px);
     border: 1px solid var(--border-highlight);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-main);
-    z-index: 600;
+    z-index: 500;
     display: flex;
     flex-direction: column;
-    transform: translateX(-320px); /* Oculto por defecto */
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: none; /* Visible de forma permanente en el costado izquierdo */
+    transition: max-height 0.25s ease, width 0.25s ease, box-shadow 0.2s ease;
     overflow: hidden;
 }
 
-.drawer-left.open {
-    transform: translateX(0);
+.drawer-left.collapsed {
+    max-height: 44px !important;
+    width: 220px !important;
 }
 
-/* BOTÓN FLOTANTE RÁPIDO PARA ABRIR CAPAS SI ESTÁ CERRADO */
-.btn-floating-tab {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    background: var(--bg-card);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--border-highlight);
-    color: #fff;
-    padding: 7px 13px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
+.drawer-left.collapsed .drawer-body {
+    display: none !important;
+}
+
+.drawer-collapse-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-color);
+    color: var(--accent-cyan);
+    font-size: 13px;
     cursor: pointer;
-    box-shadow: var(--shadow-main);
-    z-index: 450;
+    padding: 2px 7px;
+    border-radius: 6px;
+    transition: all 0.2s;
     display: flex;
     align-items: center;
-    gap: 6px;
-    transition: all 0.2s;
+    justify-content: center;
+    line-height: 1;
 }
 
-.btn-floating-tab:hover {
-    background: rgba(2, 132, 199, 0.3);
+.drawer-collapse-btn:hover {
+    background: rgba(2, 132, 199, 0.25);
+    color: #fff;
     border-color: var(--accent-cyan);
 }
 
@@ -813,8 +812,10 @@ header.app-header {
 .emergency-card-bottom {
     position: absolute;
     bottom: 25px;
-    left: 20px;
-    width: 380px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;
+    max-width: calc(100vw - 40px);
     background: rgba(15, 23, 42, 0.95);
     backdrop-filter: blur(25px);
     border: 2px solid var(--accent-red);
@@ -938,25 +939,32 @@ header.app-header {
    6. TELÓN DE FONDO (BACKDROP) & DISEÑO 100% RESPONSIVE PARA DISPOSITIVOS MÓVILES
    ============================================================================== */
 
-/* Telón / Backdrop para móviles (cierra paneles laterales al tocar el mapa) */
+/* Telón / Backdrop para móviles (cierra panel de telemetría al tocar el mapa en teléfonos) */
 .drawer-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    z-index: 550;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: none;
 }
 
-.drawer-backdrop.active {
-    opacity: 1;
-    pointer-events: auto;
+@media (max-width: 768px) {
+    .drawer-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        z-index: 550;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        display: block;
+    }
+
+    .drawer-backdrop.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
 }
 
 /* Soporte moderno para Dynamic Viewport Height (iOS/Android Safari & Chrome) */
@@ -1132,23 +1140,24 @@ header.app-header {
         display: none !important;
     }
 
-    /* PANELES LATERALES (DRAWER) EN FORMATO MÓVIL FULL-HEIGHT */
+    /* CAJA DE CAPAS EN MÓVIL (TARJETA FLOTANTE CON COLAPSO) */
     .drawer-left {
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: min(320px, 86vw);
-        max-height: 100%;
-        height: 100%;
-        border-radius: 0 18px 18px 0;
-        border-left: none;
-        z-index: 1200;
-        transform: translateX(-105%);
-        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.7);
+        top: 10px;
+        left: 10px;
+        bottom: auto;
+        width: min(290px, calc(100vw - 20px));
+        max-height: calc(100vh - 70px);
+        height: auto;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-highlight);
+        z-index: 600;
+        transform: none;
+        box-shadow: var(--shadow-main);
     }
 
-    .drawer-left.open {
-        transform: translateX(0);
+    .drawer-left.collapsed {
+        max-height: 44px !important;
+        width: 220px !important;
     }
 
     .drawer-right {

@@ -1,36 +1,13 @@
 var json_Conexiones_Domiciliarias = {
   "type": "FeatureCollection",
-  "name": "Conexiones_Domiciliarias_GeoConecta",
+  "name": "Conexiones_Domiciliarias_Area_Servicio",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
   "features": [
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-001",
-        "id_arranque": "ARR-001",
-        "socio": "José Muñoz Díaz",
-        "rut": "8.123.456-1",
-        "n_medidor": "MED-SJ-1001",
-        "id_tramo_red": "TUB-06",
-        "longitud_m": 184.45,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.89311,
-            -36.854467
-          ],
-          [
-            -71.891046,
-            -36.85456
-          ]
-        ]
-      }
-    },
     {
       "type": "Feature",
       "properties": {
@@ -40,138 +17,24 @@ var json_Conexiones_Domiciliarias = {
         "rut": "8.246.912-2",
         "n_medidor": "MED-SJ-1002",
         "id_tramo_red": "TUB-06",
-        "longitud_m": 58.7,
+        "sector_red": "Ramal Centro Cívico (Escuela y Posta)",
+        "longitud_m": 58.5,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
             -71.89311,
-            -36.854206
+            -36.854205
           ],
           [
             -71.892452,
             -36.854207
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-003",
-        "id_arranque": "ARR-003",
-        "socio": "Luis Díaz López",
-        "rut": "8.370.368-3",
-        "n_medidor": "MED-SJ-1003",
-        "id_tramo_red": "TUB-07",
-        "longitud_m": 208.0,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.889803,
-            -36.852826
-          ],
-          [
-            -71.887899,
-            -36.853906
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-004",
-        "id_arranque": "ARR-004",
-        "socio": "Jorge Pérez Araya",
-        "rut": "8.493.824-4",
-        "n_medidor": "MED-SJ-1004",
-        "id_tramo_red": "TUB-07",
-        "longitud_m": 180.18,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.889803,
-            -36.852826
-          ],
-          [
-            -71.888224,
-            -36.853837
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-005",
-        "id_arranque": "ARR-005",
-        "socio": "Pedro Soto Espinoza",
-        "rut": "8.617.280-5",
-        "n_medidor": "MED-SJ-1005",
-        "id_tramo_red": "TUB-07",
-        "longitud_m": 250.88,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.889803,
-            -36.852826
-          ],
-          [
-            -71.887158,
-            -36.853592
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-006",
-        "id_arranque": "ARR-006",
-        "socio": "Manuel Contreras Alarcón",
-        "rut": "8.740.736-6",
-        "n_medidor": "MED-SJ-1006",
-        "id_tramo_red": "TUB-07",
-        "longitud_m": 183.19,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.889803,
-            -36.852826
-          ],
-          [
-            -71.887811,
-            -36.853225
           ]
         ]
       }
@@ -185,11 +48,13 @@ var json_Conexiones_Domiciliarias = {
         "rut": "8.864.192-7",
         "n_medidor": "MED-SJ-1007",
         "id_tramo_red": "TUB-07",
-        "longitud_m": 61.41,
+        "sector_red": "Ramal Centro Cívico (Escuela y Posta)",
+        "longitud_m": 61.3,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
@@ -214,18 +79,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "8.987.648-8",
         "n_medidor": "MED-SJ-1008",
         "id_tramo_red": "TUB-07",
-        "longitud_m": 51.01,
+        "sector_red": "Ramal Centro Cívico (Escuela y Posta)",
+        "longitud_m": 51.3,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.889838,
-            -36.852713
+            -71.889855,
+            -36.852658
           ],
           [
             -71.890393,
@@ -243,51 +110,24 @@ var json_Conexiones_Domiciliarias = {
         "rut": "9.111.104-0",
         "n_medidor": "MED-SJ-1009",
         "id_tramo_red": "TUB-07",
-        "longitud_m": 68.91,
+        "sector_red": "Ramal Centro Cívico (Escuela y Posta)",
+        "longitud_m": 69.3,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.88987,
-            -36.852608
+            -71.889893,
+            -36.852534
           ],
           [
             -71.89062,
             -36.852757
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-010",
-        "id_arranque": "ARR-010",
-        "socio": "Rosa Sepúlveda Rojas",
-        "rut": "9.234.560-1",
-        "n_medidor": "MED-SJ-1010",
-        "id_tramo_red": "TUB-07",
-        "longitud_m": 225.2,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.889803,
-            -36.852826
-          ],
-          [
-            -71.887282,
-            -36.852737
           ]
         ]
       }
@@ -301,18 +141,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "9.358.016-2",
         "n_medidor": "MED-SJ-1011",
         "id_tramo_red": "TUB-07",
-        "longitud_m": 82.77,
+        "sector_red": "Ramal Centro Cívico (Escuela y Posta)",
+        "longitud_m": 83.2,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.889918,
-            -36.852451
+            -71.889946,
+            -36.852362
           ],
           [
             -71.890819,
@@ -330,254 +172,24 @@ var json_Conexiones_Domiciliarias = {
         "rut": "9.481.472-3",
         "n_medidor": "MED-SJ-1012",
         "id_tramo_red": "TUB-07",
-        "longitud_m": 23.6,
+        "sector_red": "Ramal Centro Cívico (Escuela y Posta)",
+        "longitud_m": 23.7,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.889884,
-            -36.852562
+            -71.889892,
+            -36.852537
           ],
           [
             -71.890141,
             -36.852613
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-013",
-        "id_arranque": "ARR-013",
-        "socio": "Ana Castillo Fuentes",
-        "rut": "9.604.928-4",
-        "n_medidor": "MED-SJ-1013",
-        "id_tramo_red": "TUB-07",
-        "longitud_m": 220.72,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.889803,
-            -36.852826
-          ],
-          [
-            -71.887367,
-            -36.852484
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-014",
-        "id_arranque": "ARR-014",
-        "socio": "Patricia Torres Torres",
-        "rut": "9.728.384-5",
-        "n_medidor": "MED-SJ-1014",
-        "id_tramo_red": "TUB-07",
-        "longitud_m": 257.41,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.889803,
-            -36.852826
-          ],
-          [
-            -71.886962,
-            -36.852422
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-015",
-        "id_arranque": "ARR-015",
-        "socio": "Margarita Espinoza Rivera",
-        "rut": "9.851.840-6",
-        "n_medidor": "MED-SJ-1015",
-        "id_tramo_red": "TUB-08",
-        "longitud_m": 407.82,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.883982,
-            -36.848726
-          ],
-          [
-            -71.884033,
-            -36.852399
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-016",
-        "id_arranque": "ARR-016",
-        "socio": "Gloria Flores Carrasco",
-        "rut": "9.975.296-7",
-        "n_medidor": "MED-SJ-1016",
-        "id_tramo_red": "TUB-07",
-        "longitud_m": 253.21,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.889864,
-            -36.852627
-          ],
-          [
-            -71.887109,
-            -36.852082
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-017",
-        "id_arranque": "ARR-017",
-        "socio": "Teresa Rivera Henríquez",
-        "rut": "10.098.752-8",
-        "n_medidor": "MED-SJ-1017",
-        "id_tramo_red": "TUB-07",
-        "longitud_m": 224.74,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.88989,
-            -36.852544
-          ],
-          [
-            -71.887444,
-            -36.85206
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-018",
-        "id_arranque": "ARR-018",
-        "socio": "Posta de Salud Rural Santa Juana",
-        "rut": "10.222.208-0",
-        "n_medidor": "MED-SJ-1018",
-        "id_tramo_red": "TUB-08",
-        "longitud_m": 356.27,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.883982,
-            -36.848726
-          ],
-          [
-            -71.8843,
-            -36.851924
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-019",
-        "id_arranque": "ARR-019",
-        "socio": "Elizabeth Valenzuela Muñoz",
-        "rut": "10.345.664-1",
-        "n_medidor": "MED-SJ-1019",
-        "id_tramo_red": "TUB-01",
-        "longitud_m": 392.47,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.906839,
-            -36.848311
-          ],
-          [
-            -71.906165,
-            -36.851804
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-020",
-        "id_arranque": "ARR-020",
-        "socio": "Juan Carrasco Pérez",
-        "rut": "10.469.120-2",
-        "n_medidor": "MED-SJ-1020",
-        "id_tramo_red": "TUB-01",
-        "longitud_m": 339.69,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.906839,
-            -36.848311
-          ],
-          [
-            -71.906379,
-            -36.851348
           ]
         ]
       }
@@ -591,80 +203,24 @@ var json_Conexiones_Domiciliarias = {
         "rut": "10.592.576-3",
         "n_medidor": "MED-SJ-1021",
         "id_tramo_red": "TUB-07",
-        "longitud_m": 22.69,
+        "sector_red": "Ramal Centro Cívico (Escuela y Posta)",
+        "longitud_m": 22.7,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.892242,
+            -71.892243,
             -36.851454
           ],
           [
             -71.892245,
             -36.85125
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-022",
-        "id_arranque": "ARR-022",
-        "socio": "Carlos Reyes Sepúlveda",
-        "rut": "10.716.032-4",
-        "n_medidor": "MED-SJ-1022",
-        "id_tramo_red": "TUB-01",
-        "longitud_m": 294.93,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Vidrio empañado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.906839,
-            -36.848311
-          ],
-          [
-            -71.906087,
-            -36.850898
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-023",
-        "id_arranque": "ARR-023",
-        "socio": "Luis Henríquez Castillo",
-        "rut": "10.839.488-5",
-        "n_medidor": "MED-SJ-1023",
-        "id_tramo_red": "TUB-01",
-        "longitud_m": 277.78,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.906839,
-            -36.848311
-          ],
-          [
-            -71.906413,
-            -36.85079
           ]
         ]
       }
@@ -678,18 +234,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "10.962.944-6",
         "n_medidor": "MED-SJ-1024",
         "id_tramo_red": "TUB-06",
-        "longitud_m": 57.67,
+        "sector_red": "Ramal Centro Cívico (Escuela y Posta)",
+        "longitud_m": 57.5,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
             -71.893067,
-            -36.85062
+            -36.850615
           ],
           [
             -71.892421,
@@ -707,51 +265,24 @@ var json_Conexiones_Domiciliarias = {
         "rut": "11.086.400-7",
         "n_medidor": "MED-SJ-1025",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 30.16,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 30.2,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.938115,
-            -36.850269
+            -71.938118,
+            -36.85027
           ],
           [
             -71.938007,
             -36.850527
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-026",
-        "id_arranque": "ARR-026",
-        "socio": "Manuel Cifuentes Reyes",
-        "rut": "11.209.856-8",
-        "n_medidor": "MED-SJ-1026",
-        "id_tramo_red": "TUB-08",
-        "longitud_m": 199.62,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.884219,
-            -36.848687
-          ],
-          [
-            -71.884667,
-            -36.850448
           ]
         ]
       }
@@ -765,18 +296,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "11.333.312-0",
         "n_medidor": "MED-SJ-1027",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 23.74,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 23.9,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.937923,
-            -36.850218
+            -71.937895,
+            -36.85021
           ],
           [
             -71.937838,
@@ -794,51 +327,24 @@ var json_Conexiones_Domiciliarias = {
         "rut": "11.456.768-1",
         "n_medidor": "MED-SJ-1028",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 29.6,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 29.9,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.937526,
-            -36.850098
+            -71.937485,
+            -36.850083
           ],
           [
             -71.937395,
             -36.850342
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-029",
-        "id_arranque": "ARR-029",
-        "socio": "Raúl Muñoz Díaz",
-        "rut": "11.580.224-2",
-        "n_medidor": "MED-SJ-1029",
-        "id_tramo_red": "TUB-08",
-        "longitud_m": 182.18,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.884258,
-            -36.84868
-          ],
-          [
-            -71.884667,
-            -36.850288
           ]
         ]
       }
@@ -852,18 +358,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "11.703.680-3",
         "n_medidor": "MED-SJ-1030",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 16.9,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 17,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.93861,
-            -36.850342
+            -71.938622,
+            -36.850343
           ],
           [
             -71.938644,
@@ -881,17 +389,19 @@ var json_Conexiones_Domiciliarias = {
         "rut": "11.827.136-4",
         "n_medidor": "MED-SJ-1031",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 43.91,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 44,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.935767,
+            -71.935766,
             -36.849642
           ],
           [
@@ -910,17 +420,19 @@ var json_Conexiones_Domiciliarias = {
         "rut": "11.950.592-5",
         "n_medidor": "MED-SJ-1032",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 37.7,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 37.8,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.935595,
+            -71.935594,
             -36.849641
           ],
           [
@@ -939,18 +451,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "12.074.048-6",
         "n_medidor": "MED-SJ-1033",
         "id_tramo_red": "TUB-06",
-        "longitud_m": 131.79,
+        "sector_red": "Ramal Centro Cívico (Escuela y Posta)",
+        "longitud_m": 131.4,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
             -71.893052,
-            -36.849952
+            -36.84994
           ],
           [
             -71.891576,
@@ -968,18 +482,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "12.197.504-7",
         "n_medidor": "MED-SJ-1034",
         "id_tramo_red": "TUB-06",
-        "longitud_m": 17.49,
+        "sector_red": "Ramal Centro Cívico (Escuela y Posta)",
+        "longitud_m": 17.4,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
             -71.893052,
-            -36.849931
+            -36.84993
           ],
           [
             -71.892856,
@@ -997,18 +513,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "12.320.960-8",
         "n_medidor": "MED-SJ-1035",
         "id_tramo_red": "TUB-06",
-        "longitud_m": 61.96,
+        "sector_red": "Ramal Centro Cívico (Escuela y Posta)",
+        "longitud_m": 61.8,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
             -71.893052,
-            -36.849906
+            -36.849912
           ],
           [
             -71.892358,
@@ -1026,51 +544,24 @@ var json_Conexiones_Domiciliarias = {
         "rut": "12.444.416-0",
         "n_medidor": "MED-SJ-1036",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 78.63,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 78.8,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.929218,
-            -36.84904
+            -71.929201,
+            -36.849039
           ],
           [
             -71.929171,
             -36.849747
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-037",
-        "id_arranque": "ARR-037",
-        "socio": "Teresa López San Martín",
-        "rut": "12.567.872-1",
-        "n_medidor": "MED-SJ-1037",
-        "id_tramo_red": "TUB-10",
-        "longitud_m": 173.92,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.87965,
-            -36.84918
-          ],
-          [
-            -71.881474,
-            -36.849731
           ]
         ]
       }
@@ -1084,18 +575,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "12.691.328-2",
         "n_medidor": "MED-SJ-1038",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 23.96,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 24.2,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.936631,
-            -36.849799
+            -71.936663,
+            -36.849809
           ],
           [
             -71.936729,
@@ -1113,17 +606,19 @@ var json_Conexiones_Domiciliarias = {
         "rut": "12.814.784-3",
         "n_medidor": "MED-SJ-1039",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 57.37,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 57.5,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.92906,
+            -71.929057,
             -36.849036
           ],
           [
@@ -1142,51 +637,24 @@ var json_Conexiones_Domiciliarias = {
         "rut": "12.938.240-4",
         "n_medidor": "MED-SJ-1040",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 20.17,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 20.2,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.936028,
-            -36.849654
+            -71.936038,
+            -36.849655
           ],
           [
             -71.936055,
             -36.849474
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-041",
-        "id_arranque": "ARR-041",
-        "socio": "José Castillo Fuentes",
-        "rut": "13.061.696-5",
-        "n_medidor": "MED-SJ-1041",
-        "id_tramo_red": "TUB-08",
-        "longitud_m": 164.1,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.886294,
-            -36.848116
-          ],
-          [
-            -71.887063,
-            -36.849459
           ]
         ]
       }
@@ -1200,17 +668,19 @@ var json_Conexiones_Domiciliarias = {
         "rut": "13.185.152-6",
         "n_medidor": "MED-SJ-1042",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 21.79,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 21.8,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.935325,
+            -71.935327,
             -36.84964
           ],
           [
@@ -1229,17 +699,19 @@ var json_Conexiones_Domiciliarias = {
         "rut": "13.308.608-7",
         "n_medidor": "MED-SJ-1043",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 24.48,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 24.5,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.934981,
+            -71.934982,
             -36.849635
           ],
           [
@@ -1258,11 +730,13 @@ var json_Conexiones_Domiciliarias = {
         "rut": "13.432.064-8",
         "n_medidor": "MED-SJ-1044",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 43.1,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 43.2,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Vidrio empañado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
@@ -1281,53 +755,26 @@ var json_Conexiones_Domiciliarias = {
     {
       "type": "Feature",
       "properties": {
-        "id_conexion": "CON-ARR-045",
-        "id_arranque": "ARR-045",
-        "socio": "Pedro Rivera Henríquez",
-        "rut": "13.555.520-0",
-        "n_medidor": "MED-SJ-1045",
-        "id_tramo_red": "TUB-08",
-        "longitud_m": 163.06,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.886405,
-            -36.848075
-          ],
-          [
-            -71.887169,
-            -36.84941
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
         "id_conexion": "CON-ARR-046",
         "id_arranque": "ARR-046",
         "socio": "Manuel Alarcón Cifuentes",
         "rut": "13.678.976-1",
         "n_medidor": "MED-SJ-1046",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 21.52,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 21.8,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.934515,
-            -36.849535
+            -71.93455,
+            -36.849551
           ],
           [
             -71.934637,
@@ -1345,11 +792,13 @@ var json_Conexiones_Domiciliarias = {
         "rut": "13.802.432-2",
         "n_medidor": "MED-SJ-1047",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 33.75,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 33.8,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
@@ -1374,18 +823,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "13.925.888-3",
         "n_medidor": "MED-SJ-1048",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 48.18,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 48.2,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.928524,
-            -36.848962
+            -71.92853,
+            -36.848964
           ],
           [
             -71.928301,
@@ -1403,18 +854,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "14.049.344-4",
         "n_medidor": "MED-SJ-1049",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 40.8,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 41,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.933185,
-            -36.848977
+            -71.933143,
+            -36.848967
           ],
           [
             -71.933061,
@@ -1432,11 +885,13 @@ var json_Conexiones_Domiciliarias = {
         "rut": "14.172.800-5",
         "n_medidor": "MED-SJ-1050",
         "id_tramo_red": "TUB-08",
-        "longitud_m": 72.12,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 72.2,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
@@ -1461,18 +916,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "14.296.256-6",
         "n_medidor": "MED-SJ-1051",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 29.89,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 30.1,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.933365,
-            -36.849017
+            -71.933335,
+            -36.84901
           ],
           [
             -71.933274,
@@ -1490,18 +947,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "14.419.712-7",
         "n_medidor": "MED-SJ-1052",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 34.4,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 34.5,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.932412,
-            -36.848953
+            -71.932426,
+            -36.848952
           ],
           [
             -71.932451,
@@ -1519,18 +978,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "14.543.168-8",
         "n_medidor": "MED-SJ-1053",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 45.65,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 45.8,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.935985,
-            -36.84965
+            -71.936006,
+            -36.849652
           ],
           [
             -71.936045,
@@ -1548,18 +1009,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "14.666.624-0",
         "n_medidor": "MED-SJ-1054",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 46.06,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 46.1,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.935784,
-            -36.849642
+            -71.935786,
+            -36.849643
           ],
           [
             -71.935788,
@@ -1577,17 +1040,19 @@ var json_Conexiones_Domiciliarias = {
         "rut": "14.790.080-1",
         "n_medidor": "MED-SJ-1055",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 22.62,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 22.7,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.931902,
+            -71.931911,
             -36.848994
           ],
           [
@@ -1606,11 +1071,13 @@ var json_Conexiones_Domiciliarias = {
         "rut": "14.913.536-2",
         "n_medidor": "MED-SJ-1056",
         "id_tramo_red": "TUB-08",
-        "longitud_m": 154.01,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 153.7,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
@@ -1635,18 +1102,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "15.036.992-3",
         "n_medidor": "MED-SJ-1057",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 24.33,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 24.4,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.933038,
-            -36.848951
+            -71.933022,
+            -36.848949
           ],
           [
             -71.932991,
@@ -1664,11 +1133,13 @@ var json_Conexiones_Domiciliarias = {
         "rut": "15.160.448-4",
         "n_medidor": "MED-SJ-1058",
         "id_tramo_red": "TUB-10",
-        "longitud_m": 55.56,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 55.4,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
@@ -1693,18 +1164,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "15.283.904-5",
         "n_medidor": "MED-SJ-1059",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 20.97,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 21,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.932658,
-            -36.848933
+            -71.932666,
+            -36.848932
           ],
           [
             -71.932681,
@@ -1722,18 +1195,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "15.407.360-6",
         "n_medidor": "MED-SJ-1060",
         "id_tramo_red": "TUB-08",
-        "longitud_m": 43.32,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 43.5,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.884019,
-            -36.848719
+            -71.884053,
+            -36.848714
           ],
           [
             -71.884117,
@@ -1751,138 +1226,24 @@ var json_Conexiones_Domiciliarias = {
         "rut": "15.530.816-7",
         "n_medidor": "MED-SJ-1061",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 13.97,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 14,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.933055,
-            -36.848954
+            -71.933045,
+            -36.848952
           ],
           [
             -71.933028,
             -36.849078
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-062",
-        "id_arranque": "ARR-062",
-        "socio": "Carlos Contreras Alarcón",
-        "rut": "15.654.272-8",
-        "n_medidor": "MED-SJ-1062",
-        "id_tramo_red": "TUB-10",
-        "longitud_m": 262.66,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.87965,
-            -36.84918
-          ],
-          [
-            -71.876709,
-            -36.849072
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-063",
-        "id_arranque": "ARR-063",
-        "socio": "Luis Silva Ramírez",
-        "rut": "15.777.728-0",
-        "n_medidor": "MED-SJ-1063",
-        "id_tramo_red": "TUB-05",
-        "longitud_m": 302.16,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.874397,
-            -36.846375
-          ],
-          [
-            -71.873887,
-            -36.849065
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-064",
-        "id_arranque": "ARR-064",
-        "socio": "Jorge Morales Guzmán",
-        "rut": "15.901.184-1",
-        "n_medidor": "MED-SJ-1064",
-        "id_tramo_red": "TUB-06",
-        "longitud_m": 208.12,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.893071,
-            -36.849014
-          ],
-          [
-            -71.895403,
-            -36.849046
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-065",
-        "id_arranque": "ARR-065",
-        "socio": "Pedro López San Martín",
-        "rut": "16.024.640-2",
-        "n_medidor": "MED-SJ-1065",
-        "id_tramo_red": "TUB-05",
-        "longitud_m": 214.31,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.896399,
-            -36.847095
-          ],
-          [
-            -71.896023,
-            -36.849001
           ]
         ]
       }
@@ -1896,18 +1257,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "16.148.096-3",
         "n_medidor": "MED-SJ-1066",
         "id_tramo_red": "TUB-08",
-        "longitud_m": 34.72,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 34.9,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Vidrio empañado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.884187,
-            -36.848692
+            -71.884214,
+            -36.848687
           ],
           [
             -71.884265,
@@ -1925,51 +1288,24 @@ var json_Conexiones_Domiciliarias = {
         "rut": "16.271.552-4",
         "n_medidor": "MED-SJ-1067",
         "id_tramo_red": "TUB-10",
-        "longitud_m": 76.05,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 76,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.879695,
-            -36.848901
+            -71.879702,
+            -36.848854
           ],
           [
             -71.88054,
             -36.848989
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-068",
-        "id_arranque": "ARR-068",
-        "socio": "Héctor Araya Morales",
-        "rut": "16.395.008-5",
-        "n_medidor": "MED-SJ-1068",
-        "id_tramo_red": "TUB-05",
-        "longitud_m": 290.6,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.874397,
-            -36.846375
-          ],
-          [
-            -71.874192,
-            -36.848987
           ]
         ]
       }
@@ -1983,11 +1319,13 @@ var json_Conexiones_Domiciliarias = {
         "rut": "16.518.464-6",
         "n_medidor": "MED-SJ-1069",
         "id_tramo_red": "TUB-08",
-        "longitud_m": 73.19,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 73,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
@@ -2012,18 +1350,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "16.641.920-7",
         "n_medidor": "MED-SJ-1070",
         "id_tramo_red": "TUB-08",
-        "longitud_m": 38.15,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 38.2,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.884335,
-            -36.848664
+            -71.884315,
+            -36.848671
           ],
           [
             -71.884498,
@@ -2041,80 +1381,24 @@ var json_Conexiones_Domiciliarias = {
         "rut": "16.765.376-8",
         "n_medidor": "MED-SJ-1071",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 113.81,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 114.1,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.923839,
-            -36.847959
+            -71.923774,
+            -36.847952
           ],
           [
             -71.923653,
             -36.848974
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-072",
-        "id_arranque": "ARR-072",
-        "socio": "Carmen Flores Carrasco",
-        "rut": "16.888.832-0",
-        "n_medidor": "MED-SJ-1072",
-        "id_tramo_red": "TUB-04",
-        "longitud_m": 262.27,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.899619,
-            -36.848621
-          ],
-          [
-            -71.90253,
-            -36.848951
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-073",
-        "id_arranque": "ARR-073",
-        "socio": "Ana Rivera Henríquez",
-        "rut": "17.012.288-1",
-        "n_medidor": "MED-SJ-1073",
-        "id_tramo_red": "TUB-10",
-        "longitud_m": 76.33,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.879673,
-            -36.849035
-          ],
-          [
-            -71.878825,
-            -36.848947
           ]
         ]
       }
@@ -2128,11 +1412,13 @@ var json_Conexiones_Domiciliarias = {
         "rut": "17.135.744-2",
         "n_medidor": "MED-SJ-1074",
         "id_tramo_red": "TUB-08",
-        "longitud_m": 155.15,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 154.7,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
@@ -2157,18 +1443,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "17.259.200-3",
         "n_medidor": "MED-SJ-1075",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 116.06,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 116.4,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.923311,
-            -36.847897
+            -71.923245,
+            -36.847889
           ],
           [
             -71.923121,
@@ -2186,18 +1474,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "17.382.656-4",
         "n_medidor": "MED-SJ-1076",
         "id_tramo_red": "TUB-10",
+        "sector_red": "Ramal Interior Pasajes",
         "longitud_m": 37.2,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.879683,
-            -36.848971
+            -71.87968,
+            -36.848994
           ],
           [
             -71.87927,
@@ -2215,18 +1505,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "17.506.112-5",
         "n_medidor": "MED-SJ-1077",
         "id_tramo_red": "TUB-10",
-        "longitud_m": 31.23,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 31.2,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.879703,
-            -36.848847
+            -71.879706,
+            -36.848827
           ],
           [
             -71.88005,
@@ -2244,18 +1536,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "17.629.568-6",
         "n_medidor": "MED-SJ-1078",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 24.08,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 24.3,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.927669,
-            -36.848654
+            -71.927634,
+            -36.848642
           ],
           [
             -71.927559,
@@ -2273,51 +1567,24 @@ var json_Conexiones_Domiciliarias = {
         "rut": "17.753.024-7",
         "n_medidor": "MED-SJ-1079",
         "id_tramo_red": "TUB-08",
-        "longitud_m": 29.51,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 29.8,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.884978,
-            -36.8486
+            -71.885021,
+            -36.848585
           ],
           [
             -71.885113,
             -36.848842
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-080",
-        "id_arranque": "ARR-080",
-        "socio": "Juan Guzmán Flores",
-        "rut": "17.876.480-8",
-        "n_medidor": "MED-SJ-1080",
-        "id_tramo_red": "TUB-10",
-        "longitud_m": 103.33,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.879688,
-            -36.84894
-          ],
-          [
-            -71.87854,
-            -36.84882
           ]
         ]
       }
@@ -2331,17 +1598,19 @@ var json_Conexiones_Domiciliarias = {
         "rut": "17.999.936-0",
         "n_medidor": "MED-SJ-1081",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 13.66,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 13.7,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.932598,
+            -71.932592,
             -36.848938
           ],
           [
@@ -2360,18 +1629,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "18.123.392-1",
         "n_medidor": "MED-SJ-1082",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 22.44,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 22.6,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.933312,
-            -36.849005
+            -71.933335,
+            -36.849011
           ],
           [
             -71.93338,
@@ -2389,11 +1660,13 @@ var json_Conexiones_Domiciliarias = {
         "rut": "18.246.848-2",
         "n_medidor": "MED-SJ-1083",
         "id_tramo_red": "TUB-08",
-        "longitud_m": 153.36,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 152.9,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
@@ -2412,46 +1685,19 @@ var json_Conexiones_Domiciliarias = {
     {
       "type": "Feature",
       "properties": {
-        "id_conexion": "CON-ARR-084",
-        "id_arranque": "ARR-084",
-        "socio": "Jorge González González",
-        "rut": "18.370.304-3",
-        "n_medidor": "MED-SJ-1084",
-        "id_tramo_red": "TUB-12",
-        "longitud_m": 157.07,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.918138,
-            -36.847285
-          ],
-          [
-            -71.918027,
-            -36.848697
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
         "id_conexion": "CON-ARR-085",
         "id_arranque": "ARR-085",
         "socio": "Pedro Muñoz Díaz",
         "rut": "18.493.760-4",
         "n_medidor": "MED-SJ-1085",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 117.95,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 118.1,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
@@ -2476,18 +1722,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "18.617.216-5",
         "n_medidor": "MED-SJ-1086",
         "id_tramo_red": "TUB-04",
-        "longitud_m": 67.68,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 67.5,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.899624,
-            -36.848539
+            -71.899625,
+            -36.848524
           ],
           [
             -71.900382,
@@ -2505,18 +1753,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "18.740.672-6",
         "n_medidor": "MED-SJ-1087",
         "id_tramo_red": "TUB-10",
-        "longitud_m": 31.76,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 31.8,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.879758,
-            -36.848505
+            -71.879761,
+            -36.848485
           ],
           [
             -71.880111,
@@ -2534,18 +1784,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "18.864.128-7",
         "n_medidor": "MED-SJ-1088",
         "id_tramo_red": "TUB-10",
-        "longitud_m": 30.51,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 30.5,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Vidrio empañado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.87975,
-            -36.848557
+            -71.879747,
+            -36.848576
           ],
           [
             -71.879411,
@@ -2563,11 +1815,13 @@ var json_Conexiones_Domiciliarias = {
         "rut": "18.987.584-8",
         "n_medidor": "MED-SJ-1089",
         "id_tramo_red": "TUB-05",
-        "longitud_m": 135.12,
+        "sector_red": "Matriz Primaria Este",
+        "longitud_m": 135.3,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
@@ -2586,115 +1840,30 @@ var json_Conexiones_Domiciliarias = {
     {
       "type": "Feature",
       "properties": {
-        "id_conexion": "CON-ARR-090",
-        "id_arranque": "ARR-090",
-        "socio": "Rosa Contreras Alarcón",
-        "rut": "19.111.040-0",
-        "n_medidor": "MED-SJ-1090",
-        "id_tramo_red": "TUB-05",
-        "longitud_m": 231.69,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.874397,
-            -36.846375
-          ],
-          [
-            -71.874098,
-            -36.848448
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-091",
-        "id_arranque": "ARR-091",
-        "socio": "María Silva Ramírez",
-        "rut": "19.234.496-1",
-        "n_medidor": "MED-SJ-1091",
-        "id_tramo_red": "TUB-05",
-        "longitud_m": 154.73,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.896181,
-            -36.847067
-          ],
-          [
-            -71.895909,
-            -36.848444
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
         "id_conexion": "CON-ARR-092",
         "id_arranque": "ARR-092",
         "socio": "Carmen Morales Guzmán",
         "rut": "19.357.952-2",
         "n_medidor": "MED-SJ-1092",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 41.86,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 41.9,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.925026,
+            -71.925012,
             -36.848062
           ],
           [
             -71.924986,
             -36.848438
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-093",
-        "id_arranque": "ARR-093",
-        "socio": "Ana López San Martín",
-        "rut": "19.481.408-3",
-        "n_medidor": "MED-SJ-1093",
-        "id_tramo_red": "TUB-10",
-        "longitud_m": 220.13,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.879735,
-            -36.848648
-          ],
-          [
-            -71.877289,
-            -36.848393
           ]
         ]
       }
@@ -2708,11 +1877,13 @@ var json_Conexiones_Domiciliarias = {
         "rut": "19.604.864-4",
         "n_medidor": "MED-SJ-1094",
         "id_tramo_red": "TUB-08",
-        "longitud_m": 54.27,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 54.2,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
@@ -2731,82 +1902,26 @@ var json_Conexiones_Domiciliarias = {
     {
       "type": "Feature",
       "properties": {
-        "id_conexion": "CON-ARR-095",
-        "id_arranque": "ARR-095",
-        "socio": "Margarita Fuentes Soto",
-        "rut": "19.728.320-5",
-        "n_medidor": "MED-SJ-1095",
-        "id_tramo_red": "TUB-05",
-        "longitud_m": 238.51,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.876435,
-            -36.846207
-          ],
-          [
-            -71.877037,
-            -36.8483
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-096",
-        "id_arranque": "ARR-096",
-        "socio": "Gloria Araya Morales",
-        "rut": "19.851.776-6",
-        "n_medidor": "MED-SJ-1096",
-        "id_tramo_red": "TUB-05",
-        "longitud_m": 126.07,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.890636,
-            -36.8471
-          ],
-          [
-            -71.890357,
-            -36.848214
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
         "id_conexion": "CON-ARR-097",
         "id_arranque": "ARR-097",
         "socio": "Teresa Castillo Fuentes",
         "rut": "19.975.232-7",
         "n_medidor": "MED-SJ-1097",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 37.72,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 37.9,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.922492,
-            -36.847786
+            -71.922466,
+            -36.847782
           ],
           [
             -71.922416,
@@ -2824,11 +1939,13 @@ var json_Conexiones_Domiciliarias = {
         "rut": "8.098.688-8",
         "n_medidor": "MED-SJ-1098",
         "id_tramo_red": "TUB-08",
-        "longitud_m": 77.98,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 78,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
@@ -2853,51 +1970,24 @@ var json_Conexiones_Domiciliarias = {
         "rut": "8.222.144-0",
         "n_medidor": "MED-SJ-1099",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 63.91,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 64.1,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.920645,
-            -36.847503
+            -71.920613,
+            -36.8475
           ],
           [
             -71.920556,
             -36.848074
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-100",
-        "id_arranque": "ARR-100",
-        "socio": "Juan Flores Carrasco",
-        "rut": "8.345.600-1",
-        "n_medidor": "MED-SJ-1100",
-        "id_tramo_red": "TUB-05",
-        "longitud_m": 196.91,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.875948,
-            -36.84627
-          ],
-          [
-            -71.876298,
-            -36.848021
           ]
         ]
       }
@@ -2911,18 +2001,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "8.469.056-2",
         "n_medidor": "MED-SJ-1101",
         "id_tramo_red": "TUB-05",
-        "longitud_m": 90.52,
+        "sector_red": "Matriz Primaria Este",
+        "longitud_m": 90.7,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.891948,
-            -36.847205
+            -71.891985,
+            -36.847202
           ],
           [
             -71.892051,
@@ -2940,18 +2032,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "8.592.512-3",
         "n_medidor": "MED-SJ-1102",
         "id_tramo_red": "TUB-05",
-        "longitud_m": 86.16,
+        "sector_red": "Matriz Primaria Este",
+        "longitud_m": 86.5,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.891406,
-            -36.84722
+            -71.891343,
+            -36.84721
           ],
           [
             -71.891224,
@@ -2969,18 +2063,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "8.715.968-4",
         "n_medidor": "MED-SJ-1103",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 42.35,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 42.5,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.921125,
-            -36.847558
+            -71.921093,
+            -36.847553
           ],
           [
             -71.921032,
@@ -2998,18 +2094,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "8.839.424-5",
         "n_medidor": "MED-SJ-1104",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 91.24,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 91.9,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.916774,
-            -36.84709
+            -71.916666,
+            -36.84706
           ],
           [
             -71.916445,
@@ -3027,11 +2125,13 @@ var json_Conexiones_Domiciliarias = {
         "rut": "8.962.880-6",
         "n_medidor": "MED-SJ-1105",
         "id_tramo_red": "TUB-08",
-        "longitud_m": 156.44,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 156.3,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
@@ -3056,51 +2156,24 @@ var json_Conexiones_Domiciliarias = {
         "rut": "9.086.336-7",
         "n_medidor": "MED-SJ-1106",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 76.94,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 77.3,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.916957,
-            -36.847136
+            -71.916896,
+            -36.847123
           ],
           [
             -71.916736,
             -36.847806
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-107",
-        "id_arranque": "ARR-107",
-        "socio": "Víctor Henríquez Castillo",
-        "rut": "9.209.792-8",
-        "n_medidor": "MED-SJ-1107",
-        "id_tramo_red": "TUB-05",
-        "longitud_m": 166.21,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.875878,
-            -36.846279
-          ],
-          [
-            -71.876174,
-            -36.847757
           ]
         ]
       }
@@ -3114,18 +2187,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "9.333.248-0",
         "n_medidor": "MED-SJ-1108",
         "id_tramo_red": "TUB-05",
-        "longitud_m": 58.8,
+        "sector_red": "Matriz Primaria Este",
+        "longitud_m": 59,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.891356,
-            -36.847212
+            -71.891313,
+            -36.847206
           ],
           [
             -71.891232,
@@ -3143,51 +2218,24 @@ var json_Conexiones_Domiciliarias = {
         "rut": "9.456.704-1",
         "n_medidor": "MED-SJ-1109",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 82.45,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 83.1,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.916543,
-            -36.847026
+            -71.916445,
+            -36.846999
           ],
           [
             -71.916245,
             -36.847729
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-110",
-        "id_arranque": "ARR-110",
-        "socio": "Rosa Cifuentes Reyes",
-        "rut": "9.580.160-2",
-        "n_medidor": "MED-SJ-1110",
-        "id_tramo_red": "TUB-12",
-        "longitud_m": 131.09,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Vidrio empañado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.909259,
-            -36.84653
-          ],
-          [
-            -71.909225,
-            -36.847711
           ]
         ]
       }
@@ -3201,80 +2249,24 @@ var json_Conexiones_Domiciliarias = {
         "rut": "9.703.616-3",
         "n_medidor": "MED-SJ-1111",
         "id_tramo_red": "TUB-05",
-        "longitud_m": 50.48,
+        "sector_red": "Matriz Primaria Este",
+        "longitud_m": 50.6,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.891546,
-            -36.847238
+            -71.89153,
+            -36.847239
           ],
           [
             -71.891604,
             -36.84769
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-112",
-        "id_arranque": "ARR-112",
-        "socio": "Carmen González González",
-        "rut": "9.827.072-4",
-        "n_medidor": "MED-SJ-1112",
-        "id_tramo_red": "TUB-05",
-        "longitud_m": 151.36,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.875331,
-            -36.84633
-          ],
-          [
-            -71.875473,
-            -36.847688
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-113",
-        "id_arranque": "ARR-113",
-        "socio": "Ana Muñoz Díaz",
-        "rut": "9.950.528-5",
-        "n_medidor": "MED-SJ-1113",
-        "id_tramo_red": "TUB-10",
-        "longitud_m": 111.7,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.879879,
-            -36.847753
-          ],
-          [
-            -71.878638,
-            -36.847624
           ]
         ]
       }
@@ -3288,80 +2280,24 @@ var json_Conexiones_Domiciliarias = {
         "rut": "10.073.984-6",
         "n_medidor": "MED-SJ-1114",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 41.65,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 41.9,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.917076,
-            -36.847161
+            -71.917035,
+            -36.847152
           ],
           [
             -71.916956,
             -36.847524
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-115",
-        "id_arranque": "ARR-115",
-        "socio": "Margarita Díaz López",
-        "rut": "10.197.440-7",
-        "n_medidor": "MED-SJ-1115",
-        "id_tramo_red": "TUB-05",
-        "longitud_m": 128.91,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.874991,
-            -36.846353
-          ],
-          [
-            -71.875112,
-            -36.84751
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id_conexion": "CON-ARR-116",
-        "id_arranque": "ARR-116",
-        "socio": "Gloria Pérez Araya",
-        "rut": "10.320.896-8",
-        "n_medidor": "MED-SJ-1116",
-        "id_tramo_red": "TUB-05",
-        "longitud_m": 129.93,
-        "diametro": "1/2\" HDPE (20 mm)",
-        "material": "PEAD HDPE PE100 PN10",
-        "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -71.875257,
-            -36.846335
-          ],
-          [
-            -71.875379,
-            -36.847501
           ]
         ]
       }
@@ -3375,18 +2311,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "10.444.352-0",
         "n_medidor": "MED-SJ-1117",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 50.74,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 51.1,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.916682,
-            -36.847064
+            -71.916622,
+            -36.847048
           ],
           [
             -71.916499,
@@ -3404,18 +2342,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "10.567.808-1",
         "n_medidor": "MED-SJ-1118",
         "id_tramo_red": "TUB-05",
-        "longitud_m": 35.85,
+        "sector_red": "Matriz Primaria Este",
+        "longitud_m": 36,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.891113,
-            -36.847175
+            -71.891087,
+            -36.847171
           ],
           [
             -71.891037,
@@ -3433,18 +2373,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "10.691.264-2",
         "n_medidor": "MED-SJ-1119",
         "id_tramo_red": "TUB-05",
-        "longitud_m": 55.21,
+        "sector_red": "Matriz Primaria Este",
+        "longitud_m": 55.4,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.895537,
-            -36.846997
+            -71.895508,
+            -36.846994
           ],
           [
             -71.895454,
@@ -3462,18 +2404,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "10.814.720-3",
         "n_medidor": "MED-SJ-1120",
         "id_tramo_red": "TUB-10",
+        "sector_red": "Ramal Interior Pasajes",
         "longitud_m": 60.9,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.879934,
-            -36.847416
+            -71.87994,
+            -36.847378
           ],
           [
             -71.88061,
@@ -3491,18 +2435,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "10.938.176-4",
         "n_medidor": "MED-SJ-1121",
         "id_tramo_red": "TUB-05",
-        "longitud_m": 31.74,
+        "sector_red": "Matriz Primaria Este",
+        "longitud_m": 31.8,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.89245,
-            -36.847166
+            -71.892461,
+            -36.847165
           ],
           [
             -71.892483,
@@ -3520,18 +2466,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "11.061.632-5",
         "n_medidor": "MED-SJ-1122",
         "id_tramo_red": "TUB-05",
-        "longitud_m": 49.42,
+        "sector_red": "Matriz Primaria Este",
+        "longitud_m": 49.6,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.889914,
-            -36.846981
+            -71.889949,
+            -36.846989
           ],
           [
             -71.88975,
@@ -3549,17 +2497,19 @@ var json_Conexiones_Domiciliarias = {
         "rut": "11.185.088-6",
         "n_medidor": "MED-SJ-1123",
         "id_tramo_red": "TUB-02",
-        "longitud_m": 52.31,
+        "sector_red": "Matriz Primaria Norte",
+        "longitud_m": 52.4,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.898629,
+            -71.898634,
             -36.84691
           ],
           [
@@ -3578,18 +2528,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "11.308.544-7",
         "n_medidor": "MED-SJ-1124",
         "id_tramo_red": "TUB-10",
+        "sector_red": "Ramal Interior Pasajes",
         "longitud_m": 20.3,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.879955,
-            -36.84728
+            -71.879957,
+            -36.847268
           ],
           [
             -71.880181,
@@ -3607,18 +2559,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "11.432.000-8",
         "n_medidor": "MED-SJ-1125",
         "id_tramo_red": "TUB-02",
-        "longitud_m": 36.75,
+        "sector_red": "Matriz Primaria Norte",
+        "longitud_m": 36.8,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.898077,
-            -36.846923
+            -71.898085,
+            -36.846922
           ],
           [
             -71.898099,
@@ -3636,18 +2590,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "11.555.456-0",
         "n_medidor": "MED-SJ-1126",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 38.7,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 38.8,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.915235,
-            -36.846892
+            -71.915243,
+            -36.846891
           ],
           [
             -71.915257,
@@ -3665,18 +2621,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "11.678.912-1",
         "n_medidor": "MED-SJ-1127",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 43.06,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 43.1,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.913851,
-            -36.846853
+            -71.913838,
+            -36.846852
           ],
           [
             -71.913813,
@@ -3694,17 +2652,19 @@ var json_Conexiones_Domiciliarias = {
         "rut": "11.802.368-2",
         "n_medidor": "MED-SJ-1128",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 77.4,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 77.5,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.904324,
+            -71.904327,
             -36.846533
           ],
           [
@@ -3723,17 +2683,19 @@ var json_Conexiones_Domiciliarias = {
         "rut": "11.925.824-3",
         "n_medidor": "MED-SJ-1129",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 38.41,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 38.5,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.915517,
+            -71.915525,
             -36.84688
           ],
           [
@@ -3752,18 +2714,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "12.049.280-4",
         "n_medidor": "MED-SJ-1130",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 38.45,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 38.5,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.914049,
-            -36.846866
+            -71.914037,
+            -36.846865
           ],
           [
             -71.914015,
@@ -3781,18 +2745,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "12.172.736-5",
         "n_medidor": "MED-SJ-1131",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 34.89,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 35,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.914401,
-            -36.846889
+            -71.91439,
+            -36.846888
           ],
           [
             -71.91437,
@@ -3810,17 +2776,19 @@ var json_Conexiones_Domiciliarias = {
         "rut": "12.296.192-6",
         "n_medidor": "MED-SJ-1132",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 38.21,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 38.3,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Vidrio empañado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.913683,
+            -71.91367,
             -36.846842
           ],
           [
@@ -3839,18 +2807,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "12.419.648-7",
         "n_medidor": "MED-SJ-1133",
         "id_tramo_red": "TUB-02",
-        "longitud_m": 31.24,
+        "sector_red": "Matriz Primaria Norte",
+        "longitud_m": 31.3,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.896971,
-            -36.846903
+            -71.896961,
+            -36.846902
           ],
           [
             -71.896944,
@@ -3868,18 +2838,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "12.543.104-8",
         "n_medidor": "MED-SJ-1134",
         "id_tramo_red": "TUB-10",
-        "longitud_m": 24.82,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 24.8,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.879978,
-            -36.847139
+            -71.879981,
+            -36.847124
           ],
           [
             -71.880254,
@@ -3897,17 +2869,19 @@ var json_Conexiones_Domiciliarias = {
         "rut": "12.666.560-0",
         "n_medidor": "MED-SJ-1135",
         "id_tramo_red": "TUB-02",
-        "longitud_m": 23.55,
+        "sector_red": "Matriz Primaria Norte",
+        "longitud_m": 23.6,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.897858,
+            -71.897863,
             -36.846932
           ],
           [
@@ -3926,18 +2900,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "12.790.016-1",
         "n_medidor": "MED-SJ-1136",
         "id_tramo_red": "TUB-04",
-        "longitud_m": 17.12,
+        "sector_red": "Ramal Interior Pasajes",
+        "longitud_m": 17.1,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
             -71.899704,
-            -36.847128
+            -36.847124
           ],
           [
             -71.899895,
@@ -3955,17 +2931,19 @@ var json_Conexiones_Domiciliarias = {
         "rut": "12.913.472-2",
         "n_medidor": "MED-SJ-1137",
         "id_tramo_red": "TUB-05",
-        "longitud_m": 6.72,
+        "sector_red": "Matriz Primaria Este",
+        "longitud_m": 6.7,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.895943,
+            -71.89594,
             -36.847041
           ],
           [
@@ -3984,18 +2962,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "13.036.928-3",
         "n_medidor": "MED-SJ-1138",
         "id_tramo_red": "TUB-05",
-        "longitud_m": 106.17,
+        "sector_red": "Matriz Primaria Este",
+        "longitud_m": 106.4,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.883447,
-            -36.846117
+            -71.883464,
+            -36.846116
           ],
           [
             -71.883494,
@@ -4013,18 +2993,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "13.160.384-4",
         "n_medidor": "MED-SJ-1139",
         "id_tramo_red": "TUB-12",
-        "longitud_m": 10.83,
+        "sector_red": "Matriz Principal Troncal Poniente (El Calvario)",
+        "longitud_m": 10.9,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.916934,
-            -36.847131
+            -71.916945,
+            -36.847133
           ],
           [
             -71.916966,
@@ -4042,18 +3024,20 @@ var json_Conexiones_Domiciliarias = {
         "rut": "13.283.840-5",
         "n_medidor": "MED-SJ-1140",
         "id_tramo_red": "TUB-05",
-        "longitud_m": 16.08,
+        "sector_red": "Matriz Primaria Este",
+        "longitud_m": 16.1,
         "diametro": "1/2\" HDPE (20 mm)",
         "material": "PEAD HDPE PE100 PN10",
         "tipo": "Acometida / Arranque Domiciliario",
-        "estado": "Operativo / Buen Estado"
+        "estado": "Operativo / Concesión Oficial",
+        "area_servicio": "Dentro de Área Oficial DOH"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -71.890936,
-            -36.847147
+            -71.890947,
+            -36.847149
           ],
           [
             -71.890969,

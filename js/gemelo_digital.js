@@ -138,11 +138,10 @@ function initMap() {
 // ------------------------------------------------------------------------------
 function initDrawerControls() {
     const drawerLeft = document.getElementById('drawer-left');
+    const drawerLeftHeader = document.getElementById('drawer-left-header');
+    const btnCollapseLeft = document.getElementById('btn-collapse-drawer-left');
+
     const drawerRight = document.getElementById('drawer-right');
-    const btnToggleLayers = document.getElementById('btn-toggle-layers');
-    const btnFloatingLayers = document.getElementById('btn-floating-layers');
-    const btnCloseLeft = document.getElementById('btn-close-drawer-left');
-    
     const btnToggleTelemetry = document.getElementById('btn-toggle-telemetry');
     const btnCloseRight = document.getElementById('btn-close-drawer-right');
     const tabBtnTelemetry = document.getElementById('tab-btn-telemetry');
@@ -152,42 +151,38 @@ function initDrawerControls() {
 
     const backdrop = document.getElementById('drawer-backdrop');
 
+    // Control de Colapso / Expansión de la Caja de Capas Izquierda
+    function toggleCollapseLayers(e) {
+        if (e) e.stopPropagation();
+        if (!drawerLeft) return;
+        drawerLeft.classList.toggle('collapsed');
+        if (btnCollapseLeft) {
+            btnCollapseLeft.innerHTML = drawerLeft.classList.contains('collapsed') ? '▸' : '▾';
+            btnCollapseLeft.title = drawerLeft.classList.contains('collapsed') ? 'Expandir panel de capas' : 'Minimizar panel de capas';
+        }
+    }
+
+    if (btnCollapseLeft) btnCollapseLeft.addEventListener('click', toggleCollapseLayers);
+    if (drawerLeftHeader) {
+        drawerLeftHeader.addEventListener('click', (e) => {
+            if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+                toggleCollapseLayers(e);
+            }
+        });
+    }
+
     function syncBackdrop() {
         if (!backdrop) return;
-        const anyOpen = (drawerLeft && drawerLeft.classList.contains('open')) ||
-                        (drawerRight && drawerRight.classList.contains('open'));
-        if (anyOpen) {
-            lastDrawerActionTime = Date.now();
-            setTimeout(() => {
-                const stillOpen = (drawerLeft && drawerLeft.classList.contains('open')) ||
-                                  (drawerRight && drawerRight.classList.contains('open'));
-                backdrop.classList.toggle('active', stillOpen);
-            }, 80);
+        if (window.innerWidth < 768 && drawerRight && drawerRight.classList.contains('open')) {
+            backdrop.classList.add('active');
         } else {
             backdrop.classList.remove('active');
         }
     }
 
-    // Panel Izquierdo (Capas)
-    function toggleLeftDrawer() {
-        if (!drawerLeft.classList.contains('open') && window.innerWidth < 768 && drawerRight && drawerRight.classList.contains('open')) {
-            closeRightDrawer();
-        }
-        lastDrawerActionTime = Date.now();
-        drawerLeft.classList.toggle('open');
-        btnToggleLayers.classList.toggle('active', drawerLeft.classList.contains('open'));
-        btnFloatingLayers.style.display = drawerLeft.classList.contains('open') ? 'none' : 'flex';
-        syncBackdrop();
-    }
-
-    if (btnToggleLayers) btnToggleLayers.addEventListener('click', toggleLeftDrawer);
-    if (btnFloatingLayers) btnFloatingLayers.addEventListener('click', toggleLeftDrawer);
-    if (btnCloseLeft) btnCloseLeft.addEventListener('click', toggleLeftDrawer);
-
     if (backdrop) {
         backdrop.addEventListener('click', () => {
             if (Date.now() - lastDrawerActionTime < 350) return;
-            if (drawerLeft && drawerLeft.classList.contains('open')) toggleLeftDrawer();
             if (drawerRight && drawerRight.classList.contains('open')) closeRightDrawer();
         });
     }
@@ -195,11 +190,6 @@ function initDrawerControls() {
     // Panel Derecho (Telemetría / Ficha)
     function openRightDrawer(tabName = 'telemetry') {
         lastDrawerActionTime = Date.now();
-        if (window.innerWidth < 768 && drawerLeft && drawerLeft.classList.contains('open')) {
-            drawerLeft.classList.remove('open');
-            btnToggleLayers.classList.remove('active');
-            btnFloatingLayers.style.display = 'flex';
-        }
         drawerRight.classList.add('open');
         btnToggleTelemetry.classList.add('active');
         switchRightTab(tabName);
@@ -265,15 +255,15 @@ function initDrawerControls() {
 // 3. CARGA Y SIMBOLOGÍA DE CAPAS GEOESPACIALES
 // ------------------------------------------------------------------------------
 function initLayers() {
-    // A. Área de Concesión Oficial
+    // A. Área de Concesión Oficial (DOH / Ley 20.998)
     if (typeof json_Area_Servicio_4 !== 'undefined') {
         layers.concesion = L.geoJSON(json_Area_Servicio_4, {
             style: {
-                color: '#00d2ff',
-                weight: 2,
-                dashArray: '5, 5',
-                fillColor: '#0077ff',
-                fillOpacity: 0.08
+                color: '#f97316', // Naranja / Ámbar institucional DOH (Completamente diferenciado de tuberías)
+                weight: 2.8,
+                dashArray: '12, 5, 3, 5', // Raya-punto oficial de deslinde territorial
+                fillColor: '#f97316',
+                fillOpacity: 0.05
             }
         }).addTo(map);
     }
@@ -360,34 +350,49 @@ function bindLayerCheckbox(id, layer) {
 }
 
 function stylePipes(feature) {
-    const diam = feature.properties.diametro_nominal || '75 mm';
-    let color = '#0284c7';
-    let weight = 3;
+    const p = feature.properties;
+    const diam = p.diametro_nominal || '75 mm';
+    const sector = p.sector || '';
 
-    if (diam.includes('110')) {
-        color = '#00d2ff';
-        weight = 4.2;
-    } else if (diam.includes('90')) {
-        color = '#38bdf8';
-        weight = 3.6;
-    } else if (diam.includes('75')) {
-        color = '#0284c7';
-        weight = 2.8;
-    } else {
-        color = '#2dd4bf';
-        weight = 2.2;
+    // 1. Línea de Impulsión Pozo - Estanque
+    if (p.id_tramo === 'TUB-11' || sector.includes('Impulsión')) {
+        return {
+            color: '#4f46e5', // Azul Índigo / Impulsión
+            weight: 4.5,
+            opacity: 0.95,
+            dashArray: '8, 4'
+        };
     }
 
+    // 2. Matriz Troncal Principal (110 mm y 90 mm)
+    if (diam.includes('110') || diam.includes('90')) {
+        return {
+            color: '#1d4ed8', // Azul Rey Intenso para Matriz Troncal
+            weight: 5.5,
+            opacity: 1.0,
+            lineCap: 'round',
+            lineJoin: 'round'
+        };
+    }
+
+    // 3. Redes Ramales Secundarias (75 mm y 63 mm - Pasajes y Centro Cívico)
     return {
-        color: color,
-        weight: weight,
-        opacity: 0.9,
+        color: '#00e5ff', // Cian Neón / Turquesa Eléctrico para Redes Ramales
+        weight: 3.5,
+        opacity: 0.95,
         lineCap: 'round',
         lineJoin: 'round'
     };
 }
 
 function onEachPipeFeature(feature, layer) {
+    const p = feature.properties;
+    const diam = p.diametro_nominal || '75 mm';
+    const isTroncal = diam.includes('110') || diam.includes('90');
+    const isImpulsion = p.id_tramo === 'TUB-11' || (p.sector && p.sector.includes('Impulsión'));
+    const tipoRed = isImpulsion ? 'Línea de Impulsión' : (isTroncal ? 'Matriz Principal Troncal' : 'Red Ramal Secundaria');
+    const tipoColor = isImpulsion ? '#818cf8' : (isTroncal ? '#60a5fa' : '#22d3ee');
+
     layer.on('click', (e) => {
         if (e && e.originalEvent) {
             L.DomEvent.stopPropagation(e);
@@ -402,7 +407,6 @@ function onEachPipeFeature(feature, layer) {
             }
 
             if (selectedPipeLayer === layer) {
-                // Si se hace clic en la misma tubería seleccionada, se deselecciona
                 selectedPipeLayer = null;
                 const drawerRight = document.getElementById('drawer-right');
                 if (drawerRight) drawerRight.classList.remove('open');
@@ -412,7 +416,7 @@ function onEachPipeFeature(feature, layer) {
             selectedPipeLayer = layer;
             layer.setStyle({
                 color: '#fbbf24', // Dorado/amarillo brillante de selección técnica
-                weight: 6,
+                weight: 6.5,
                 opacity: 1
             });
             layer.bringToFront();
@@ -421,19 +425,19 @@ function onEachPipeFeature(feature, layer) {
     });
 
     layer.bindTooltip(`
-        <strong>${feature.properties.id_tramo || 'Tubería'}</strong><br>
-        Sector: ${feature.properties.sector}<br>
-        Diámetro: ${feature.properties.diametro_nominal} (${feature.properties.material})
+        <strong style="color:${tipoColor}; font-size:10px;">${tipoRed.toUpperCase()}</strong><br>
+        <strong>${p.id_tramo || 'Tubería'}</strong> - ${p.sector}<br>
+        Diámetro: <strong>${p.diametro_nominal}</strong> (${p.material})
     `, { sticky: true });
 }
 
-// Estilo y comportamiento de las Conexiones Domiciliarias (Arranques a Red)
+// Estilo y comportamiento de las Conexiones Domiciliarias (Arranques a Red dentro del Área de Servicio)
 function styleConnection(feature) {
     return {
-        color: '#38bdf8',
-        weight: 2,
-        opacity: 0.85,
-        dashArray: '4, 4',
+        color: '#facc15', // Amarillo oro cálido distintivo de acometida
+        weight: 2.0,
+        opacity: 0.9,
+        dashArray: '3, 4',
         lineCap: 'round',
         lineJoin: 'round'
     };
@@ -444,7 +448,7 @@ function onEachConnectionFeature(feature, layer) {
 
     layer.on('mouseover', function(e) {
         layer.setStyle({
-            color: '#facc15',
+            color: '#ffffff',
             weight: 3.5,
             opacity: 1.0,
             dashArray: null
@@ -463,21 +467,21 @@ function onEachConnectionFeature(feature, layer) {
     const popupHtml = `
         <div class="popup-consumer">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px;">
-                <span style="font-size:10px; font-weight:800; color:#38bdf8; letter-spacing:0.4px;">🔌 ACOMETIDA / CONEXIÓN</span>
-                <span style="font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:10px; background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid #38bdf8;">
-                    ● ${p.estado || 'Operativa'}
+                <span style="font-size:10px; font-weight:800; color:#facc15; letter-spacing:0.4px;">🔌 ACOMETIDA DOMICILIARIA</span>
+                <span style="font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:10px; background:rgba(250,204,21,0.15); color:#facc15; border:1px solid #facc15;">
+                    ● Área Oficial DOH
                 </span>
             </div>
             <div style="font-size:13px; font-weight:800; color:#ffffff; margin-bottom:3px; line-height:1.2;">
                 ${p.socio || 'Socio'}
             </div>
             <div style="font-size:11px; color:#94a3b8; margin-bottom:8px;">
-                Arranque: <strong style="color:#f1f5f9;">${p.id_arranque}</strong> | Conexión: <strong style="color:#38bdf8;">${p.id_conexion}</strong>
+                Arranque: <strong style="color:#f1f5f9;">${p.id_arranque}</strong> | Conexión: <strong style="color:#facc15;">${p.id_conexion}</strong>
             </div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; background:rgba(255,255,255,0.06); padding:7px 9px; border-radius:8px; margin-bottom:8px;">
                 <div>
                     <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Long. Acometida</div>
-                    <div style="font-size:13px; font-weight:800; color:#38bdf8;">
+                    <div style="font-size:13px; font-weight:800; color:#facc15;">
                         ${p.longitud_m || '-'} m
                     </div>
                 </div>
@@ -490,7 +494,8 @@ function onEachConnectionFeature(feature, layer) {
             </div>
             <div style="font-size:10px; color:#cbd5e1; margin-bottom:8px; line-height:1.4;">
                 • Diámetro: <strong style="color:#facc15;">${p.diametro}</strong><br>
-                • Material: <span>${p.material}</span>
+                • Material: <span>${p.material}</span><br>
+                • Delimitación: <strong style="color:var(--accent-green);">✓ Dentro de Área de Servicio DOH</strong>
             </div>
             <button class="btn-popup-view-detail" onclick="openConsumerDrawerFromPopup('${p.id_arranque}')" style="
                 width: 100%;
@@ -987,7 +992,12 @@ function showConsumerDetails(props) {
         if (con) {
             conexionHtml = `
                 <tr><td class="prop-name">Empalme Red:</td><td class="prop-val"><strong style="color:var(--accent-cyan)">${con.properties.id_tramo_red}</strong> (${con.properties.longitud_m} m)</td></tr>
-                <tr><td class="prop-name">Acometida:</td><td class="prop-val">${con.properties.diametro} (${con.properties.material})</td></tr>
+                <tr><td class="prop-name">Acometida:</td><td class="prop-val">${con.properties.diametro}</td></tr>
+                <tr><td class="prop-name">Área Servicio:</td><td class="prop-val" style="color:var(--accent-green); font-weight:700;">✓ Dentro de Área Oficial DOH</td></tr>
+            `;
+        } else {
+            conexionHtml = `
+                <tr><td class="prop-name">Área Servicio:</td><td class="prop-val" style="color:var(--accent-yellow); font-weight:700;">⚠️ Fuera de Concesión DOH</td></tr>
             `;
         }
     }
@@ -1046,11 +1056,19 @@ function showSourceDetails(props, isTank) {
 }
 
 function showPipeDetails(props) {
-    const badge = `<span class="drawer-badge" style="background:rgba(56,189,248,0.2); color:#38bdf8;">TUBERÍA</span>`;
+    const diam = props.diametro_nominal || '75 mm';
+    const isTroncal = diam.includes('110') || diam.includes('90');
+    const isImpulsion = props.id_tramo === 'TUB-11' || (props.sector && props.sector.includes('Impulsión'));
+    
+    let badgeText = isImpulsion ? 'IMPULSIÓN' : (isTroncal ? 'MATRIZ TRONCAL' : 'RED RAMAL');
+    let badgeColor = isImpulsion ? '#818cf8' : (isTroncal ? '#38bdf8' : '#00e5ff');
+    let badgeBg = isImpulsion ? 'rgba(99,102,241,0.2)' : (isTroncal ? 'rgba(2,132,199,0.2)' : 'rgba(0,229,255,0.2)');
+    const badge = `<span class="drawer-badge" style="background:${badgeBg}; color:${badgeColor};">${badgeText}</span>`;
 
     const html = `
         <table class="prop-table">
             <tr><td class="prop-name">ID Tramo:</td><td class="prop-val"><strong>${props.id_tramo}</strong></td></tr>
+            <tr><td class="prop-name">Jerarquía:</td><td class="prop-val"><strong style="color:${badgeColor}">${isImpulsion ? 'Línea de Impulsión' : (isTroncal ? 'Matriz Principal Troncal' : 'Red Ramal Secundaria')}</strong></td></tr>
             <tr><td class="prop-name">Sector:</td><td class="prop-val">${props.sector}</td></tr>
             <tr><td class="prop-name">Diámetro:</td><td class="prop-val"><strong>${props.diametro_nominal}</strong></td></tr>
             <tr><td class="prop-name">Material:</td><td class="prop-val">${props.material} (${props.clase})</td></tr>
@@ -1132,25 +1150,8 @@ function printValveSheet(valveId) {
 // 7. EVENT LISTENERS
 // ------------------------------------------------------------------------------
 function initEventListeners() {
-    document.querySelectorAll('.profile-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            AppState.profile = btn.getAttribute('data-profile');
-            applyProfileMode(AppState.profile);
-        });
-    });
-
     const emBtn = document.getElementById('btn-emergency-mode');
     if (emBtn) emBtn.addEventListener('click', toggleEmergencyMode);
-}
-
-function applyProfileMode(mode) {
-    if (mode === 'operativo') {
-        map.setView([-36.8464, -71.9017], 15);
-    } else {
-        map.setView([-36.8480, -71.9180], 14);
-    }
 }
 
 // ------------------------------------------------------------------------------

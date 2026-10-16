@@ -667,7 +667,11 @@ function createConsumerMarker(feature, latlng) {
         bubblingMouseEvents: false
     });
 
-    // Popup interactivo sobre el mapa (inmediato y accesible tanto en móvil como en PC)
+    // Verificación si el arranque está dentro o fuera del Área de Servicio DOH
+    const isInsideServ = typeof json_Conexiones_Domiciliarias !== 'undefined' && 
+                         json_Conexiones_Domiciliarias.features.some(f => f.properties.id_arranque === p.id_arranque);
+
+    // Popup interactivo sobre el mapa (Ficha Resumida por defecto para vista móvil y escritorio)
     const popupHtml = `
         <div class="popup-consumer">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px;">
@@ -679,8 +683,12 @@ function createConsumerMarker(feature, latlng) {
             <div style="font-size:13px; font-weight:800; color:#ffffff; margin-bottom:3px; line-height:1.2;">
                 ${p.socio || 'Socio Sin Nombre'}
             </div>
-            <div style="font-size:11px; color:#94a3b8; margin-bottom:8px;">
+            <div style="font-size:11px; color:#94a3b8; margin-bottom:6px;">
                 RUT: <strong style="color:#f1f5f9;">${p.rut || '-'}</strong> | Medidor: <strong style="color:#00d2ff;">${p.n_medidor || '-'}</strong>
+            </div>
+            <div style="font-size:10px; color:${isInsideServ ? '#10b981' : '#f59e0b'}; margin-bottom:8px; font-weight:600; display:flex; align-items:center; gap:4px;">
+                <span>${isInsideServ ? '✓' : '⚠️'}</span>
+                <span>${isInsideServ ? 'Dentro de Área de Servicio DOH' : 'Fuera de Concesión DOH'}</span>
             </div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; background:rgba(255,255,255,0.06); padding:7px 9px; border-radius:8px; margin-bottom:8px;">
                 <div>
@@ -730,7 +738,28 @@ function createConsumerMarker(feature, latlng) {
             if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
             L.DomEvent.stopPropagation(e);
         }
-        showConsumerDetails(feature.properties);
+
+        const isMobile = window.innerWidth < 768;
+        if (isMobile) {
+            // En móvil: mostrar la ficha resumida por defecto sobre el mapa, sin abrir la ficha extendida
+            const drawerRight = document.getElementById('drawer-right');
+            if (drawerRight && drawerRight.classList.contains('open')) {
+                drawerRight.classList.remove('open');
+                const btnToggleTelemetry = document.getElementById('btn-toggle-telemetry');
+                if (btnToggleTelemetry) btnToggleTelemetry.classList.remove('active');
+                const backdrop = document.getElementById('drawer-backdrop');
+                if (backdrop) backdrop.classList.remove('active');
+            }
+            marker.openPopup();
+        } else {
+            // En escritorio: abrir ficha resumida en el mapa
+            marker.openPopup();
+            // Solo si el panel derecho ya estaba abierto previamente por el usuario, actualizar su contenido
+            const drawerRight = document.getElementById('drawer-right');
+            if (drawerRight && drawerRight.classList.contains('open')) {
+                showConsumerDetails(feature.properties);
+            }
+        }
     });
 
     return marker;
@@ -1265,7 +1294,23 @@ function onSearchResultClick(type, propsEncoded, lng, lat) {
     map.flyTo([lat, lng], 17, { duration: 1.0 });
 
     setTimeout(() => {
-        if (type === 'valve') showValveDetails(props);
-        else if (type === 'consumer') showConsumerDetails(props);
+        if (type === 'valve') {
+            showValveDetails(props);
+        } else if (type === 'consumer') {
+            const isMobile = window.innerWidth < 768;
+            if (layers.arranques) {
+                layers.arranques.eachLayer(layer => {
+                    if (layer.feature && layer.feature.properties.id_arranque === props.id_arranque) {
+                        layer.openPopup();
+                    }
+                });
+            }
+            if (!isMobile) {
+                const drawerRight = document.getElementById('drawer-right');
+                if (drawerRight && drawerRight.classList.contains('open')) {
+                    showConsumerDetails(props);
+                }
+            }
+        }
     }, 1100);
 }

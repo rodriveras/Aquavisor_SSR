@@ -411,9 +411,9 @@ function onEachPipeFeature(feature, layer) {
     // Ficha resumida interactiva sobre el mapa (mismo principio que arranques para móviles y escritorio)
     const popupHtml = `
         <div class="popup-consumer">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px;">
-                <span style="font-size:10px; font-weight:800; color:${tipoColor}; letter-spacing:0.4px;">${headerTitle}</span>
-                <span style="font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:10px; background:${badgeBg}; color:${tipoColor}; border:1px solid ${tipoColor};">
+            <div class="popup-header-row" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px; padding-right:28px; gap:6px;">
+                <span style="font-size:10px; font-weight:800; color:${tipoColor}; letter-spacing:0.4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${headerTitle}</span>
+                <span style="font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:10px; background:${badgeBg}; color:${tipoColor}; border:1px solid ${tipoColor}; white-space:nowrap; flex-shrink:0;">
                     ● ${tipoBadge}
                 </span>
             </div>
@@ -524,12 +524,6 @@ function onEachPipeFeature(feature, layer) {
             selectedPipeLayer = null;
         }
     });
-
-    layer.bindTooltip(`
-        <strong style="color:${tipoColor}; font-size:10px;">${tipoRed.toUpperCase()}</strong><br>
-        <strong>${p.id_tramo || 'Tubería'}</strong> - ${p.sector}<br>
-        Diámetro: <strong>${p.diametro_nominal}</strong> (${p.material})
-    `, { sticky: true });
 }
 
 // Estilo y comportamiento de las Conexiones Domiciliarias (Arranques a Red dentro del Área de Servicio)
@@ -567,9 +561,9 @@ function onEachConnectionFeature(feature, layer) {
 
     const popupHtml = `
         <div class="popup-consumer">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px;">
-                <span style="font-size:10px; font-weight:800; color:#facc15; letter-spacing:0.4px;">🔌 ACOMETIDA DOMICILIARIA</span>
-                <span style="font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:10px; background:rgba(250,204,21,0.15); color:#facc15; border:1px solid #facc15;">
+            <div class="popup-header-row" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px; padding-right:28px; gap:6px;">
+                <span style="font-size:10px; font-weight:800; color:#facc15; letter-spacing:0.4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">🔌 ACOMETIDA DOMICILIARIA</span>
+                <span style="font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:10px; background:rgba(250,204,21,0.15); color:#facc15; border:1px solid #facc15; white-space:nowrap; flex-shrink:0;">
                     ● Área Oficial DOH
                 </span>
             </div>
@@ -781,9 +775,9 @@ function createConsumerMarker(feature, latlng) {
     // Popup interactivo sobre el mapa (Ficha Resumida por defecto para vista móvil y escritorio)
     const popupHtml = `
         <div class="popup-consumer">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px;">
-                <span style="font-size:10px; font-weight:800; color:#00d2ff; letter-spacing:0.4px;">💧 ARRANQUE DOMICILIARIO</span>
-                <span style="font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:10px; background:${badgeBg}; color:${badgeColor}; border:1px solid ${color};">
+            <div class="popup-header-row" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px; padding-right:28px; gap:6px;">
+                <span style="font-size:10px; font-weight:800; color:#00d2ff; letter-spacing:0.4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">💧 ARRANQUE DOMICILIARIO</span>
+                <span style="font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:10px; background:${badgeBg}; color:${badgeColor}; border:1px solid ${color}; white-space:nowrap; flex-shrink:0;">
                     ● ${estado}
                 </span>
             </div>

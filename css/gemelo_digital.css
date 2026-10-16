@@ -925,15 +925,42 @@ header.app-header {
     border: 1px solid var(--accent-cyan) !important;
 }
 
+.aquavisor-popup .popup-header-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 6px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+    padding-bottom: 5px !important;
+    padding-right: 28px !important; /* Espacio reservado para que el botón de cierre 'X' nunca monte sobre el badge */
+    gap: 6px !important;
+}
+
 .aquavisor-popup a.leaflet-popup-close-button {
     color: #94a3b8 !important;
-    padding: 8px 10px 0 0 !important;
-    font-size: 18px !important;
-    font-weight: 700;
+    top: 7px !important;
+    right: 8px !important;
+    width: 22px !important;
+    height: 22px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+    z-index: 50 !important;
 }
 
 .aquavisor-popup a.leaflet-popup-close-button:hover {
-    color: #00d2ff !important;
+    color: #ffffff !important;
+    background: rgba(239, 68, 68, 0.7) !important;
+    border-color: rgba(239, 68, 68, 0.8) !important;
 }
 
 /* ==============================================================================

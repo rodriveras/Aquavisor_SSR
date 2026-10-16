@@ -171,9 +171,18 @@ function initDrawerControls() {
         });
     }
 
+    // Estado inicial de la caja de capas: asegurar colapsado por defecto
+    if (drawerLeft && btnCollapseLeft) {
+        if (!drawerLeft.classList.contains('collapsed')) {
+            drawerLeft.classList.add('collapsed');
+        }
+        btnCollapseLeft.innerHTML = '▸';
+        btnCollapseLeft.title = 'Expandir panel de capas';
+    }
+
     function syncBackdrop() {
         if (!backdrop) return;
-        if (window.innerWidth < 768 && drawerRight && drawerRight.classList.contains('open')) {
+        if (window.innerWidth < 1024 && drawerRight && drawerRight.classList.contains('open')) {
             backdrop.classList.add('active');
         } else {
             backdrop.classList.remove('active');
@@ -205,6 +214,9 @@ function initDrawerControls() {
         }
         syncBackdrop();
     }
+
+    // Exponer globalmente para cerrar panel derecho
+    window.closeRightDrawer = closeRightDrawer;
 
     function switchRightTab(tabName) {
         if (tabName === 'telemetry') {
@@ -526,7 +538,13 @@ function onEachConnectionFeature(feature, layer) {
 
     layer.on('click', function(e) {
         if (e && e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
-        openConsumerDrawerFromPopup(p.id_arranque);
+        if (window.closeRightDrawer) {
+            window.closeRightDrawer();
+        } else {
+            const drawerRight = document.getElementById('drawer-right');
+            if (drawerRight) drawerRight.classList.remove('open');
+        }
+        layer.openPopup();
     });
 }
 
@@ -739,27 +757,21 @@ function createConsumerMarker(feature, latlng) {
             L.DomEvent.stopPropagation(e);
         }
 
-        const isMobile = window.innerWidth < 768;
-        if (isMobile) {
-            // En móvil: mostrar la ficha resumida por defecto sobre el mapa, sin abrir la ficha extendida
-            const drawerRight = document.getElementById('drawer-right');
-            if (drawerRight && drawerRight.classList.contains('open')) {
-                drawerRight.classList.remove('open');
-                const btnToggleTelemetry = document.getElementById('btn-toggle-telemetry');
-                if (btnToggleTelemetry) btnToggleTelemetry.classList.remove('active');
-                const backdrop = document.getElementById('drawer-backdrop');
-                if (backdrop) backdrop.classList.remove('active');
-            }
-            marker.openPopup();
+        // Al seleccionar cualquier arranque: SIEMPRE cerrar el panel extendido derecho
+        // para dar protagonismo absoluto al mapa y a la ficha resumida
+        if (window.closeRightDrawer) {
+            window.closeRightDrawer();
         } else {
-            // En escritorio: abrir ficha resumida en el mapa
-            marker.openPopup();
-            // Solo si el panel derecho ya estaba abierto previamente por el usuario, actualizar su contenido
             const drawerRight = document.getElementById('drawer-right');
-            if (drawerRight && drawerRight.classList.contains('open')) {
-                showConsumerDetails(feature.properties);
-            }
+            if (drawerRight) drawerRight.classList.remove('open');
+            const btnToggleTelemetry = document.getElementById('btn-toggle-telemetry');
+            if (btnToggleTelemetry) btnToggleTelemetry.classList.remove('active');
+            const backdrop = document.getElementById('drawer-backdrop');
+            if (backdrop) backdrop.classList.remove('active');
         }
+
+        // Mostrar SIEMPRE la ficha resumida (popup sobre el mapa) por defecto
+        marker.openPopup();
     });
 
     return marker;
@@ -1297,7 +1309,6 @@ function onSearchResultClick(type, propsEncoded, lng, lat) {
         if (type === 'valve') {
             showValveDetails(props);
         } else if (type === 'consumer') {
-            const isMobile = window.innerWidth < 768;
             if (layers.arranques) {
                 layers.arranques.eachLayer(layer => {
                     if (layer.feature && layer.feature.properties.id_arranque === props.id_arranque) {
@@ -1305,12 +1316,7 @@ function onSearchResultClick(type, propsEncoded, lng, lat) {
                     }
                 });
             }
-            if (!isMobile) {
-                const drawerRight = document.getElementById('drawer-right');
-                if (drawerRight && drawerRight.classList.contains('open')) {
-                    showConsumerDetails(props);
-                }
-            }
+            if (window.closeRightDrawer) window.closeRightDrawer();
         }
     }, 1100);
 }

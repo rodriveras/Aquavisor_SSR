@@ -335,6 +335,7 @@ header.app-header {
 
 .drawer-left.collapsed {
     max-height: 44px !important;
+    height: 44px !important;
     width: 220px !important;
 }
 
@@ -1157,6 +1158,7 @@ header.app-header {
 
     .drawer-left.collapsed {
         max-height: 44px !important;
+        height: 44px !important;
         width: 220px !important;
     }
 
@@ -1185,7 +1187,10 @@ header.app-header {
     }
 
     @supports (height: 100dvh) {
-        .drawer-left, .drawer-right {
+        .drawer-left {
+            max-height: calc(100dvh - 70px);
+        }
+        .drawer-right {
             height: 100dvh;
             max-height: 100dvh;
         }

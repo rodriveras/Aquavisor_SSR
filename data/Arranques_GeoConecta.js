@@ -1,4 +1,4 @@
-﻿var json_Arranques_GeoConecta = {
+var json_Arranques_GeoConecta = {
     "features":  [
                      {
                          "properties":  {

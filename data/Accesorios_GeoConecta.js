@@ -1,4 +1,4 @@
-﻿var json_Accesorios_GeoConecta = {
+var json_Accesorios_GeoConecta = {
     "features":  [
                      {
                          "properties":  {

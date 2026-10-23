@@ -25,7 +25,7 @@ let activeBurstLayer = null;
 let lastDrawerActionTime = 0;
 let layers = {
     redes: null,
-    conexiones: null,
+    edificaciones_n9: null,
     valvulas: null,
     arranques: null,
     accesorios: null,
@@ -58,7 +58,7 @@ function initMap() {
     map = L.map('map', {
         zoomControl: false,
         attributionControl: false
-    }).setView([-36.8480, -71.9180], 14);
+    }).setView([-36.8480, -71.9380], 13);
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
@@ -276,6 +276,28 @@ function initLayers() {
                 dashArray: '12, 5, 3, 5', // Raya-punto oficial de deslinde territorial
                 fillColor: '#f97316',
                 fillOpacity: 0.05
+            },
+            onEachFeature: function(feature, layer) {
+                const p = feature.properties;
+                layer.bindPopup(`
+                    <div class="popup-consumer">
+                        <div style="font-size:10px; font-weight:800; color:#f97316; margin-bottom:4px; text-transform:uppercase;">
+                            ⬚ ÁREA DE SERVICIO OFICIAL DOH
+                        </div>
+                        <div style="font-size:13px; font-weight:800; color:#ffffff; margin-bottom:4px;">
+                            ${p.nombre || 'Área de Servicio SSR'}
+                        </div>
+                        <div style="font-size:11px; color:#94a3b8; margin-bottom:4px;">
+                            Comuna: <strong style="color:#f1f5f9;">${p.comuna || 'San Ignacio'}</strong> (${p.region || 'Región de Ñuble'})
+                        </div>
+                        <div style="font-size:10.5px; font-weight:600; color:#10b981; margin-bottom:4px;">
+                            ● ${p.estado_concesion || 'Territorio Operacional Ley Nº 20.998'}
+                        </div>
+                        <div style="font-size:10px; color:#cbd5e1;">
+                            Fuente: <em>${p.fuente_dato || 'Catastro Oficial DOH'}</em>
+                        </div>
+                    </div>
+                `, { className: 'aquavisor-popup', maxWidth: 280 });
             }
         }).addTo(map);
     }
@@ -325,11 +347,44 @@ function initLayers() {
         }).addTo(map);
     }
 
-    // G. Conexiones Domiciliarias (Simulación de Acometidas a la Red)
-    if (typeof json_Conexiones_Domiciliarias !== 'undefined') {
-        layers.conexiones = L.geoJSON(json_Conexiones_Domiciliarias, {
-            style: styleConnection,
-            onEachFeature: onEachConnectionFeature
+    // G. Edificaciones Santa Juana Nº9 (Precenso / Censo 2024)
+    if (typeof json_Edificaciones_Santa_Juana_N9 !== 'undefined') {
+        layers.edificaciones_n9 = L.geoJSON(json_Edificaciones_Santa_Juana_N9, {
+            pointToLayer: function(feature, latlng) {
+                const p = feature.properties;
+                const isVivienda = (p.USO_EDIFIC || p.uso || '').toUpperCase().includes('VIVIENDA');
+                const color = isVivienda ? '#c084fc' : '#f472b6';
+                return L.circleMarker(latlng, {
+                    radius: 4.5,
+                    fillColor: color,
+                    color: '#ffffff',
+                    weight: 1.2,
+                    opacity: 0.9,
+                    fillOpacity: 0.85
+                });
+            },
+            onEachFeature: function(feature, layer) {
+                const p = feature.properties;
+                layer.bindPopup(`
+                    <div class="popup-consumer">
+                        <div style="font-size:10px; font-weight:800; color:#c084fc; margin-bottom:4px; text-transform:uppercase;">
+                            🏠 EDIFICACIÓN CATASTRADA
+                        </div>
+                        <div style="font-size:13px; font-weight:800; color:#ffffff; margin-bottom:4px; line-height:1.2;">
+                            ${p.USO_EDIFIC || p.uso || 'Edificación'}
+                        </div>
+                        <div style="font-size:11px; color:#cbd5e1; margin-bottom:4px;">
+                            Sector: <strong>Santa Juana Nº9</strong>
+                        </div>
+                        <div style="font-size:10.5px; color:#94a3b8; margin-bottom:4px;">
+                            Comuna: <strong style="color:#f1f5f9;">${p.N_COMUNA || p.comuna || 'San Ignacio'}</strong>
+                        </div>
+                        <div style="font-size:10px; color:#a855f7;">
+                            ID: <em>${p.id_edif || p.fid || '-'}</em> | Fuente: <em>${p.FUENTE || 'Precenso INE'}</em>
+                        </div>
+                    </div>
+                `, { className: 'aquavisor-popup', maxWidth: 260 });
+            }
         }).addTo(map);
     }
 
@@ -342,7 +397,7 @@ function initLayers() {
 
     // Checkboxes
     bindLayerCheckbox('chk-redes', layers.redes);
-    bindLayerCheckbox('chk-conexiones', layers.conexiones);
+    bindLayerCheckbox('chk-edificaciones-n9', layers.edificaciones_n9);
     bindLayerCheckbox('chk-valvulas', layers.valvulas);
     bindLayerCheckbox('chk-arranques', layers.arranques);
     bindLayerCheckbox('chk-fuentes', layers.fuentes);
@@ -632,11 +687,16 @@ function onEachConnectionFeature(feature, layer) {
 }
 
 function createSourceMarker(feature, latlng) {
-    const isTank = feature.properties.name.includes('50') || feature.properties.name.includes('SE');
+    const p = feature.properties;
+    const isTank = (p.name && (p.name.includes('50') || p.name.includes('25') || p.name.includes('Estanque') || p.name.includes('SE'))) || 
+                   (p.tipo_obra && p.tipo_obra.includes('Estanque'));
+    const isProyectado = p.estado && p.estado.includes('Proyectado');
+    const color = isTank ? (isProyectado ? '#f59e0b' : '#0284c7') : '#00d2ff';
+
     const customIcon = L.divIcon({
         className: 'custom-div-icon',
         html: `<div style="
-            background: ${isTank ? '#0284c7' : '#00d2ff'};
+            background: ${color};
             color: #fff;
             width: 30px;
             height: 30px;
@@ -646,18 +706,53 @@ function createSourceMarker(feature, latlng) {
             justify-content: center;
             font-size: 15px;
             border: 2px solid #fff;
-            box-shadow: 0 0 14px ${isTank ? 'rgba(2,132,199,0.8)' : 'rgba(0,210,255,0.8)'};
+            box-shadow: 0 0 14px ${color};
         ">${isTank ? '🚰' : '⚡'}</div>`,
         iconSize: [30, 30],
         iconAnchor: [15, 15]
     });
 
     const marker = L.marker(latlng, { icon: customIcon });
+
+    marker.bindPopup(`
+        <div class="popup-consumer">
+            <div style="font-size:10px; font-weight:800; color:${color}; margin-bottom:4px; text-transform:uppercase;">
+                ${isTank ? '🚰 Estanque de Regulación' : '⚡ Captación / Pozo'}
+            </div>
+            <div style="font-size:13px; font-weight:800; color:#ffffff; margin-bottom:4px; line-height:1.2;">
+                ${p.name || 'Infraestructura'}
+            </div>
+            <div style="font-size:11px; color:#94a3b8; margin-bottom:4px;">
+                Sistema: <strong style="color:#f1f5f9;">${p.sistema || 'SSR San Ignacio'}</strong>
+            </div>
+            <div style="font-size:11px; color:#cbd5e1; margin-bottom:6px;">
+                Capacidad: <strong style="color:#00d2ff;">${p.capacidad || '-'}</strong>
+            </div>
+            <div style="font-size:10.5px; font-weight:600; color:${isProyectado ? '#f59e0b' : '#10b981'}; margin-bottom:8px;">
+                ● ${p.estado || 'Operativo / En Servicio'}
+            </div>
+            <button class="btn-popup-view-detail" onclick="showSourceDetailsFromPopup('${p.fid || ''}')" style="
+                width: 100%;
+                padding: 6px 10px;
+                background: linear-gradient(135deg, #0284c7, #00d2ff);
+                border: none;
+                border-radius: 6px;
+                color: #ffffff;
+                font-size: 11px;
+                font-weight: 700;
+                cursor: pointer;
+            ">
+                📋 Ver Ficha Técnica
+            </button>
+        </div>
+    `, { className: 'aquavisor-popup', maxWidth: 280 });
+
     marker.on('click', (e) => {
         if (e) {
             if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
             L.DomEvent.stopPropagation(e);
         }
+        marker.openPopup();
         showSourceDetails(feature.properties, isTank);
     });
     return marker;
@@ -1156,27 +1251,46 @@ window.openConsumerDrawerFromPopup = function(arranqueId) {
     }
 };
 
+window.showSourceDetailsFromPopup = function(fid) {
+    if (typeof json_Fuentefuente__output_point_layer_6 !== 'undefined') {
+        const item = json_Fuentefuente__output_point_layer_6.features.find(f => f.properties.fid === fid);
+        if (item) {
+            const p = item.properties;
+            const isTank = (p.name && (p.name.includes('50') || p.name.includes('25') || p.name.includes('Estanque') || p.name.includes('SE'))) || 
+                           (p.tipo_obra && p.tipo_obra.includes('Estanque'));
+            showSourceDetails(p, isTank);
+        }
+    }
+};
+
 function showSourceDetails(props, isTank) {
-    const badge = `<span class="drawer-badge" style="background:rgba(2,132,199,0.3); color:#00d2ff;">${isTank ? 'ESTANQUE DE REGULACIÓN' : 'CAPTACIÓN POZO'}</span>`;
+    const isProyectado = props.estado && props.estado.includes('Proyectado');
+    const badgeText = isTank ? (isProyectado ? 'ESTANQUE PROYECTADO' : 'ESTANQUE DE REGULACIÓN') : (isProyectado ? 'CAPTACIÓN PROYECTADA' : 'CAPTACIÓN POZO');
+    const badgeBg = isProyectado ? 'rgba(245,158,11,0.2)' : 'rgba(2,132,199,0.3)';
+    const badgeColor = isProyectado ? '#f59e0b' : '#00d2ff';
+    const badge = `<span class="drawer-badge" style="background:${badgeBg}; color:${badgeColor};">${badgeText}</span>`;
 
     let html = isTank ? `
         <table class="prop-table">
-            <tr><td class="prop-name">Capacidad:</td><td class="prop-val">50.0 m³</td></tr>
-            <tr><td class="prop-name">Volumen Actual:</td><td class="prop-val" style="color:var(--accent-cyan)"><strong>${AppState.tankCurrentVol} m³</strong></td></tr>
-            <tr><td class="prop-name">Altura Torre:</td><td class="prop-val">15.0 m</td></tr>
-            <tr><td class="prop-name">Cota Solera:</td><td class="prop-val">142.5 m.s.n.m.</td></tr>
-            <tr><td class="prop-name">Salida:</td><td class="prop-val">PVC 110 mm</td></tr>
+            <tr><td class="prop-name">Sistema:</td><td class="prop-val"><strong>${props.sistema || 'SSR San Ignacio'}</strong></td></tr>
+            <tr><td class="prop-name">Tipo Obra:</td><td class="prop-val">${props.tipo_obra || 'Estanque de Regulación'}</td></tr>
+            <tr><td class="prop-name">Capacidad:</td><td class="prop-val"><strong>${props.capacidad || '50.0 m³'}</strong></td></tr>
+            <tr><td class="prop-name">Estado:</td><td class="prop-val" style="color:${isProyectado ? '#f59e0b' : '#10b981'}">● ${props.estado || 'Operativo / En Servicio'}</td></tr>
+            <tr><td class="prop-name">Altura Torre:</td><td class="prop-val">${props.altura_torre ? props.altura_torre + ' m' : '15.0 m'}</td></tr>
+            <tr><td class="prop-name">Salida:</td><td class="prop-val">${props.salida || 'PVC 110 mm'}</td></tr>
         </table>
     ` : `
         <table class="prop-table">
-            <tr><td class="prop-name">Profundidad:</td><td class="prop-val">48.0 m</td></tr>
-            <tr><td class="prop-name">Bomba:</td><td class="prop-val">7.5 HP Trifásica</td></tr>
-            <tr><td class="prop-name">Caudal:</td><td class="prop-val"><strong>6.8 L/s</strong></td></tr>
-            <tr><td class="prop-name">Derecho DGA:</td><td class="prop-val">8.0 L/s Consuntivo</td></tr>
+            <tr><td class="prop-name">Sistema:</td><td class="prop-val"><strong>${props.sistema || 'SSR San Ignacio'}</strong></td></tr>
+            <tr><td class="prop-name">Tipo Obra:</td><td class="prop-val">${props.tipo_obra || 'Captación Subterránea'}</td></tr>
+            <tr><td class="prop-name">Caudal / Cap:</td><td class="prop-val"><strong>${props.capacidad || '6.8 L/s'}</strong></td></tr>
+            <tr><td class="prop-name">Estado:</td><td class="prop-val" style="color:${isProyectado ? '#f59e0b' : '#10b981'}">● ${props.estado || 'Operativo / En Servicio'}</td></tr>
+            <tr><td class="prop-name">Bomba:</td><td class="prop-val">${props.bomba || '7.5 HP Trifásica'}</td></tr>
+            <tr><td class="prop-name">Derecho DGA:</td><td class="prop-val">${props.derecho_dga || '8.0 L/s Consuntivo'}</td></tr>
         </table>
     `;
 
-    setDrawerDetail(props.name, badge, html);
+    setDrawerDetail(props.name || 'Infraestructura', badge, html);
 }
 
 function showPipeDetails(props) {

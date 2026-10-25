@@ -37,6 +37,20 @@
             </div>
 
             <div class="header-right-tools">
+                <!-- Selector de Perfil Adaptativo (RBAC 360°) -->
+                <div class="role-selector-wrapper" id="role-selector-wrapper" title="Cambiar Vista según Perfil">
+                    <span class="role-badge-label desktop-only">Perfil:</span>
+                    <div class="role-select-box">
+                        <span id="current-role-icon" class="role-select-icon">👷</span>
+                        <select id="select-user-role" class="select-user-role" aria-label="Seleccionar Perfil">
+                            <option value="terreno" selected>👷 Terreno (Operador)</option>
+                            <option value="administracion">👩‍💼 Administración (Cobranza)</option>
+                            <option value="directorio">📊 Directorio (KPIs 360°)</option>
+                            <option value="auditor">🏛️ Fiscalización (DOH / Ley 20.998)</option>
+                        </select>
+                    </div>
+                </div>
+
                 <!-- Botón Lupa en Móvil -->
                 <button id="btn-mobile-search" class="btn-header-tool mobile-search-btn mobile-only" title="Buscar...">
                     🔍
@@ -44,6 +58,10 @@
 
                 <!-- Botones de Acción -->
                 <div class="header-actions">
+                    <button id="btn-gps-locate" class="btn-header-tool" title="Centrar mapa en mi posición GPS" onclick="locateUserGPS()">
+                        <span class="btn-icon">📍</span><span class="btn-text desktop-only"> GPS</span>
+                    </button>
+
                     <button id="btn-toggle-telemetry" class="btn-header-tool" title="Telemetría SCADA">
                         <span class="btn-icon">📡</span><span class="btn-text desktop-only"> SCADA</span>
                     </button>
@@ -54,6 +72,45 @@
                 </div>
             </div>
         </header>
+
+        <!-- ====================================================================
+             1.1. RIBBON DE KPIs EJECUTIVOS 360° (MODO DIRECTORIO / COMITÉ)
+             ==================================================================== -->
+        <div id="executive-kpi-ribbon" class="executive-kpi-ribbon" style="display:none;">
+            <div class="kpi-ribbon-item">
+                <span class="kpi-ribbon-icon">💧</span>
+                <div class="kpi-ribbon-content">
+                    <span class="kpi-ribbon-val text-cyan">99.4%</span>
+                    <span class="kpi-ribbon-lbl">Continuidad Servicio (NCh 691)</span>
+                </div>
+            </div>
+            <div class="kpi-ribbon-item">
+                <span class="kpi-ribbon-icon">💰</span>
+                <div class="kpi-ribbon-content">
+                    <span class="kpi-ribbon-val text-green">86.5%</span>
+                    <span class="kpi-ribbon-lbl">Recaudación ($3.48M cobrado)</span>
+                </div>
+            </div>
+            <div class="kpi-ribbon-item">
+                <span class="kpi-ribbon-icon">📉</span>
+                <div class="kpi-ribbon-content">
+                    <span class="kpi-ribbon-val text-yellow">27.4%</span>
+                    <span class="kpi-ribbon-lbl">Pérdida ANF (Agua No Facturada)</span>
+                </div>
+            </div>
+            <div class="kpi-ribbon-item">
+                <span class="kpi-ribbon-icon">⚠️</span>
+                <div class="kpi-ribbon-content">
+                    <span class="kpi-ribbon-val text-red">12</span>
+                    <span class="kpi-ribbon-lbl">Socios en Causal de Corte</span>
+                </div>
+            </div>
+            <div class="kpi-ribbon-item kpi-ribbon-action">
+                <button id="btn-export-assembly-report" class="btn-ribbon-action" onclick="exportAssemblyReport()">
+                    <span>📄</span> Minuta Asamblea
+                </button>
+            </div>
+        </div>
 
         <!-- ====================================================================
              2. VISTA PRINCIPAL (MAPA A PANTALLA COMPLETA + PANELES DESPLEGABLES)
@@ -134,8 +191,10 @@
             <aside id="drawer-right" class="drawer-right">
                 <div class="drawer-header">
                     <div class="drawer-tabs">
-                        <button id="tab-btn-telemetry" class="drawer-tab-btn active">📡 Telemetría SCADA</button>
-                        <button id="tab-btn-detail" class="drawer-tab-btn">ℹ️ Ficha Técnica</button>
+                        <button id="tab-btn-telemetry" class="drawer-tab-btn active">📡 SCADA</button>
+                        <button id="tab-btn-commercial" class="drawer-tab-btn">💰 Cobranza</button>
+                        <button id="tab-btn-copilot" class="drawer-tab-btn">🤖 Copiloto IA</button>
+                        <button id="tab-btn-detail" class="drawer-tab-btn">ℹ️ Ficha</button>
                     </div>
                     <button id="btn-close-drawer-right" class="drawer-close" title="Ocultar Panel">✕</button>
                 </div>
@@ -200,6 +259,150 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- CONTENIDO PESTAÑA 3: GEOGESTIÓN COMERCIAL Y BALANCE ANF -->
+                <div id="tab-content-commercial" class="drawer-body" style="display:none;">
+                    <!-- Tarjeta Resumen de Cartera -->
+                    <div class="comm-summary-card">
+                        <div class="comm-card-header">
+                            <span class="comm-title">📊 Recaudación Mensual SSR</span>
+                            <span class="comm-badge-live">ACTIVA</span>
+                        </div>
+                        <div class="comm-metrics-grid">
+                            <div class="comm-metric">
+                                <span class="lbl">Socios Totales</span>
+                                <span class="val">292</span>
+                            </div>
+                            <div class="comm-metric">
+                                <span class="lbl">Tasa al Día</span>
+                                <span class="val text-green">84.9%</span>
+                            </div>
+                            <div class="comm-metric">
+                                <span class="lbl">Morosos (1-2 m)</span>
+                                <span class="val text-yellow">38</span>
+                            </div>
+                            <div class="comm-metric">
+                                <span class="lbl">Causal de Corte</span>
+                                <span class="val text-red">6</span>
+                            </div>
+                        </div>
+                        <div class="comm-progress-wrap">
+                            <div class="comm-progress-bar">
+                                <div class="comm-progress-fill" style="width: 84.9%;"></div>
+                            </div>
+                            <div class="comm-progress-sub">
+                                <span>Recaudado: <strong>$3.480.000</strong></span>
+                                <span>Total Facturado: $4.098.000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botón Toggle Semáforo en el Mapa -->
+                    <div class="comm-action-box">
+                        <label class="comm-switch-label">
+                            <input type="checkbox" id="chk-commercial-semaphore" onchange="toggleCommercialSemaphore(this.checked)">
+                            <span>🚦 <strong>Activar Semáforo Comercial en el Mapa</strong></span>
+                        </label>
+                        <p class="comm-switch-hint">Tiñe los 292 arranques en Verde (Al Día), Amarillo (Aviso) o Rojo (Corte) para planificar cobranza o cortes en terreno.</p>
+                    </div>
+
+                    <!-- Módulo de Carga de Planilla Excel / CSV -->
+                    <div class="comm-import-box">
+                        <div class="import-header">
+                            <span>📥 Actualizar Cobranza del Mes</span>
+                        </div>
+                        <p class="import-desc">Carga la planilla generada por el software del SSR (APRChile, SisAPR o Excel de tesorería):</p>
+                        <input type="file" id="input-commercial-excel" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleCommercialFileSelect(event)">
+                        <div class="import-dropzone" onclick="document.getElementById('input-commercial-excel').click()">
+                            <span class="drop-icon">📁</span>
+                            <span class="drop-text">Arrastra aquí o haz clic para subir archivo Excel/CSV</span>
+                            <span class="drop-sub">Formatos: .xlsx, .xls, .csv (Cruza por RUT o N° Medidor)</span>
+                        </div>
+                        <div style="margin-top:8px; display:flex; gap:6px;">
+                            <button class="btn-demo-data" onclick="loadDemoCommercialData()">
+                                <span>⚡</span> Cargar Datos de Demostración
+                            </button>
+                            <button class="btn-export-morosos" onclick="exportMorososListCSV()">
+                                <span>📋</span> Exportar Morosos
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Balance de Agua No Facturada (ANF) -->
+                    <div class="comm-anf-box">
+                        <div class="anf-header">
+                            <span>💧 Balance de Agua No Facturada (ANF)</span>
+                            <span class="anf-badge-alert">ALERTA 27.4%</span>
+                        </div>
+                        <div class="anf-compare-row">
+                            <div>
+                                <span class="anf-lbl">Macromedición Estanque</span>
+                                <span class="anf-val">142.8 m³/día</span>
+                            </div>
+                            <span class="anf-arrow">➔</span>
+                            <div>
+                                <span class="anf-lbl">Suma Micromedición</span>
+                                <span class="anf-val text-green">103.6 m³/día</span>
+                            </div>
+                        </div>
+                        <div class="anf-alert-text">
+                            ⚠️ <strong>Pérdida estimada: 39.2 m³/día (27.4%)</strong>. La DOH recomienda mantener el ANF bajo 25%. Posible rotura no aflorante en sector poniente o sub-medición de equipos antiguos.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTENIDO PESTAÑA 4: COPILOTO INTELIGENTE SSR -->
+                <div id="tab-content-copilot" class="drawer-body copilot-section" style="display:none;">
+                    <div class="copilot-header-card">
+                        <div style="display:flex; align-items:center; justify-content:space-between;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <div class="copilot-avatar">🤖</div>
+                                <div>
+                                    <h4 style="font-size:12px; font-weight:700; color:#fff; margin:0;">Copiloto SSR 360°</h4>
+                                    <span style="font-size:9.5px; color:#10b981;">● Asistente Técnico y Comunitario</span>
+                                </div>
+                            </div>
+                            <button class="btn-copilot-clear" onclick="clearCopilotChat()" title="Limpiar conversación">🔄</button>
+                        </div>
+                    </div>
+
+                    <!-- Mensajes del Chat -->
+                    <div id="copilot-chat-messages" class="copilot-chat-container">
+                        <div class="copilot-msg bot-msg">
+                            <div class="msg-sender">🤖 Copiloto SSR</div>
+                            <div class="msg-bubble">
+                                Hola, soy el asistente inteligente de <strong>Santa Juana Nº9 y El Calvario</strong>. Conozco las 20 válvulas, los 292 socios, las presiones y las pérdidas de la red.<br><br>
+                                ¿En qué te ayudo hoy? Puedes escribir o tocar cualquiera de las consultas rápidas de abajo.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pills de Consultas Rápidas -->
+                    <div class="copilot-quick-pills">
+                        <button class="quick-pill" onclick="sendQuickCopilotQuery('¿Qué válvula debo cerrar si hay fuga en Callejón Hijuelas?')">
+                            🔧 Fuga en Hijuelas
+                        </button>
+                        <button class="quick-pill" onclick="sendQuickCopilotQuery('¿Cuál es la presión de servicio en el sector Santa Juana Nº9?')">
+                            💧 Presiones en N9
+                        </button>
+                        <button class="quick-pill" onclick="sendQuickCopilotQuery('Redactar comunicado de corte de agua para WhatsApp')">
+                            📲 Comunicado WhatsApp
+                        </button>
+                        <button class="quick-pill" onclick="sendQuickCopilotQuery('¿Cuánto es el Agua No Facturada y dónde se sospecha la fuga?')">
+                            📉 Pérdidas ANF
+                        </button>
+                        <button class="quick-pill" onclick="sendQuickCopilotQuery('¿Cuántos socios están en causal de corte por deuda?')">
+                            ⚠️ Socios Morosos
+                        </button>
+                    </div>
+
+                    <!-- Input de Chat -->
+                    <div class="copilot-input-bar">
+                        <input type="text" id="copilot-input-text" placeholder="Pregunta al Copiloto sobre la red..." onkeydown="if(event.key==='Enter') sendCopilotQuery()">
+                        <button id="btn-copilot-mic" class="btn-copilot-mic" onclick="toggleCopilotVoiceSim()" title="Dictar por voz (Simulador micrófono)">🎙️</button>
+                        <button class="btn-copilot-send" onclick="sendCopilotQuery()" title="Enviar">➤</button>
+                    </div>
+                </div>
             </aside>
 
             <!-- TARJETA COMPACTA DE EMERGENCIA (ESQUINA INFERIOR IZQUIERDA - NO TAPA EL MAPA) -->
@@ -230,6 +433,44 @@
             </div>
 
         </main>
+
+        <!-- ====================================================================
+             3. MODAL DE COMUNICADO OFICIAL WHATSAPP (GENERADO POR IA)
+             ==================================================================== -->
+        <div id="whatsapp-broadcast-modal" class="modal-backdrop" style="display:none;">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:18px;">📲</span>
+                        <div>
+                            <h3 style="font-size:13px; font-weight:800; color:#fff; margin:0;">Generador de Comunicado WhatsApp</h3>
+                            <span style="font-size:10px; color:#10b981;">● Asistencia Inteligente de Redacción Comunitaria</span>
+                        </div>
+                    </div>
+                    <button class="modal-close-btn" onclick="closeWhatsAppModal()">✕</button>
+                </div>
+                <div class="modal-body">
+                    <p style="font-size:11px; color:#94a3b8; margin-bottom:8px;">
+                        Mensaje oficial redactado automáticamente para enviar a los grupos vecinales según la maniobra activa:
+                    </p>
+                    <textarea id="whatsapp-message-text" class="whatsapp-textarea" rows="7"></textarea>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; flex-wrap:wrap; gap:8px;">
+                        <div style="display:flex; gap:6px;">
+                            <button class="btn-tone" onclick="adjustWhatsAppTone('breve')">Texto Breve</button>
+                            <button class="btn-tone" onclick="adjustWhatsAppTone('urgencia')">Alerta Rápida</button>
+                            <button class="btn-tone" onclick="adjustWhatsAppTone('formal')">Formal DOH</button>
+                        </div>
+                        <button id="btn-copy-whatsapp" class="btn-copy-wsp" onclick="copyWhatsAppToClipboard()">
+                            <span>📋</span> Copiar al Portapapeles
+                        </button>
+                    </div>
+                    <div id="wsp-copy-feedback" class="copy-feedback" style="display:none;">
+                        ✔ ¡Copiado con éxito! Listo para pegar en los grupos de WhatsApp de los vecinos.
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Librerías de Datos Geográficos (Archivos Reales y Enriquecidos) -->

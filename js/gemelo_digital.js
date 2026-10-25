@@ -15,7 +15,8 @@ const AppState = {
     pumpStatus: 'ENCENDIDA',
     pumpFlow: 6.8, // L/s
     selectedFeature: null,
-    valvesState: {} // { 'VALV-01': true, ... }
+    valvesState: {}, // { 'VALV-01': true, ... }
+    activeValveOutage: null
 };
 
 // Referencias a Capas Leaflet y Estado de Selección
@@ -31,7 +32,8 @@ let layers = {
     accesorios: null,
     fuentes: null,
     concesion: null,
-    censo: null
+    censo: null,
+    outageLayer: null
 };
 
 // Patrón Horario de Demanda NCh 691
@@ -65,6 +67,10 @@ function initMap() {
     // Pane dedicado para Arranques y Medidores (siempre prioritario al tacto sobre tuberías y polígonos)
     map.createPane('arranquesPane');
     map.getPane('arranquesPane').style.zIndex = '620';
+
+    // Pane dedicado para Simulación de Corte (destaque moderado y prioritario de viviendas afectadas)
+    map.createPane('outagePane');
+    map.getPane('outagePane').style.zIndex = '650';
 
     // 1. Google Satélite (Imágenes aéreas de alta resolución sin etiquetas)
     const googleSat = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
@@ -365,8 +371,60 @@ function initLayers() {
             },
             onEachFeature: function(feature, layer) {
                 const p = feature.properties;
-                layer.bindPopup(`
-                    <div class="popup-consumer">
+                const estado = p.estado_comercial || 'Al Día';
+                const estadoColor = estado.includes('Moroso') ? '#f59e0b' : (estado.includes('Suspendido') ? '#ef4444' : '#10b981');
+                const badgeBg = estado.includes('Moroso') ? 'rgba(245,158,11,0.2)' : (estado.includes('Suspendido') ? 'rgba(239,68,68,0.2)' : 'rgba(16,185,129,0.2)');
+
+                let popupContent = '';
+                if (p.socio && p.id_arranque) {
+                    popupContent = `
+                        <div class="popup-header-row" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px; gap:6px;">
+                            <span style="font-size:10px; font-weight:800; color:#c084fc; letter-spacing:0.4px;">🏠 USUARIO SSR Nº9</span>
+                            <span style="font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:10px; background:${badgeBg}; color:${estadoColor}; border:1px solid ${estadoColor}; white-space:nowrap;">
+                                ● ${estado}
+                            </span>
+                        </div>
+                        <div style="font-size:13px; font-weight:800; color:#ffffff; margin-bottom:3px; line-height:1.2;">
+                            ${p.socio}
+                        </div>
+                        <div style="font-size:11px; color:#94a3b8; margin-bottom:6px;">
+                            RUT: <strong style="color:#f1f5f9;">${p.rut || '-'}</strong> | Med: <strong style="color:#00d2ff;">${p.n_medidor || '-'}</strong>
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; background:rgba(255,255,255,0.06); padding:6px 8px; border-radius:8px; margin-bottom:8px;">
+                            <div>
+                                <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Presión Grifo</div>
+                                <div style="font-size:12.5px; font-weight:800; color:#10b981;">
+                                    ${p.presion_servicio_mca || '-'} mca
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Consumo Prom.</div>
+                                <div style="font-size:12.5px; font-weight:800; color:#ffffff;">
+                                    ${p.consumo_prom_m3 || '-'} <small style="font-size:8.5px; color:#cbd5e1;">m³/m</small>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-popup-view-detail" onclick="openConsumerDrawerFromPopup('${p.id_arranque}')" style="
+                            width: 100%;
+                            padding: 7px 10px;
+                            background: linear-gradient(135deg, #7c3aed, #a855f7);
+                            border: none;
+                            border-radius: 8px;
+                            color: #ffffff;
+                            font-size: 11px;
+                            font-weight: 700;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 5px;
+                            box-shadow: 0 2px 8px rgba(168, 85, 247, 0.4);
+                        ">
+                            <span>📋</span> Ver Ficha Técnica Completa
+                        </button>
+                    `;
+                } else {
+                    popupContent = `
                         <div style="font-size:10px; font-weight:800; color:#c084fc; margin-bottom:4px; text-transform:uppercase;">
                             🏠 EDIFICACIÓN CATASTRADA
                         </div>
@@ -382,8 +440,9 @@ function initLayers() {
                         <div style="font-size:10px; color:#a855f7;">
                             ID: <em>${p.id_edif || p.fid || '-'}</em> | Fuente: <em>${p.FUENTE || 'Precenso INE'}</em>
                         </div>
-                    </div>
-                `, { className: 'aquavisor-popup', maxWidth: 260 });
+                    `;
+                }
+                layer.bindPopup(`<div class="popup-consumer">${popupContent}</div>`, { className: 'aquavisor-popup', maxWidth: 280 });
             }
         }).addTo(map);
     }
@@ -394,6 +453,9 @@ function initLayers() {
             pointToLayer: createConsumerMarker
         }).addTo(map);
     }
+
+    // I. Capa Dinámica de Simulación de Corte (Afectación de Viviendas)
+    layers.outageLayer = L.featureGroup().addTo(map);
 
     // Checkboxes
     bindLayerCheckbox('chk-redes', layers.redes);
@@ -420,6 +482,21 @@ function stylePipes(feature) {
     const p = feature.properties;
     const diam = p.diametro_nominal || '75 mm';
     const sector = p.sector || '';
+
+    // Simulación de Corte de Válvula Activo (Tubería Despresurizada / Aislada)
+    if (AppState.activeValveOutage && typeof VALVE_OUTAGE_SIMULATION_DB !== 'undefined') {
+        const sim = VALVE_OUTAGE_SIMULATION_DB[AppState.activeValveOutage];
+        if (sim && sim.pipes && sim.pipes.includes(p.id_tramo)) {
+            return {
+                color: '#ef4444', // Rojo Alerta para tubería sin agua
+                weight: 5.5,
+                opacity: 0.95,
+                dashArray: '6, 6',
+                lineCap: 'round',
+                lineJoin: 'round'
+            };
+        }
+    }
 
     // 1. Línea de Impulsión Pozo - Estanque
     if (p.id_tramo === 'TUB-11' || sector.includes('Impulsión')) {
@@ -1086,7 +1163,31 @@ function triggerBurstSimulation(feature, layer) {
 
     let valvesToClose = ['VALV-02 (Salida Estanque)', 'VALV-08 (KM 1.5 Poniente)'];
     let affectedHomes = 38;
-    if (props.sector && props.sector.includes('Norte')) {
+    if (props.sistema && (props.sistema.includes('Nº9') || props.sistema.includes('N9'))) {
+        const tid = props.id_tramo || '';
+        if (tid === 'TUB-43') {
+            valvesToClose = ['VALV-16 (Ramal Hijuelas)'];
+            affectedHomes = 6;
+        } else if (['TUB-02','TUB-03','TUB-04','TUB-05','TUB-06','TUB-07','TUB-08'].includes(tid)) {
+            valvesToClose = ['VALV-15 (Ramal Interconexión Poniente)'];
+            affectedHomes = 10;
+        } else if (['TUB-36','TUB-37','TUB-38','TUB-39','TUB-40','TUB-41','TUB-42'].includes(tid)) {
+            valvesToClose = ['VALV-20 (Terminal Red 63 mm)'];
+            affectedHomes = 8;
+        } else if (['TUB-30','TUB-31','TUB-32','TUB-33','TUB-34','TUB-35'].includes(tid)) {
+            valvesToClose = ['VALV-19 (Sector Los Castaños)'];
+            affectedHomes = 14;
+        } else if (['TUB-24','TUB-25','TUB-26','TUB-27','TUB-28','TUB-29'].includes(tid)) {
+            valvesToClose = ['VALV-18 (Reducción Troncal 75 mm)'];
+            affectedHomes = 24;
+        } else if (['TUB-17','TUB-18','TUB-19','TUB-20','TUB-21','TUB-22','TUB-23'].includes(tid)) {
+            valvesToClose = ['VALV-17 (Troncal KM 0.7)'];
+            affectedHomes = 32;
+        } else {
+            valvesToClose = ['VALV-13 (Salida Estanque Cabecera N9)', 'VALV-14 (Troncal Principal N9)'];
+            affectedHomes = 45;
+        }
+    } else if (props.sector && props.sector.includes('Norte')) {
         valvesToClose = ['VALV-03 (Bifurcación Norte)'];
         affectedHomes = 29;
     } else if (props.sector && props.sector.includes('Este')) {
@@ -1162,6 +1263,62 @@ function setDrawerDetail(title, badgeHtml, contentHtml) {
 function showValveDetails(props) {
     const isOpen = AppState.valvesState[props.id] !== false;
     const badge = `<span class="drawer-badge badge-valve">VÁLVULA DE SECTORIZACIÓN</span>`;
+    const sim = (typeof VALVE_OUTAGE_SIMULATION_DB !== 'undefined') ? VALVE_OUTAGE_SIMULATION_DB[props.id] : null;
+    const affectedCount = sim ? sim.affectedCount : 0;
+    const pipesKm = sim ? sim.pipesKm : 0;
+    const pipesCount = sim ? sim.pipesCount : 0;
+    const sectorAfectado = sim ? sim.sector : props.sector_afectado;
+    const tipoCorte = sim ? sim.tipo_corte : 'Sectorización';
+    const recoveryTime = sim ? sim.recovery_time : '20 min';
+
+    let outagePanelHtml = '';
+    if (!isOpen) {
+        outagePanelHtml = `
+            <div class="valve-outage-box compact">
+                <div class="outage-compact-header">
+                    <span class="outage-title-txt">
+                        <span class="hud-pulse-beacon"></span> ${tipoCorte}
+                    </span>
+                    <span class="outage-tag-mini">EN MAPA</span>
+                </div>
+                
+                <div class="outage-stat-strip">
+                    <div class="outage-pill-metric">
+                        <span class="outage-pill-num">${affectedCount}</span>
+                        <span class="outage-pill-txt">viviendas</span>
+                    </div>
+                    <div class="outage-pill-metric">
+                        <span class="outage-pill-num">${pipesKm} km</span>
+                        <span class="outage-pill-txt">${pipesCount} tramos</span>
+                    </div>
+                    <div class="outage-pill-metric">
+                        <span class="outage-pill-num" style="color:#38bdf8;">~${recoveryTime.split(' ')[0]}m</span>
+                        <span class="outage-pill-txt">purga</span>
+                    </div>
+                </div>
+
+                <div class="outage-compact-sector" title="${sectorAfectado}">
+                    <strong>Sector:</strong> ${sectorAfectado}
+                </div>
+
+                <div class="outage-btn-row">
+                    <button class="btn-outage-sm btn-outage-focus" onclick="focusValveOutage('${props.id}')" title="Centrar mapa en viviendas afectadas">
+                        🔍 Enfocar
+                    </button>
+                    <button class="btn-outage-sm btn-outage-table" onclick="toggleOutageClientsList('${props.id}')" title="Ver nómina de afectados">
+                        📋 Lista (${affectedCount})
+                    </button>
+                    <button class="btn-outage-sm btn-outage-dl" onclick="exportOutageClientsCSV('${props.id}')" title="Descargar CSV para terreno">
+                        📥 CSV
+                    </button>
+                </div>
+
+                <div id="outage-clients-scroll-${props.id}" class="outage-clients-scroll" style="display:none;">
+                    ${renderOutageClientsList(props.id)}
+                </div>
+            </div>
+        `;
+    }
 
     const html = `
         <table class="prop-table">
@@ -1170,20 +1327,24 @@ function showValveDetails(props) {
             <tr><td class="prop-name">Diámetro:</td><td class="prop-val">${props.diametro}</td></tr>
             <tr><td class="prop-name">Ubicación:</td><td class="prop-val">${props.ubicacion}</td></tr>
             <tr><td class="prop-name">Cámara:</td><td class="prop-val">${props.camara}</td></tr>
-            <tr><td class="prop-name">Afectación:</td><td class="prop-val" style="color:var(--accent-yellow)">${props.sector_afectado}</td></tr>
+            <tr><td class="prop-name">Afectación:</td><td class="prop-val" style="color:var(--accent-yellow)">${sectorAfectado}</td></tr>
         </table>
 
-        <div class="valve-action-box">
-            <div style="font-size:10.5px; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Instrucción de Terreno</div>
-            <div class="maneuver-direction">🔄 ${props.sentido_giro}</div>
-            <div class="maneuver-turns">Vueltas de Cierre: <strong>${props.vueltas_cierre} vueltas</strong></div>
+        <div class="valve-action-box ${isOpen ? '' : 'outage-active'}">
+            <div class="maneuver-chip">
+                <span>🔄 <strong>${props.sentido_giro || 'Horario'}</strong></span>
+                <span class="maneuver-divider">·</span>
+                <span>Cierre: <strong>${props.vueltas_cierre} vueltas</strong></span>
+            </div>
+
             <button class="btn-toggle-valve ${isOpen ? '' : 'closed'}" onclick="toggleValveState('${props.id}')">
-                ${isOpen ? '🔒 Simular Maniobra: CERRAR' : '🔓 Simular Maniobra: ABRIR'}
+                ${isOpen ? '🔒 Simular Maniobra: CERRAR' : '🔓 Simular Maniobra: ABRIR (Restablecer)'}
             </button>
+            ${outagePanelHtml}
         </div>
 
-        <button class="btn-act btn-repair" style="width:100%; margin-top:10px;" onclick="printValveSheet('${props.id}')">
-            📄 Imprimir Ficha Oficial (Fontanero / DOH)
+        <button class="btn-act btn-repair" style="width:100%; margin-top:8px; padding:6px 10px; font-size:11px;" onclick="printValveSheet('${props.id}')">
+            📄 Imprimir Ficha Oficial
         </button>
     `;
 
@@ -1191,12 +1352,232 @@ function showValveDetails(props) {
 }
 
 function toggleValveState(valveId) {
-    AppState.valvesState[valveId] = !AppState.valvesState[valveId];
-    layers.valvulas.clearLayers();
-    layers.valvulas.addData(json_Valvulas_GeoConecta);
-    
+    const isCurrentlyOpen = AppState.valvesState[valveId] !== false;
+    const newState = !isCurrentlyOpen;
+    AppState.valvesState[valveId] = newState;
+
+    if (layers.valvulas) {
+        layers.valvulas.clearLayers();
+        layers.valvulas.addData(json_Valvulas_GeoConecta);
+    }
+
+    if (!newState) {
+        activateValveOutage(valveId);
+    } else {
+        clearValveOutage(valveId);
+    }
+
     const f = json_Valvulas_GeoConecta.features.find(x => x.properties.id === valveId);
     if (f) showValveDetails(f.properties);
+}
+
+function activateValveOutage(valveId) {
+    if (typeof VALVE_OUTAGE_SIMULATION_DB === 'undefined') return;
+    const sim = VALVE_OUTAGE_SIMULATION_DB[valveId];
+    if (!sim) return;
+
+    AppState.activeValveOutage = valveId;
+
+    if (layers.redes) {
+        layers.redes.setStyle(stylePipes);
+    }
+
+    if (!layers.outageLayer) {
+        layers.outageLayer = L.featureGroup().addTo(map);
+    } else {
+        layers.outageLayer.clearLayers();
+    }
+
+    const boundsPoints = [];
+    const valveFeat = json_Valvulas_GeoConecta.features.find(f => f.properties.id === valveId);
+    if (valveFeat) {
+        const vc = valveFeat.geometry.coordinates;
+        boundsPoints.push([vc[1], vc[0]]);
+    }
+
+    sim.consumers.forEach(c => {
+        const latlng = [c.coords[1], c.coords[0]];
+        boundsPoints.push(latlng);
+
+        // 1. Halo moderado de advertencia (anillo exterior suave que destaca el predio sin invadir el mapa)
+        const halo = L.circleMarker(latlng, {
+            pane: 'outagePane',
+            radius: 11,
+            fillColor: '#ef4444',
+            color: '#f87171',
+            weight: 1.5,
+            dashArray: '3, 3',
+            opacity: 0.85,
+            fillOpacity: 0.18,
+            className: 'outage-halo-pulse',
+            interactive: false
+        });
+        layers.outageLayer.addLayer(halo);
+
+        // 2. Nodo central de corte
+        const marker = L.circleMarker(latlng, {
+            pane: 'outagePane',
+            radius: 5.5,
+            fillColor: '#ef4444',
+            color: '#ffffff',
+            weight: 1.5,
+            opacity: 1.0,
+            fillOpacity: 0.95,
+            className: 'outage-marker-pulse'
+        });
+
+        marker.bindTooltip(`⚠️ ${c.name} (Sin Agua)`, {
+            direction: 'top',
+            offset: [0, -6],
+            className: 'outage-tooltip'
+        });
+
+        const popupHtml = `
+            <div class="popup-consumer" style="border-top: 3px solid #ef4444; min-width: 230px;">
+                <div class="popup-header-row" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:4px; gap:6px;">
+                    <span style="font-size:10px; font-weight:800; color:#ef4444; letter-spacing:0.4px; display:flex; align-items:center; gap:4px;">
+                        <span class="hud-pulse-beacon"></span> VIVIENDA SIN AGUA
+                    </span>
+                    <span style="font-size:9px; font-weight:700; padding:1px 6px; border-radius:4px; background:rgba(239,68,68,0.2); color:#f87171; border:1px solid rgba(239,68,68,0.4);">
+                        SIMULACIÓN
+                    </span>
+                </div>
+                <div style="font-size:13px; font-weight:800; color:#ffffff; margin-bottom:3px; line-height:1.2;">
+                    ${c.name}
+                </div>
+                <div style="font-size:11px; color:#cbd5e1; margin-bottom:3px;">
+                    Arranque: <strong style="color:#00d2ff;">${c.id}</strong> | Medidor: <strong>${c.meter}</strong>
+                </div>
+                <div style="font-size:10.5px; color:#94a3b8; margin-bottom:6px;">
+                    RUT Titular: <strong style="color:#f1f5f9;">${c.rut}</strong>
+                </div>
+                <div style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.35); border-radius:6px; padding:6px 8px; font-size:10px; color:#fca5a5; line-height:1.35; margin-bottom:8px;">
+                    Afectado por maniobra en válvula <strong>${valveId}</strong>.<br>
+                    • Sector: <em>${sim.sector}</em><br>
+                    • Reposición estimada: <strong>${sim.recovery_time || '15 a 30 min'}</strong>
+                </div>
+                <button class="btn-popup-view-detail" onclick="openConsumerDrawerFromPopup('${c.id}')" style="
+                    width: 100%;
+                    padding: 6px 8px;
+                    background: linear-gradient(135deg, #b91c1c, #ef4444);
+                    border: none;
+                    border-radius: 6px;
+                    color: #ffffff;
+                    font-size: 10.5px;
+                    font-weight: 700;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 5px;
+                ">
+                    <span>📋</span> Ver Ficha Técnica del Arranque
+                </button>
+            </div>
+        `;
+        marker.bindPopup(popupHtml, { className: 'aquavisor-popup' });
+        layers.outageLayer.addLayer(marker);
+    });
+
+    showOutageHUD(valveId, sim);
+
+    if (boundsPoints.length > 0) {
+        const bounds = L.latLngBounds(boundsPoints);
+        map.fitBounds(bounds.pad(0.12), { maxZoom: 16, duration: 1.0 });
+    }
+}
+
+function clearValveOutage(valveId) {
+    if (AppState.activeValveOutage === valveId || !valveId) {
+        AppState.activeValveOutage = null;
+        if (layers.outageLayer) {
+            layers.outageLayer.clearLayers();
+        }
+        if (layers.redes) {
+            layers.redes.setStyle(stylePipes);
+        }
+        const hud = document.getElementById('valve-outage-hud');
+        if (hud) hud.remove();
+    }
+}
+
+function showOutageHUD(valveId, sim) {
+    let hud = document.getElementById('valve-outage-hud');
+    if (!hud) {
+        hud = document.createElement('div');
+        hud.id = 'valve-outage-hud';
+        hud.className = 'valve-outage-hud';
+        document.body.appendChild(hud);
+    }
+
+    hud.innerHTML = `
+        <span class="hud-pulse-beacon"></span>
+        <div class="hud-pill-content">
+            <strong>${valveId} cerrada:</strong> ${sim.affectedCount} viviendas aisladas (${sim.pipesKm} km)
+        </div>
+        <button class="btn-hud-pill-focus" onclick="focusValveOutage('${valveId}')" title="Centrar mapa en viviendas">🔍 Ver</button>
+        <button class="btn-hud-pill-restore" onclick="toggleValveState('${valveId}')" title="Abrir válvula">🔓 Abrir</button>
+        <button class="btn-hud-pill-close" onclick="clearValveOutage('${valveId}')" title="Cerrar aviso">✕</button>
+    `;
+}
+
+function focusValveOutage(valveId) {
+    if (layers.outageLayer && layers.outageLayer.getLayers().length > 0) {
+        if (window.innerWidth < 768 && typeof closeRightDrawer === 'function') {
+            closeRightDrawer();
+        }
+        map.fitBounds(layers.outageLayer.getBounds().pad(0.12), { maxZoom: 16, duration: 0.8 });
+    }
+}
+
+function toggleOutageClientsList(valveId) {
+    const el = document.getElementById(`outage-clients-scroll-${valveId}`);
+    if (el) {
+        el.style.display = (el.style.display === 'none' || !el.style.display) ? 'block' : 'none';
+    }
+}
+
+function renderOutageClientsList(valveId) {
+    if (typeof VALVE_OUTAGE_SIMULATION_DB === 'undefined') return '';
+    const sim = VALVE_OUTAGE_SIMULATION_DB[valveId];
+    if (!sim || !sim.consumers || sim.consumers.length === 0) {
+        return '<div style="font-size:11px; color:#94a3b8; padding:8px; text-align:center;">No se registraron consumidores directos en este tramo.</div>';
+    }
+
+    return sim.consumers.map(c => `
+        <div class="outage-client-item" onclick="zoomToConsumerCoords(${c.coords[1]}, ${c.coords[0]})" style="cursor:pointer;" title="Haga clic para centrar en el mapa">
+            <div>
+                <div class="outage-client-name">🏠 ${c.name}</div>
+                <div class="outage-client-meta">Código: ${c.id} | Med: ${c.meter}</div>
+            </div>
+            <span style="font-size:9.5px; color:#ef4444; font-weight:800; background:rgba(239,68,68,0.18); padding:2px 5px; border-radius:3px;">SIN AGUA</span>
+        </div>
+    `).join('');
+}
+
+function zoomToConsumerCoords(lat, lng) {
+    map.flyTo([lat, lng], 17, { duration: 0.8 });
+}
+
+function exportOutageClientsCSV(valveId) {
+    if (typeof VALVE_OUTAGE_SIMULATION_DB === 'undefined') return;
+    const sim = VALVE_OUTAGE_SIMULATION_DB[valveId];
+    if (!sim || !sim.consumers) return;
+
+    let csv = '\uFEFF"ID_Vivienda","Nombre_Titular_Predio","Num_Medidor","RUT","Estado_Comercial","Latitud","Longitud","Sector_Afectado","Valvula_Corte"\n';
+    sim.consumers.forEach(c => {
+        csv += `"${c.id}","${c.name}","${c.meter}","${c.rut}","${c.status}","${c.coords[1]}","${c.coords[0]}","${sim.sector}","${valveId}"\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Nomina_Corte_Suministro_${valveId}_Santa_Juana.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
 function showConsumerDetails(props) {
@@ -1443,10 +1824,14 @@ function initSearchEngine() {
         if (typeof json_Arranques_GeoConecta !== 'undefined') {
             json_Arranques_GeoConecta.features.forEach(f => {
                 const p = f.properties;
-                if (p.socio.toLowerCase().includes(query) || p.rut.toLowerCase().includes(query) || p.n_medidor.toLowerCase().includes(query)) {
+                const matchName = p.socio && p.socio.toLowerCase().includes(query);
+                const matchRut = p.rut && p.rut.toLowerCase().includes(query);
+                const matchMed = p.n_medidor && p.n_medidor.toLowerCase().includes(query);
+                const matchArr = p.id_arranque && p.id_arranque.toLowerCase().includes(query);
+                if (matchName || matchRut || matchMed || matchArr) {
                     matches.push({
                         title: p.socio,
-                        sub: `RUT: ${p.rut} | Medidor: ${p.n_medidor}`,
+                        sub: `${p.id_arranque} | Med: ${p.n_medidor} | ${p.sistema || 'SSR'}`,
                         tag: 'CLIENTE',
                         coords: f.geometry.coordinates,
                         type: 'consumer',
@@ -1547,6 +1932,11 @@ function onSearchResultClick(type, propsEncoded, lng, lat) {
             showValveDetails(props);
         } else if (type === 'consumer') {
             if (layers.arranques) {
+                if (!map.hasLayer(layers.arranques)) {
+                    map.addLayer(layers.arranques);
+                    const chk = document.getElementById('chk-arranques');
+                    if (chk) chk.checked = true;
+                }
                 layers.arranques.eachLayer(layer => {
                     if (layer.feature && layer.feature.properties.id_arranque === props.id_arranque) {
                         layer.openPopup();

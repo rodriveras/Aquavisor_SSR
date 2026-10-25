@@ -1443,3 +1443,407 @@ header.app-header {
         font-size: 7.5px;
     }
 }
+
+
+/* ==============================================================================
+   7. HERRAMIENTA DE SIMULACIÓN DE CORTE DE VÁLVULAS - ULTRA COMPACTA Y MOBILE-FIRST
+   ============================================================================== */
+
+.valve-action-box {
+    margin-top: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(0, 210, 255, 0.25);
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+    text-align: center;
+}
+
+.valve-action-box.outage-active {
+    border-color: rgba(239, 68, 68, 0.5);
+    background: rgba(239, 68, 68, 0.05);
+}
+
+/* Chip informativo compacto */
+.maneuver-chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 11px;
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 20px;
+    padding: 3px 10px;
+    margin-bottom: 7px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.maneuver-chip strong {
+    color: var(--accent-cyan);
+}
+
+.maneuver-divider {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-toggle-valve {
+    width: 100%;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #0284c7, #02649b);
+    border: none;
+    color: #fff;
+    font-weight: 800;
+    font-size: 11.5px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-toggle-valve:hover {
+    filter: brightness(1.1);
+}
+
+.btn-toggle-valve.closed {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    box-shadow: 0 2px 10px rgba(239, 68, 68, 0.35);
+}
+
+/* Caja de corte compacta y no invasiva */
+.valve-outage-box.compact {
+    margin-top: 8px;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    border-radius: var(--radius-sm);
+    padding: 8px;
+    text-align: left;
+}
+
+.outage-compact-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.outage-title-txt {
+    font-size: 10.5px;
+    font-weight: 800;
+    color: #fca5a5;
+    letter-spacing: 0.2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.outage-tag-mini {
+    font-size: 8.5px;
+    font-weight: 800;
+    background: rgba(239, 68, 68, 0.25);
+    color: #fca5a5;
+    padding: 1px 5px;
+    border-radius: 3px;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+/* Fila horizontal de estadísticas */
+.outage-stat-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 4px;
+    padding: 5px 4px;
+    margin-bottom: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.outage-pill-metric {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.outage-pill-num {
+    font-size: 15px;
+    font-weight: 900;
+    color: #ef4444;
+    line-height: 1.1;
+}
+
+.outage-pill-txt {
+    font-size: 8.5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+}
+
+.outage-compact-sector {
+    font-size: 10.5px;
+    color: #cbd5e1;
+    background: rgba(239, 68, 68, 0.08);
+    border-left: 2px solid #ef4444;
+    padding: 3px 6px;
+    border-radius: 0 3px 3px 0;
+    margin-bottom: 6px;
+    line-height: 1.25;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Botones en una sola fila compacta */
+.outage-btn-row {
+    display: flex;
+    gap: 4px;
+}
+
+.btn-outage-sm {
+    flex: 1;
+    padding: 5px 6px;
+    border-radius: var(--radius-sm);
+    font-size: 9.5px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.btn-outage-focus {
+    background: rgba(0, 210, 255, 0.15);
+    color: #00d2ff;
+    border: 1px solid rgba(0, 210, 255, 0.35);
+}
+.btn-outage-focus:hover {
+    background: rgba(0, 210, 255, 0.25);
+}
+
+.btn-outage-table {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.btn-outage-table:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.btn-outage-dl {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+}
+.btn-outage-dl:hover {
+    background: rgba(16, 185, 129, 0.25);
+}
+
+/* Lista desplegable compacta */
+.outage-clients-scroll {
+    margin-top: 6px;
+    max-height: 120px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    padding: 3px;
+}
+
+.outage-client-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3px 6px;
+    font-size: 9.5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.outage-client-item:last-child {
+    border-bottom: none;
+}
+
+.outage-client-name {
+    font-weight: 700;
+    color: #fff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 140px;
+}
+
+.outage-client-meta {
+    font-size: 8.5px;
+    color: #94a3b8;
+}
+
+/* Banner flotante en el mapa: Píldora ultra-delgada (HUD) */
+.valve-outage-hud {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1000;
+    width: auto;
+    max-width: calc(100vw - 40px);
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(239, 68, 68, 0.7);
+    border-radius: 24px;
+    padding: 5px 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), 0 0 12px rgba(239, 68, 68, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: hudSlideUp 0.25s ease;
+}
+
+@keyframes hudSlideUp {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.hud-pill-content {
+    font-size: 11px;
+    color: #e2e8f0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hud-pill-content strong {
+    color: #ef4444;
+}
+
+.btn-hud-pill-restore {
+    padding: 3px 8px;
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+}
+
+.btn-hud-pill-restore:hover {
+    background: #dc2626;
+}
+
+.btn-hud-pill-focus {
+    padding: 3px 7px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-hud-pill-close {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 0 2px;
+    line-height: 1;
+}
+
+.btn-hud-pill-close:hover {
+    color: #fff;
+}
+
+.hud-pulse-beacon {
+    width: 7px;
+    height: 7px;
+    min-width: 7px;
+    border-radius: 50%;
+    background: #ef4444;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8);
+    animation: beaconPulse 1.5s infinite;
+}
+
+@keyframes beaconPulse {
+    0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8); }
+    70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+    100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.outage-marker-pulse {
+    animation: markerPulseRing 2s infinite;
+}
+
+@keyframes markerPulseRing {
+    0% { filter: drop-shadow(0 0 1px rgba(239, 68, 68, 0.8)); }
+    50% { filter: drop-shadow(0 0 4px rgba(239, 68, 68, 1)); }
+    100% { filter: drop-shadow(0 0 1px rgba(239, 68, 68, 0.8)); }
+}
+
+.outage-halo-pulse {
+    animation: softHaloPulse 3s infinite ease-in-out;
+}
+
+@keyframes softHaloPulse {
+    0% {
+        stroke-opacity: 0.55;
+        fill-opacity: 0.12;
+    }
+    50% {
+        stroke-opacity: 1.0;
+        fill-opacity: 0.26;
+    }
+    100% {
+        stroke-opacity: 0.55;
+        fill-opacity: 0.12;
+    }
+}
+
+.outage-tooltip {
+    background: rgba(15, 23, 42, 0.94) !important;
+    border: 1px solid rgba(239, 68, 68, 0.6) !important;
+    color: #fecaca !important;
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
+    padding: 3px 8px !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+    pointer-events: none;
+}
+
+/* Ajustes Responsive para Móviles */
+@media (max-width: 768px) {
+    .valve-outage-hud {
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        max-width: calc(100vw - 20px);
+        justify-content: space-between;
+        padding: 4px 8px;
+    }
+    
+    .hud-pill-content {
+        font-size: 9.5px;
+    }
+    
+    .outage-pill-num {
+        font-size: 13px;
+    }
+    
+    .btn-outage-sm {
+        font-size: 8.5px;
+        padding: 4px 3px;
+    }
+}

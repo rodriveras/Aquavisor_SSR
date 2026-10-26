@@ -3379,3 +3379,605 @@ body.role-auditor #tab-btn-copilot {
 .btn-icon-only:hover svg {
     transform: scale(1.1);
 }
+
+/* ==============================================================================
+   18. HEADER LIMPIO & BOTÓN DE PORTAL DE INICIO / PERFILES
+   ============================================================================== */
+.btn-portal-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(2, 132, 199, 0.35);
+    border-radius: 20px;
+    padding: 3px 12px 3px 6px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.btn-portal-switch:hover {
+    border-color: var(--accent-cyan);
+    background: rgba(2, 132, 199, 0.2);
+    box-shadow: 0 0 12px rgba(0, 210, 255, 0.4);
+    transform: translateY(-1px);
+}
+
+.portal-role-avatar {
+    font-size: 15px;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+}
+
+.portal-role-meta {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    line-height: 1.15;
+}
+
+.portal-role-badge {
+    font-size: 8px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.portal-role-name {
+    font-size: 11px;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.portal-switch-chevron {
+    font-size: 10px;
+    color: var(--accent-cyan);
+    margin-left: 2px;
+}
+
+
+/* ==============================================================================
+   19. PORTAL DE INICIO: SELECCIÓN DE PERFIL 360° (MINIMALISTA, DISCRETO Y ATRACTIVO)
+   ============================================================================== */
+.landing-portal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: radial-gradient(circle at 50% 35%, rgba(2, 132, 199, 0.22) 0%, rgba(11, 19, 41, 0.92) 65%, rgba(6, 11, 24, 0.98) 100%),
+                url('../images/APR Mutupin1.jpg') center/cover no-repeat;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+    opacity: 1;
+    visibility: visible;
+}
+
+.landing-portal-overlay.portal-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.landing-portal-container {
+    position: relative;
+    max-width: 680px;
+    width: 100%;
+    background: rgba(15, 23, 42, 0.88);
+    border: 1px solid rgba(2, 132, 199, 0.35);
+    border-radius: 24px;
+    box-shadow: 0 25px 65px rgba(0, 0, 0, 0.85), 0 0 35px rgba(0, 210, 255, 0.2);
+    padding: 34px 36px 28px 36px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    text-align: center;
+}
+
+.landing-portal-close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #94a3b8;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.landing-portal-close:hover {
+    background: rgba(239, 68, 68, 0.25);
+    border-color: #ef4444;
+    color: #ffffff;
+}
+
+.landing-portal-header {
+    margin-bottom: 24px;
+}
+
+.landing-portal-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 14px;
+    background: rgba(2, 132, 199, 0.15);
+    border: 1px solid rgba(0, 210, 255, 0.35);
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #38bdf8;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+
+.landing-portal-chip .chip-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #00d2ff;
+    box-shadow: 0 0 8px #00d2ff;
+}
+
+.landing-portal-title {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin: 0 0 6px 0;
+    background: linear-gradient(135deg, #ffffff 40%, #7dd3fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.landing-portal-subtitle {
+    font-size: 13px;
+    font-weight: 600;
+    color: #94a3b8;
+    margin: 0;
+}
+
+/* Botones de Acceso Rápido (Solo Título + Icono) */
+.landing-buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.portal-role-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 60px;
+    padding: 10px 18px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    background: rgba(30, 41, 59, 0.65);
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.portal-role-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    background: rgba(30, 41, 59, 0.95);
+}
+
+.role-btn-icon {
+    font-size: 24px;
+    margin-right: 12px;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.role-btn-title {
+    font-size: 14.5px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.2px;
+    text-align: left;
+}
+
+.role-btn-arrow {
+    margin-left: auto;
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text-muted);
+    transition: transform 0.2s ease, color 0.2s ease;
+    padding-left: 8px;
+}
+
+.portal-role-btn:hover .role-btn-arrow {
+    transform: translateX(4px);
+    color: #ffffff;
+}
+
+/* Colores por Rol */
+.role-btn-terreno {
+    border-left: 5px solid #00d2ff;
+}
+.role-btn-terreno:hover {
+    border-color: #00d2ff;
+    box-shadow: 0 0 22px rgba(0, 210, 255, 0.35);
+}
+.role-btn-terreno .role-btn-icon {
+    border: 1px solid rgba(0, 210, 255, 0.35);
+    background: rgba(0, 210, 255, 0.12);
+}
+
+.role-btn-admin {
+    border-left: 5px solid #10b981;
+}
+.role-btn-admin:hover {
+    border-color: #10b981;
+    box-shadow: 0 0 22px rgba(16, 185, 129, 0.35);
+}
+.role-btn-admin .role-btn-icon {
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    background: rgba(16, 185, 129, 0.12);
+}
+
+.role-btn-directorio {
+    border-left: 5px solid #f59e0b;
+}
+.role-btn-directorio:hover {
+    border-color: #f59e0b;
+    box-shadow: 0 0 22px rgba(245, 158, 11, 0.35);
+}
+.role-btn-directorio .role-btn-icon {
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    background: rgba(245, 158, 11, 0.12);
+}
+
+.role-btn-auditor {
+    border-left: 5px solid #8b5cf6;
+}
+.role-btn-auditor:hover {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 22px rgba(139, 92, 246, 0.35);
+}
+.role-btn-auditor .role-btn-icon {
+    border: 1px solid rgba(139, 92, 246, 0.35);
+    background: rgba(139, 92, 246, 0.12);
+}
+
+.landing-portal-footer {
+    display: flex;
+    justify-content: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 14px;
+}
+
+.btn-skip-portal {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+}
+.btn-skip-portal:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+/* ==============================================================================
+   20. PRIORIDAD TÁCTIL Y MEJORAS DE SIMBOLOGÍA GEOESPACIAL (TUBERÍAS, FUENTES, ETC)
+   ============================================================================== */
+/* Prioridad Táctil Absoluta de Arranques sobre Área de Servicio */
+.leaflet-pane.leaflet-concesionPane-pane {
+    pointer-events: none !important;
+}
+.leaflet-pane.leaflet-concesionPane-pane svg,
+.leaflet-pane.leaflet-concesionPane-pane path {
+    pointer-events: none !important;
+}
+.leaflet-pane.leaflet-arranquesPane-pane {
+    z-index: 680 !important;
+    pointer-events: auto !important;
+}
+.leaflet-pane.leaflet-arranquesPane-pane svg,
+.leaflet-pane.leaflet-arranquesPane-pane path {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+/* Tuberías con relieve y alta definición */
+.pipe-troncal {
+    filter: drop-shadow(0 0 3px rgba(0, 132, 255, 0.7));
+}
+.pipe-impulsion {
+    filter: drop-shadow(0 0 3px rgba(168, 85, 247, 0.7));
+}
+.pipe-ramal {
+    filter: drop-shadow(0 0 2px rgba(0, 229, 255, 0.5));
+}
+
+/* Nodos Industriales: Estanques y Pozos */
+.custom-source-div-icon {
+    background: transparent !important;
+    border: none !important;
+}
+.hud-source-badge {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.source-icon-core {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.tank-core {
+    background: linear-gradient(135deg, #0284c7 0%, #00d2ff 100%);
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 16px rgba(0, 210, 255, 0.8);
+}
+.well-core {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.8);
+}
+.hud-source-badge:hover .source-icon-core {
+    transform: scale(1.15);
+}
+.source-core-sym {
+    font-size: 15px;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+}
+.source-beacon-pulse {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(0, 210, 255, 0.35);
+    animation: sonar-pulse 2.2s infinite ease-out;
+    pointer-events: none;
+    z-index: 1;
+}
+.pulse-emerald {
+    background: rgba(16, 185, 129, 0.35) !important;
+}
+@keyframes sonar-pulse {
+    0% { transform: scale(0.6); opacity: 0.9; }
+    100% { transform: scale(1.6); opacity: 0; }
+}
+.source-float-tag {
+    position: absolute;
+    bottom: -11px;
+    white-space: nowrap;
+    font-size: 8.5px;
+    font-weight: 800;
+    padding: 1.5px 6px;
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.92);
+    border: 1px solid #00d2ff;
+    color: #38bdf8;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    z-index: 3;
+    pointer-events: none;
+}
+.tag-emerald {
+    border-color: #10b981 !important;
+    color: #34d399 !important;
+}
+
+/* Accesorios Técnicos: Grifos, Ventosas, Purgas */
+.custom-acc-icon {
+    background: transparent !important;
+    border: none !important;
+}
+.acc-marker-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+.acc-marker-badge:hover {
+    transform: scale(1.22);
+}
+.acc-core {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+}
+.acc-grifo .acc-core {
+    border-radius: 7px !important;
+}
+.acc-ventosa .acc-core {
+    border-radius: 5px !important;
+}
+
+
+/* ==============================================================================
+   20. BOTÓN FLOTANTE LATERAL PARA EL PANEL DERECHO (DOCK HANDLE)
+   ============================================================================== */
+.panel-dock-handle {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    background: rgba(11, 19, 41, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(2, 132, 199, 0.45);
+    border-radius: 20px;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.panel-dock-handle:hover {
+    background: rgba(15, 28, 60, 0.95);
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 16px rgba(0, 210, 255, 0.45);
+    transform: translateY(-1px);
+}
+
+.panel-dock-handle .dock-icon {
+    font-size: 14px;
+}
+
+
+/* ==============================================================================
+   21. CONTROL GPS JUNTO AL CONTROL DE ZOOM (LEAFLET BOTTOMRIGHT)
+   ============================================================================== */
+.leaflet-control-custom-gps {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+    border-radius: 6px !important;
+    overflow: hidden;
+    margin-bottom: 8px !important;
+}
+
+.leaflet-control-gps-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 34px !important;
+    height: 34px !important;
+    background: rgba(11, 19, 41, 0.92) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(2, 132, 199, 0.4) !important;
+    color: #38bdf8 !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+}
+
+.leaflet-control-gps-btn:hover {
+    background: rgba(2, 132, 199, 0.85) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 12px rgba(0, 210, 255, 0.5) !important;
+}
+
+.leaflet-control-gps-btn.locating svg {
+    animation: spin-gps 1s linear infinite;
+    color: #00d2ff;
+}
+
+@keyframes spin-gps {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+
+/* ==============================================================================
+   22. BOTÓN DE SIMULAR ROTURA EN FICHA TÉCNICA DE TUBERÍA
+   ============================================================================== */
+.btn-ficha-burst {
+    width: 100%;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.22) 0%, rgba(185, 28, 28, 0.35) 100%);
+    border: 1px solid #ef4444;
+    border-radius: 8px;
+    color: #fca5a5;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-ficha-burst:hover {
+    background: #ef4444;
+    color: #ffffff;
+    box-shadow: 0 0 14px rgba(239, 68, 68, 0.6);
+    transform: translateY(-1px);
+}
+
+
+/* ==============================================================================
+   23. RESPONSIVE MOBILE PARA PORTAL Y CONTROLES
+   ============================================================================== */
+@media (max-width: 768px) {
+    .landing-portal-container {
+        padding: 24px 18px 20px 18px;
+        max-height: 94vh;
+    }
+
+    .landing-portal-title {
+        font-size: 22px;
+    }
+
+    .landing-portal-subtitle {
+        font-size: 12px;
+    }
+
+    .landing-buttons-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .portal-role-btn {
+        min-height: 56px;
+        padding: 8px 16px;
+    }
+
+    .role-btn-title {
+        font-size: 14.5px;
+    }
+
+    .leaflet-control-gps-btn {
+        width: 44px !important;
+        height: 44px !important;
+    }
+}

@@ -37,38 +37,20 @@
             </div>
 
             <div class="header-right-tools">
-                <!-- Selector de Perfil Adaptativo (RBAC 360°) -->
-                <div class="role-selector-wrapper" id="role-selector-wrapper" title="Cambiar Vista según Perfil">
-                    <span class="role-badge-label desktop-only">Perfil:</span>
-                    <div class="role-select-box">
-                        <span id="current-role-icon" class="role-select-icon">👷</span>
-                        <select id="select-user-role" class="select-user-role" aria-label="Seleccionar Perfil">
-                            <option value="terreno" selected>👷 Terreno (Operador)</option>
-                            <option value="administracion">👩‍💼 Administración (Cobranza)</option>
-                            <option value="directorio">📊 Directorio (KPIs 360°)</option>
-                            <option value="auditor">🏛️ Fiscalización (DOH / Ley 20.998)</option>
-                        </select>
+                <!-- Botón Discreto de Perfil y Portal de Inicio -->
+                <button id="btn-portal-switch" class="btn-portal-switch" onclick="openLandingPortal()" title="Página de Inicio / Cambiar Perfil">
+                    <span class="portal-role-avatar" id="header-role-icon">👷</span>
+                    <div class="portal-role-meta desktop-only">
+                        <span class="portal-role-badge">Perfil</span>
+                        <span class="portal-role-name" id="header-role-name">Operación Terreno</span>
                     </div>
-                </div>
+                    <span class="portal-switch-chevron">▾</span>
+                </button>
 
                 <!-- Botón Lupa en Móvil -->
                 <button id="btn-mobile-search" class="btn-header-tool mobile-search-btn mobile-only" title="Buscar...">
                     🔍
                 </button>
-
-                <!-- Botones de Acción -->
-                <div class="header-actions">
-                    <button id="btn-gps-locate" class="btn-header-tool only-role-terreno" title="Centrar mapa en mi posición GPS" onclick="locateUserGPS()">
-                        <span class="btn-icon">📍</span><span class="btn-text desktop-only"> GPS</span>
-                    </button>
-
-                    <button id="btn-emergency-mode" class="btn-emergency only-role-terreno" title="Simular Rotura">
-                        <span class="btn-icon">🚨</span><span class="btn-text desktop-only"> Rotura</span>
-                    </button>
-                    <button id="btn-toggle-drawer" class="btn-header-tool btn-drawer-toggle" title="Abrir Panel" onclick="toggleRightDrawer()">
-                        <span class="btn-icon">📑</span><span class="btn-text desktop-only"> Panel</span>
-                    </button>
-                </div>
             </div>
         </header>
 
@@ -185,6 +167,12 @@
                     </div>
                 </div>
             </aside>
+
+            <!-- TIRADOR FLOTANTE LATERAL PARA EL PANEL DERECHO -->
+            <button id="btn-panel-dock" class="panel-dock-handle" onclick="toggleRightDrawer()" title="Abrir Panel de Control y Ficha">
+                <span class="dock-icon">📑</span>
+                <span class="dock-text desktop-only">Panel</span>
+            </button>
 
             <!-- PANEL LATERAL DERECHO DESPLEGABLE (TELEMETRÍA + FICHA TÉCNICA) -->
             <aside id="drawer-right" class="drawer-right">
@@ -468,6 +456,58 @@
                         ✔ ¡Copiado con éxito! Listo para pegar en los grupos de WhatsApp de los vecinos.
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================
+         PORTAL DE INICIO: ACCESO RÁPIDO POR PERFIL 360° (ATRACTIVO & MINIMALISTA)
+         ==================================================================== -->
+    <div id="landing-portal" class="landing-portal-overlay">
+        <div class="landing-portal-container">
+            <button class="landing-portal-close" onclick="closeLandingPortal()" title="Continuar al Mapa">✕</button>
+
+            <div class="landing-portal-header">
+                <div class="landing-portal-chip">
+                    <span class="chip-dot"></span> SISTEMA SANITARIO RURAL • SANTA JUANA - EL CALVARIO
+                </div>
+                <h1 class="landing-portal-title">AquaVisor 360° SSR</h1>
+                <p class="landing-portal-subtitle">
+                    Gemelo Digital Hidráulico & Inteligencia Territorial
+                </p>
+            </div>
+
+            <!-- Botones de Acceso con solo Título e Icono -->
+            <div class="landing-buttons-grid">
+                <button class="portal-role-btn role-btn-terreno" onclick="enterAppWithRole('terreno')">
+                    <span class="role-btn-icon">👷</span>
+                    <span class="role-btn-title">Operación en Terreno</span>
+                    <span class="role-btn-arrow">→</span>
+                </button>
+
+                <button class="portal-role-btn role-btn-admin" onclick="enterAppWithRole('administracion')">
+                    <span class="role-btn-icon">👩‍💼</span>
+                    <span class="role-btn-title">Gestión Comercial</span>
+                    <span class="role-btn-arrow">→</span>
+                </button>
+
+                <button class="portal-role-btn role-btn-directorio" onclick="enterAppWithRole('directorio')">
+                    <span class="role-btn-icon">📊</span>
+                    <span class="role-btn-title">Comité y Directorio</span>
+                    <span class="role-btn-arrow">→</span>
+                </button>
+
+                <button class="portal-role-btn role-btn-auditor" onclick="enterAppWithRole('auditor')">
+                    <span class="role-btn-icon">🏛️</span>
+                    <span class="role-btn-title">Fiscalización y Auditoría</span>
+                    <span class="role-btn-arrow">→</span>
+                </button>
+            </div>
+
+            <div class="landing-portal-footer">
+                <button class="btn-skip-portal" onclick="closeLandingPortal()">
+                    <span>🗺️</span> Entrar al Mapa General
+                </button>
             </div>
         </div>
     </div>

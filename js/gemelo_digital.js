@@ -68,16 +68,56 @@ function initMap() {
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    // Pane dedicado para Arranques y Medidores (siempre prioritario al tacto sobre tuberías y polígonos)
+    // Control GPS personalizado adyacente a la herramienta de Zoom
+    const GpsControl = L.Control.extend({
+        options: { position: 'bottomright' },
+        onAdd: function() {
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom-gps');
+            const btn = L.DomUtil.create('a', 'leaflet-control-gps-btn', container);
+            btn.href = '#';
+            btn.title = 'Centrar en mi ubicación GPS (Terreno)';
+            btn.setAttribute('role', 'button');
+            btn.setAttribute('aria-label', 'Centrar en mi ubicación GPS');
+            btn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="7"></circle>
+                <circle cx="12" cy="12" r="2.5" fill="currentColor"></circle>
+                <line x1="12" y1="1" x2="12" y2="4"></line>
+                <line x1="12" y1="20" x2="12" y2="23"></line>
+                <line x1="1" y1="12" x2="4" y2="12"></line>
+                <line x1="20" y1="12" x2="23" y2="12"></line>
+            </svg>`;
+            L.DomEvent.disableClickPropagation(container);
+            L.DomEvent.on(btn, 'click', function(e) {
+                L.DomEvent.preventDefault(e);
+                locateUserGPS();
+            });
+            return container;
+        }
+    });
+    map.addControl(new GpsControl());
+
+    // Panes dedicados con jerarquía estricta de z-index y eventos táctiles:
+    // 1. Área de Concesión / Island Spotlight (Fondo pasivo sin captura de clics)
     map.createPane('concesionPane');
-    map.getPane('concesionPane').style.zIndex = '420';
+    map.getPane('concesionPane').style.zIndex = '350';
+    map.getPane('concesionPane').style.pointerEvents = 'none';
 
+    // 2. Redes de Tuberías
+    map.createPane('redesPane');
+    map.getPane('redesPane').style.zIndex = '450';
+
+    // 3. Válvulas y Accesorios
+    map.createPane('valvulasPane');
+    map.getPane('valvulasPane').style.zIndex = '600';
+
+    // 4. Arranques y Medidores (Prioridad TÁCTIL ABSOLUTA sobre polígonos y tuberías)
     map.createPane('arranquesPane');
-    map.getPane('arranquesPane').style.zIndex = '620';
+    map.getPane('arranquesPane').style.zIndex = '680';
+    map.getPane('arranquesPane').style.pointerEvents = 'auto';
 
-    // Pane dedicado para Simulación de Corte (destaque moderado y prioritario de viviendas afectadas)
+    // 5. Simulación de Corte (destaque prioritario de viviendas afectadas)
     map.createPane('outagePane');
-    map.getPane('outagePane').style.zIndex = '650';
+    map.getPane('outagePane').style.zIndex = '720';
 
     // 1. Google Satélite (Imágenes aéreas de alta resolución sin etiquetas)
     const googleSat = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
@@ -217,6 +257,8 @@ function initDrawerControls() {
     function openRightDrawer(tabName = 'telemetry') {
         lastDrawerActionTime = Date.now();
         drawerRight.classList.add('open');
+        const dockBtn = document.getElementById('btn-panel-dock');
+        if (dockBtn) dockBtn.style.display = 'none';
         if (btnToggleTelemetry) btnToggleTelemetry.classList.add('active');
         switchRightTab(tabName);
         syncBackdrop();
@@ -224,6 +266,8 @@ function initDrawerControls() {
 
     function closeRightDrawer() {
         drawerRight.classList.remove('open');
+        const dockBtn = document.getElementById('btn-panel-dock');
+        if (dockBtn) dockBtn.style.display = 'flex';
         if (btnToggleTelemetry) btnToggleTelemetry.classList.remove('active');
         if (selectedPipeLayer && layers.redes) {
             layers.redes.resetStyle(selectedPipeLayer);
@@ -350,88 +394,34 @@ function initLayers() {
             }
         });
 
-        // 2. Capa Interior de Precisión Catastral (Trazo nítido de deslinde con patrón oficial)
+        // 2. Capa Interior de Precisión Catastral (Trazo nítido de deslinde sin captura de clics)
         const boundaryLayer = L.geoJSON(json_Area_Servicio_4, {
             pane: 'concesionPane',
+            interactive: false,
             style: {
                 color: '#ea580c',
-                weight: 2.4,
+                weight: 2.6,
                 opacity: 1.0,
                 dashArray: '10, 4, 2, 4',
-                fillColor: 'transparent',
-                fillOpacity: 0.0
-            },
-            onEachFeature: function(feature, layer) {
-                const p = feature.properties;
-
-                // Microinteracción Hover
-                layer.on('mouseover', function() {
-                    this.setStyle({
-                        weight: 3.4,
-                        color: '#f97316'
-                    });
-                    haloLayer.setStyle({
-                        opacity: 0.75,
-                        weight: 11
-                    });
-                });
-
-                layer.on('mouseout', function() {
-                    this.setStyle({
-                        weight: 2.4,
-                        color: '#ea580c'
-                    });
-                    haloLayer.setStyle({
-                        opacity: 0.40,
-                        weight: 8
-                    });
-                });
-
-                layer.bindPopup(`
-                    <div class="popup-consumer">
-                        <div class="popup-header-row" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px; gap:6px;">
-                            <span style="font-size:10px; font-weight:800; color:#f59e0b; letter-spacing:0.4px;">🏝️ ISLA OPERACIONAL DOH</span>
-                            <span style="font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:10px; background:rgba(245,158,11,0.2); color:#fbbf24; border:1px solid #f59e0b; white-space:nowrap;">
-                                ● Ley Nº 20.998
-                            </span>
-                        </div>
-                        <div style="font-size:13px; font-weight:800; color:#ffffff; margin-bottom:4px; line-height:1.2;">
-                            ${p.nombre || 'Área de Servicio Santa Juana Nº9'}
-                        </div>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; background:rgba(255,255,255,0.06); padding:6px 8px; border-radius:8px; margin-bottom:8px;">
-                            <div>
-                                <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Superficie</div>
-                                <div style="font-size:12.5px; font-weight:800; color:#f59e0b;">
-                                    345 ha
-                                </div>
-                            </div>
-                            <div>
-                                <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Comuna</div>
-                                <div style="font-size:12.5px; font-weight:800; color:#ffffff;">
-                                    ${p.comuna || 'San Ignacio'}
-                                </div>
-                            </div>
-                        </div>
-                        <div style="font-size:10px; color:#94a3b8; line-height:1.35;">
-                            Territorio oficial de concesión sanitaria rural. Imagen satelital en alta fidelidad y foco operativo.
-                        </div>
-                    </div>
-                `, { className: 'aquavisor-popup', maxWidth: 280 });
+                fill: false,
+                interactive: false
             }
         });
 
-        // Agrupación unificada: Máscara Spotlight + Halo + Límite de Precisión
+        // Agrupación unificada: Máscara Spotlight + Halo + Límite de Precisión (100% pasivo)
         layers.concesion = L.featureGroup([spotlightMaskLayer, haloLayer, boundaryLayer]).addTo(map);
     }
 
     // B. Localidad Censal Santa Juana
     if (typeof json_Santa_Juanacartografia_censo2024_pais__localidades_cpv24_3 !== 'undefined') {
         layers.censo = L.geoJSON(json_Santa_Juanacartografia_censo2024_pais__localidades_cpv24_3, {
+            interactive: false,
             style: {
                 color: '#8b5cf6',
                 weight: 1.5,
                 fillColor: '#8b5cf6',
-                fillOpacity: 0.03
+                fillOpacity: 0.03,
+                interactive: false
             }
         });
     }
@@ -439,6 +429,7 @@ function initLayers() {
     // C. Redes de Tuberías
     if (typeof json_Redes_Enriquecidas !== 'undefined') {
         layers.redes = L.geoJSON(json_Redes_Enriquecidas, {
+            pane: 'redesPane',
             style: stylePipes,
             onEachFeature: onEachPipeFeature
         }).addTo(map);
@@ -628,43 +619,49 @@ function stylePipes(feature) {
         if (sim && sim.pipes && sim.pipes.includes(p.id_tramo)) {
             return {
                 color: '#ef4444', // Rojo Alerta para tubería sin agua
-                weight: 5.5,
-                opacity: 0.95,
-                dashArray: '6, 6',
+                weight: 6.5,
+                opacity: 1.0,
+                dashArray: '7, 6',
                 lineCap: 'round',
-                lineJoin: 'round'
+                lineJoin: 'round',
+                className: 'hud-pipe-burst'
             };
         }
     }
 
-    // 1. Línea de Impulsión Pozo - Estanque
+    // 1. Línea de Impulsión Pozo - Estanque (Alta Presión de Bombeo DGA)
     if (p.id_tramo === 'TUB-11' || sector.includes('Impulsión')) {
         return {
-            color: '#4f46e5', // Azul Índigo / Impulsión
-            weight: 4.5,
+            color: '#a855f7', // Púrpura Neón Eléctrico / Bombeo
+            weight: 5.0,
             opacity: 0.95,
-            dashArray: '8, 4'
+            dashArray: '10, 5',
+            lineCap: 'round',
+            lineJoin: 'round',
+            className: 'pipe-impulsion'
         };
     }
 
-    // 2. Matriz Troncal Principal (110 mm y 90 mm)
+    // 2. Matriz Troncal Principal (110 mm y 90 mm - Columna Vertebral Hidráulica)
     if (diam.includes('110') || diam.includes('90')) {
         return {
-            color: '#1d4ed8', // Azul Rey Intenso para Matriz Troncal
-            weight: 5.5,
+            color: '#0084ff', // Azul Cobalto Neón Luminoso de Alto Contraste
+            weight: 6.0,
             opacity: 1.0,
             lineCap: 'round',
-            lineJoin: 'round'
+            lineJoin: 'round',
+            className: 'pipe-troncal'
         };
     }
 
-    // 3. Redes Ramales Secundarias (75 mm y 63 mm - Pasajes y Centro Cívico)
+    // 3. Redes Ramales Secundarias (75 mm y 63 mm - Distribución a Calles y Pasajes)
     return {
-        color: '#00e5ff', // Cian Neón / Turquesa Eléctrico para Redes Ramales
-        weight: 3.5,
+        color: '#00e5ff', // Cian Neón Cristalino / Red Ramal
+        weight: 3.6,
         opacity: 0.95,
         lineCap: 'round',
-        lineJoin: 'round'
+        lineJoin: 'round',
+        className: 'pipe-ramal'
     };
 }
 
@@ -732,6 +729,24 @@ function onEachPipeFeature(feature, layer) {
             ">
                 <span>📋</span> Ver Ficha Técnica Completa
             </button>
+            <button class="btn-popup-burst" onclick="simulateBurstByPipeId('${p.id_tramo}')" style="
+                width: 100%;
+                margin-top: 6px;
+                padding: 6px 10px;
+                background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(185, 28, 28, 0.35));
+                border: 1px solid #ef4444;
+                border-radius: 8px;
+                color: #fca5a5;
+                font-size: 10.5px;
+                font-weight: 700;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+            ">
+                <span>🚨</span> Simular Rotura en este Tramo
+            </button>
         </div>
     `;
 
@@ -783,6 +798,25 @@ function onEachPipeFeature(feature, layer) {
                 layer.openPopup(e.latlng);
             } else {
                 layer.openPopup();
+            }
+        }
+    });
+
+    layer.on('mouseover', function() {
+        if (!AppState.activeBurst || (AppState.activeBurst && AppState.activeBurst.id !== p.id_tramo)) {
+            if (!selectedPipeLayer || selectedPipeLayer !== layer) {
+                layer.setStyle({
+                    color: '#38bdf8',
+                    weight: isTroncal ? 7.5 : (isImpulsion ? 6.5 : 5.0)
+                });
+            }
+        }
+    });
+
+    layer.on('mouseout', function() {
+        if (!selectedPipeLayer || selectedPipeLayer !== layer) {
+            if (layers.redes && (!AppState.activeBurst || AppState.activeBurst.id !== p.id_tramo)) {
+                layers.redes.resetStyle(layer);
             }
         }
     });
@@ -907,28 +941,39 @@ function createSourceMarker(feature, latlng) {
     const isTank = (p.name && (p.name.includes('50') || p.name.includes('25') || p.name.includes('Estanque') || p.name.includes('SE'))) || 
                    (p.tipo_obra && p.tipo_obra.includes('Estanque'));
     const isProyectado = p.estado && p.estado.includes('Proyectado');
-    const color = isTank ? (isProyectado ? '#f59e0b' : '#0284c7') : '#00d2ff';
+    const color = isTank ? (isProyectado ? '#f59e0b' : '#00d2ff') : '#10b981';
+
+    let markerHtml = '';
+    if (isTank) {
+        markerHtml = `
+            <div class="hud-source-badge tank-badge" title="Estanque de Regulación ${p.capacidad || '50 m³'} (${p.name || 'Estanque'})">
+                <div class="source-beacon-pulse"></div>
+                <div class="source-icon-core tank-core">
+                    <span class="source-core-sym">🗼</span>
+                </div>
+                <span class="source-float-tag">ESTANQUE ${p.capacidad || '50m³'}</span>
+            </div>
+        `;
+    } else {
+        markerHtml = `
+            <div class="hud-source-badge well-badge" title="Captación Pozo Profundo DGA (${p.name || 'Pozo'})">
+                <div class="source-beacon-pulse pulse-emerald"></div>
+                <div class="source-icon-core well-core">
+                    <span class="source-core-sym">⚡</span>
+                </div>
+                <span class="source-float-tag tag-emerald">POZO DGA 6.8 L/s</span>
+            </div>
+        `;
+    }
 
     const customIcon = L.divIcon({
-        className: 'custom-div-icon',
-        html: `<div style="
-            background: ${color};
-            color: #fff;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 15px;
-            border: 2px solid #fff;
-            box-shadow: 0 0 14px ${color};
-        ">${isTank ? '🚰' : '⚡'}</div>`,
-        iconSize: [30, 30],
-        iconAnchor: [15, 15]
+        className: 'custom-source-div-icon',
+        html: markerHtml,
+        iconSize: [44, 44],
+        iconAnchor: [22, 22]
     });
 
-    const marker = L.marker(latlng, { icon: customIcon });
+    const marker = L.marker(latlng, { icon: customIcon, zIndexOffset: 1000 });
 
     marker.bindPopup(`
         <div class="popup-consumer">
@@ -975,17 +1020,17 @@ function createSourceMarker(feature, latlng) {
 }
 
 
-// Funciones de Dimensionamiento Dinámico Multi-Escala (Opción 1)
+// Funciones de Dimensionamiento Dinámico Multi-Escala (Optimizado para Touch Táctil)
 function getArranqueRadiusForZoom(zoom) {
-    if (zoom <= 14) return 2.6; // Escala Macro: micro-punto constelación (no tapa tuberías)
-    if (zoom <= 16) return 4.6; // Escala Sector: anillo bien proporcionado
-    return 6.8;                 // Escala Detalle / Terreno (>=17): amplio, táctil y legible
+    if (zoom <= 14) return 3.8; // Escala Macro: visible y con área táctil cómoda
+    if (zoom <= 16) return 5.8; // Escala Sector: anillo bien proporcionado y fácil de pulsar
+    return 8.5;                 // Escala Detalle / Terreno (>=17): amplio touch target para dedos
 }
 
 function getArranqueWeightForZoom(zoom) {
-    if (zoom <= 14) return 1.0;
-    if (zoom <= 16) return 1.5;
-    return 2.0;
+    if (zoom <= 14) return 1.8;
+    if (zoom <= 16) return 2.2;
+    return 2.8;
 }
 
 function createValveMarker(feature, latlng) {
@@ -1016,29 +1061,37 @@ function createAccessoryMarker(feature, latlng) {
     const tipo = feature.properties.tipo || '';
     let symbol = '🔧';
     let bgColor = '#8b5cf6';
+    let shapeClass = 'acc-default';
+    let label = 'Accesorio';
 
-    if (tipo.includes('Grifo')) { symbol = '🚒'; bgColor = '#f97316'; }
-    else if (tipo.includes('Ventosa')) { symbol = '💨'; bgColor = '#a855f7'; }
-    else if (tipo.includes('Purga')) { symbol = '🌊'; bgColor = '#eab308'; }
+    if (tipo.includes('Grifo')) { 
+        symbol = '🧯'; 
+        bgColor = '#ea580c'; 
+        shapeClass = 'acc-grifo';
+        label = 'Grifo DOH';
+    } else if (tipo.includes('Ventosa')) { 
+        symbol = '💨'; 
+        bgColor = '#8b5cf6'; 
+        shapeClass = 'acc-ventosa';
+        label = 'Ventosa Aire';
+    } else if (tipo.includes('Purga') || tipo.includes('Desagüe')) { 
+        symbol = '🚿'; 
+        bgColor = '#eab308'; 
+        shapeClass = 'acc-purga';
+        label = 'Purga Desagüe';
+    }
 
     const icon = L.divIcon({
         className: 'custom-acc-icon',
-        html: `<div style="
-            background: ${bgColor};
-            color: #fff;
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10.5px;
-            border: 1.5px solid #fff;
-            box-shadow: 0 0 6px ${bgColor};
-            cursor: pointer;
-        ">${symbol}</div>`,
-        iconSize: [20, 20],
-        iconAnchor: [10, 10]
+        html: `
+            <div class="acc-marker-badge ${shapeClass}" title="${label}">
+                <div class="acc-core" style="background:${bgColor}; border:1.8px solid #ffffff; box-shadow:0 0 10px ${bgColor};">
+                    <span>${symbol}</span>
+                </div>
+            </div>
+        `,
+        iconSize: [26, 26],
+        iconAnchor: [13, 13]
     });
 
     const marker = L.marker(latlng, { icon: icon });
@@ -1982,6 +2035,17 @@ function showPipeDetails(props) {
                     <span class="ficha-chip"><span class="chip-k">Año:</span> ${props.ano_instalacion || '2019'}</span>
                 </div>
             </div>
+
+            <!-- Bloque 4: Operación y Aislamiento de Red -->
+            <div class="ficha-card ficha-block-maneuver" style="margin-top:10px;">
+                <div class="ficha-card-label"><span class="block-icon">🚨</span> GESTIÓN DE INCIDENCIAS</div>
+                <div style="font-size:10px; color:var(--text-secondary); margin-bottom:8px; line-height:1.4;">
+                    Simula la rotura de esta tubería para calcular automáticamente las válvulas de cierre y los socios afectados.
+                </div>
+                <button class="btn-ficha-burst" onclick="simulateBurstByPipeId('${props.id_tramo}')">
+                    <span>🚨</span> Simular Rotura en este Tramo
+                </button>
+            </div>
         </div>
     `;
 
@@ -1996,6 +2060,21 @@ window.openPipeDrawerFromPopup = function(pipeId) {
             map.closePopup();
             showPipeDetails(item.properties);
         }
+    }
+};
+
+window.simulateBurstByPipeId = function(pipeId) {
+    if (!layers || !layers.redes) return;
+    let foundLayer = null;
+    layers.redes.eachLayer(l => {
+        if (l.feature && l.feature.properties && l.feature.properties.id_tramo === pipeId) {
+            foundLayer = l;
+        }
+    });
+    if (foundLayer) {
+        if (map && map.closePopup) map.closePopup();
+        triggerBurstSimulation(foundLayer.feature, foundLayer);
+        map.fitBounds(foundLayer.getBounds(), { maxZoom: 17, padding: [60, 60] });
     }
 };
 
@@ -2265,35 +2344,53 @@ function onSearchResultClick(type, propsEncoded, lng, lat) {
 // ------------------------------------------------------------------------------
 let currentAppRole = 'terreno';
 
-function initRoleManager() {
-    const roleSelect = document.getElementById('select-user-role');
-    const savedRole = localStorage.getItem('aquavisor_role') || 'terreno';
-    
-    if (roleSelect) {
-        roleSelect.value = savedRole;
-        roleSelect.addEventListener('change', (e) => {
-            setAppRole(e.target.value);
-        });
+const ROLE_METADATA = {
+    'terreno': { icon: '👷', name: 'Operación Terreno', short: 'Operador' },
+    'administracion': { icon: '👩‍💼', name: 'Gestión Comercial', short: 'Cobranza' },
+    'directorio': { icon: '📊', name: 'Comité y Directorio', short: 'Directorio' },
+    'auditor': { icon: '🏛️', name: 'Fiscalización DOH', short: 'Fiscalización' }
+};
+
+window.openLandingPortal = function() {
+    const portal = document.getElementById('landing-portal');
+    if (portal) {
+        portal.classList.remove('portal-hidden');
     }
-    setAppRole(savedRole, false);
+};
+
+window.closeLandingPortal = function() {
+    const portal = document.getElementById('landing-portal');
+    if (portal) {
+        portal.classList.add('portal-hidden');
+    }
+};
+
+window.enterAppWithRole = function(role) {
+    setAppRole(role);
+    window.closeLandingPortal();
+    if (typeof map !== 'undefined' && map) {
+        setTimeout(() => { map.invalidateSize(); }, 300);
+    }
+};
+
+function initRoleManager() {
+    const savedRole = localStorage.getItem('aquavisor_role') || 'terreno';
+    setAppRole(savedRole);
+    // La página de inicio aparece SIEMPRE por defecto al ingresar o recargar la plataforma
+    window.openLandingPortal();
 }
 
 function setAppRole(role) {
     currentAppRole = role;
     localStorage.setItem('aquavisor_role', role);
-    const roleSelect = document.getElementById('select-user-role');
-    const roleIcon = document.getElementById('current-role-icon');
+
+    const meta = ROLE_METADATA[role] || { icon: '👷', name: 'Operación Terreno', short: 'Operador' };
+    const roleIcon = document.getElementById('header-role-icon');
+    const roleName = document.getElementById('header-role-name');
     const ribbon = document.getElementById('executive-kpi-ribbon');
 
-    const icons = {
-        'terreno': '👷',
-        'administracion': '👩‍💼',
-        'directorio': '📊',
-        'auditor': '🏛️'
-    };
-
-    if (roleSelect) roleSelect.value = role;
-    if (roleIcon) roleIcon.textContent = icons[role] || '🚰';
+    if (roleIcon) roleIcon.textContent = meta.icon;
+    if (roleName) roleName.textContent = meta.name;
 
     document.body.classList.remove('role-terreno', 'role-administracion', 'role-directorio', 'role-auditor');
     document.body.classList.add('role-' + role);
@@ -2665,13 +2762,18 @@ window.copyWhatsAppToClipboard = copyWhatsAppToClipboard;
 let gpsMarker = null;
 
 function locateUserGPS() {
+    const gpsBtn = document.querySelector('.leaflet-control-gps-btn');
+    if (gpsBtn) gpsBtn.classList.add('locating');
+
     if (!navigator.geolocation) {
+        if (gpsBtn) gpsBtn.classList.remove('locating');
         alert('La geolocalización no está soportada en este navegador.');
         return;
     }
 
     navigator.geolocation.getCurrentPosition(
         (pos) => {
+            if (gpsBtn) gpsBtn.classList.remove('locating');
             const lat = pos.coords.latitude;
             const lng = pos.coords.longitude;
 
@@ -2693,6 +2795,7 @@ function locateUserGPS() {
             map.flyTo([lat, lng], 17, { duration: 1.0 });
         },
         (err) => {
+            if (gpsBtn) gpsBtn.classList.remove('locating');
             map.flyTo([-36.8480, -71.9380], 15, { duration: 1.0 });
             alert('Modo Terreno: Centrado en la red central de Santa Juana - El Calvario.');
         },
@@ -2750,9 +2853,17 @@ window.toggleRightDrawer = function() {
     const drawer = document.getElementById('drawer-right');
     if (!drawer) return;
     if (drawer.classList.contains('open')) {
-        drawer.classList.remove('open');
+        if (window.closeRightDrawer) {
+            window.closeRightDrawer();
+        } else {
+            drawer.classList.remove('open');
+            const dockBtn = document.getElementById('btn-panel-dock');
+            if (dockBtn) dockBtn.style.display = 'flex';
+        }
     } else {
         drawer.classList.add('open');
+        const dockBtn = document.getElementById('btn-panel-dock');
+        if (dockBtn) dockBtn.style.display = 'none';
         if (typeof currentAppRole !== 'undefined') {
             if (currentAppRole === 'terreno') {
                 if (window.openDetailTab) window.openDetailTab();

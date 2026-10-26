@@ -58,16 +58,15 @@
 
                 <!-- Botones de Acción -->
                 <div class="header-actions">
-                    <button id="btn-gps-locate" class="btn-header-tool" title="Centrar mapa en mi posición GPS" onclick="locateUserGPS()">
+                    <button id="btn-gps-locate" class="btn-header-tool only-role-terreno" title="Centrar mapa en mi posición GPS" onclick="locateUserGPS()">
                         <span class="btn-icon">📍</span><span class="btn-text desktop-only"> GPS</span>
                     </button>
 
-                    <button id="btn-toggle-telemetry" class="btn-header-tool" title="Telemetría SCADA">
-                        <span class="btn-icon">📡</span><span class="btn-text desktop-only"> SCADA</span>
-                    </button>
-
-                    <button id="btn-emergency-mode" class="btn-emergency" title="Simular Rotura">
+                    <button id="btn-emergency-mode" class="btn-emergency only-role-terreno" title="Simular Rotura">
                         <span class="btn-icon">🚨</span><span class="btn-text desktop-only"> Rotura</span>
+                    </button>
+                    <button id="btn-toggle-drawer" class="btn-header-tool btn-drawer-toggle" title="Abrir Panel" onclick="toggleRightDrawer()">
+                        <span class="btn-icon">📑</span><span class="btn-text desktop-only"> Panel</span>
                     </button>
                 </div>
             </div>
@@ -151,7 +150,7 @@
                             <span class="count-badge">57 tramos (18.6 km)</span>
                         </div>
                         <div class="layer-item">
-                            <label><input type="checkbox" id="chk-valvulas" checked> <span class="layer-icon-symbol" style="color:#10b981;">●</span> Válvulas de Sectorización</label>
+                            <label><input type="checkbox" id="chk-valvulas" checked> <span class="layer-icon-symbol" style="color:#00d2ff;">◈</span> Válvulas de Sectorización</label>
                             <span class="count-badge">20 unid.</span>
                         </div>
                         <div class="layer-item">
@@ -168,7 +167,7 @@
                     <div class="layer-group">
                         <div class="layer-group-title">Catastro de Socios y Legal</div>
                         <div class="layer-item">
-                            <label><input type="checkbox" id="chk-arranques" checked> <span class="layer-icon-symbol" style="color:#10b981;">●</span> Arranques y Medidores</label>
+                            <label><input type="checkbox" id="chk-arranques" checked> <span class="layer-icon-symbol" style="color:#0284c7;">⭕</span> Arranques y Medidores</label>
                             <span class="count-badge">292 socios</span>
                         </div>
                         <div class="layer-item">
@@ -176,7 +175,7 @@
                             <span class="count-badge">152 edif.</span>
                         </div>
                         <div class="layer-item">
-                            <label><input type="checkbox" id="chk-concesion" checked> <span class="layer-icon-symbol" style="color:#f97316;">⬚</span> Área de Servicio Oficial (DOH)</label>
+                            <label><input type="checkbox" id="chk-concesion" checked> <span class="layer-icon-symbol" style="color:#f59e0b;">🏝️</span> Área de Servicio (Island Spotlight)</label>
                             <span class="count-badge">2 sectores (345 ha)</span>
                         </div>
                         <div class="layer-item">
@@ -240,7 +239,7 @@
                         </div>
                     </div>
 
-                    <div style="margin-top:14px; padding:10px; background:rgba(255,255,255,0.03); border:1px solid var(--border-color); border-radius:var(--radius-md);">
+                    <div class="telemetry-summary-box" style="margin-top:14px; padding:10px; border-radius:var(--radius-md);">
                         <div style="font-size:10.5px; font-weight:700; color:var(--accent-cyan); margin-bottom:4px;">📊 Resumen de Operación Diaria</div>
                         <div style="font-size:10px; color:var(--text-secondary); line-height:1.4;">
                             • Producción Acumulada: <strong>142.8 m³/día</strong><br>
@@ -260,30 +259,30 @@
                     </div>
                 </div>
 
-                <!-- CONTENIDO PESTAÑA 3: GEOGESTIÓN COMERCIAL Y BALANCE ANF -->
+                <!-- CONTENIDO PESTAÑA 3: GEOGESTIÓN COMERCIAL Y BALANCE ANF (MINIMALISTA) -->
                 <div id="tab-content-commercial" class="drawer-body" style="display:none;">
                     <!-- Tarjeta Resumen de Cartera -->
                     <div class="comm-summary-card">
                         <div class="comm-card-header">
-                            <span class="comm-title">📊 Recaudación Mensual SSR</span>
-                            <span class="comm-badge-live">ACTIVA</span>
+                            <span class="comm-title">💰 Recaudación Mensual</span>
+                            <span class="comm-badge-live">84.9% AL DÍA</span>
                         </div>
                         <div class="comm-metrics-grid">
                             <div class="comm-metric">
-                                <span class="lbl">Socios Totales</span>
                                 <span class="val">292</span>
+                                <span class="lbl">👥 Socios</span>
                             </div>
                             <div class="comm-metric">
-                                <span class="lbl">Tasa al Día</span>
-                                <span class="val text-green">84.9%</span>
+                                <span class="val text-green">248</span>
+                                <span class="lbl">🟢 Al Día</span>
                             </div>
                             <div class="comm-metric">
-                                <span class="lbl">Morosos (1-2 m)</span>
                                 <span class="val text-yellow">38</span>
+                                <span class="lbl">🟡 Aviso</span>
                             </div>
                             <div class="comm-metric">
-                                <span class="lbl">Causal de Corte</span>
                                 <span class="val text-red">6</span>
+                                <span class="lbl">🔴 Corte</span>
                             </div>
                         </div>
                         <div class="comm-progress-wrap">
@@ -291,8 +290,8 @@
                                 <div class="comm-progress-fill" style="width: 84.9%;"></div>
                             </div>
                             <div class="comm-progress-sub">
-                                <span>Recaudado: <strong>$3.480.000</strong></span>
-                                <span>Total Facturado: $4.098.000</span>
+                                <span>💵 <strong>$3.48M</strong> cobrado</span>
+                                <span>🎯 $4.10M facturado</span>
                             </div>
                         </div>
                     </div>
@@ -301,29 +300,28 @@
                     <div class="comm-action-box">
                         <label class="comm-switch-label">
                             <input type="checkbox" id="chk-commercial-semaphore" onchange="toggleCommercialSemaphore(this.checked)">
-                            <span>🚦 <strong>Activar Semáforo Comercial en el Mapa</strong></span>
+                            <span>🚦 <strong>Semáforo en Mapa</strong></span>
                         </label>
-                        <p class="comm-switch-hint">Tiñe los 292 arranques en Verde (Al Día), Amarillo (Aviso) o Rojo (Corte) para planificar cobranza o cortes en terreno.</p>
+                        <div class="comm-legend-pills">
+                            <span class="legend-pill pill-green">🟢 Al Día</span>
+                            <span class="legend-pill pill-yellow">🟡 Aviso</span>
+                            <span class="legend-pill pill-red">🔴 Corte</span>
+                        </div>
                     </div>
 
                     <!-- Módulo de Carga de Planilla Excel / CSV -->
                     <div class="comm-import-box">
-                        <div class="import-header">
-                            <span>📥 Actualizar Cobranza del Mes</span>
-                        </div>
-                        <p class="import-desc">Carga la planilla generada por el software del SSR (APRChile, SisAPR o Excel de tesorería):</p>
                         <input type="file" id="input-commercial-excel" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleCommercialFileSelect(event)">
-                        <div class="import-dropzone" onclick="document.getElementById('input-commercial-excel').click()">
+                        <div class="import-dropzone compact" onclick="document.getElementById('input-commercial-excel').click()" title="Arrastra o selecciona archivo Excel/CSV">
                             <span class="drop-icon">📁</span>
-                            <span class="drop-text">Arrastra aquí o haz clic para subir archivo Excel/CSV</span>
-                            <span class="drop-sub">Formatos: .xlsx, .xls, .csv (Cruza por RUT o N° Medidor)</span>
+                            <span class="drop-text">Subir Planilla Cobranza <small style="color:#94a3b8; font-weight:normal;">(.xlsx / .csv)</small></span>
                         </div>
                         <div style="margin-top:8px; display:flex; gap:6px;">
-                            <button class="btn-demo-data" onclick="loadDemoCommercialData()">
-                                <span>⚡</span> Cargar Datos de Demostración
+                            <button class="btn-demo-data" onclick="loadDemoCommercialData()" title="Cargar datos de simulación">
+                                <span>⚡</span> Demo
                             </button>
-                            <button class="btn-export-morosos" onclick="exportMorososListCSV()">
-                                <span>📋</span> Exportar Morosos
+                            <button class="btn-export-morosos" onclick="exportMorososListCSV()" title="Descargar nómina de morosos en CSV">
+                                <span>📋</span> Nómina Morosos
                             </button>
                         </div>
                     </div>
@@ -331,22 +329,23 @@
                     <!-- Balance de Agua No Facturada (ANF) -->
                     <div class="comm-anf-box">
                         <div class="anf-header">
-                            <span>💧 Balance de Agua No Facturada (ANF)</span>
-                            <span class="anf-badge-alert">ALERTA 27.4%</span>
+                            <span>💧 Balance ANF</span>
+                            <span class="anf-badge-alert">⚠️ ALERTA 27.4%</span>
                         </div>
                         <div class="anf-compare-row">
                             <div>
-                                <span class="anf-lbl">Macromedición Estanque</span>
-                                <span class="anf-val">142.8 m³/día</span>
+                                <span class="anf-val">142.8 <small style="font-size:10px; color:#94a3b8;">m³/d</small></span>
+                                <span class="anf-lbl">🏢 Producción</span>
                             </div>
                             <span class="anf-arrow">➔</span>
                             <div>
-                                <span class="anf-lbl">Suma Micromedición</span>
-                                <span class="anf-val text-green">103.6 m³/día</span>
+                                <span class="anf-val text-green">103.6 <small style="font-size:10px; color:#94a3b8;">m³/d</small></span>
+                                <span class="anf-lbl">🏠 Facturado</span>
                             </div>
                         </div>
-                        <div class="anf-alert-text">
-                            ⚠️ <strong>Pérdida estimada: 39.2 m³/día (27.4%)</strong>. La DOH recomienda mantener el ANF bajo 25%. Posible rotura no aflorante en sector poniente o sub-medición de equipos antiguos.
+                        <div class="anf-alert-compact">
+                            <span>📉 Pérdida: <strong style="color:#fff;">39.2 m³/día</strong></span>
+                            <span class="badge-threshold">Máx DOH: 25%</span>
                         </div>
                     </div>
                 </div>
@@ -441,7 +440,7 @@
             <div class="modal-card">
                 <div class="modal-header">
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="font-size:18px;">📲</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#25D366" style="vertical-align:middle; display:inline-block;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                         <div>
                             <h3 style="font-size:13px; font-weight:800; color:#fff; margin:0;">Generador de Comunicado WhatsApp</h3>
                             <span style="font-size:10px; color:#10b981;">● Asistencia Inteligente de Redacción Comunitaria</span>

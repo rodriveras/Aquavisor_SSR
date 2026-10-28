@@ -120,6 +120,83 @@ header.app-header {
     gap: 12px;
 }
 
+/* Chip Permanente de Copiloto Inteligente SSR (Alternativa B) */
+.btn-header-copilot {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    padding: 4px 11px;
+    border-radius: 20px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.btn-header-copilot:hover {
+    background: rgba(2, 132, 199, 0.25);
+    border-color: #38bdf8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+
+.btn-header-copilot:active {
+    transform: scale(0.96);
+}
+
+.copilot-chip-avatar {
+    font-size: 15px;
+    line-height: 1;
+}
+
+.copilot-chip-meta {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    line-height: 1.15;
+}
+
+.copilot-chip-badge {
+    font-size: 8.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--accent-cyan);
+}
+
+.copilot-chip-desc {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #e2e8f0;
+    white-space: nowrap;
+}
+
+.copilot-chip-mobile-lbl {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--accent-cyan);
+}
+
+.copilot-chip-pulse {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+    animation: pulseDot 2s infinite;
+    flex-shrink: 0;
+}
+
+@keyframes pulseDot {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.3); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.8; }
+}
+
 /* Buscador Predictivo */
 .search-wrapper {
     position: relative;
@@ -380,6 +457,16 @@ header.app-header {
     display: flex;
     align-items: center;
     gap: 6px;
+}
+
+.drawer-header-icon-svg {
+    width: 17px;
+    height: 17px;
+    color: var(--accent-cyan);
+    stroke: currentColor;
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
 }
 
 .drawer-close {
@@ -808,85 +895,280 @@ header.app-header {
 }
 
 /* ------------------------------------------------------------------------------
-   5. TARJETA COMPACTA DE EMERGENCIA (NO BLOQUEA EL MAPA)
+   5. BANNER SUPERIOR DE MODO CORTE / ROTURA Y PROTOCOLO DE EMERGENCIA
    ------------------------------------------------------------------------------ */
-.emergency-card-bottom {
+.emergency-mode-banner {
     position: absolute;
-    bottom: 25px;
+    top: 66px;
     left: 50%;
     transform: translateX(-50%);
-    width: 400px;
-    max-width: calc(100vw - 40px);
     background: rgba(15, 23, 42, 0.95);
-    backdrop-filter: blur(25px);
-    border: 2px solid var(--accent-red);
-    border-radius: var(--radius-lg);
-    box-shadow: 0 0 35px rgba(239, 68, 68, 0.4);
-    z-index: 700;
-    padding: 14px 16px;
-    display: none; /* Activo solo en rotura */
-    animation: slide-up 0.3s ease;
-}
-
-.emergency-header {
+    border: 1.5px solid #ef4444;
+    border-radius: 30px;
+    padding: 7px 16px;
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.45);
+    z-index: 2000;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
+    gap: 12px;
+    backdrop-filter: blur(12px);
+    max-width: calc(100vw - 32px);
+    white-space: nowrap;
+    animation: fadeInDown 0.25s ease;
 }
 
-.emergency-header h2 {
-    font-size: 13.5px;
+.emergency-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #ffffff;
+}
+
+.banner-pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #ef4444;
+    animation: pulse 1s infinite;
+}
+
+.btn-banner-cancel {
+    background: rgba(255, 255, 255, 0.12);
+    border: none;
+    color: #94a3b8;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.2s;
+}
+
+.btn-banner-cancel:hover {
+    background: #ef4444;
+    color: #fff;
+}
+
+/* Protocolo de Emergencia Minimalista Integrado en Ficha / Bottom Sheet */
+.emergency-protocol-wrap {
+    padding-top: 4px;
+}
+
+.emergency-alert-card {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.18) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+    border: 1px solid rgba(239, 68, 68, 0.45) !important;
+    border-left: 5px solid #ef4444 !important;
+    padding: 12px 14px !important;
+    margin-bottom: 12px;
+}
+
+.emergency-alert-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.emergency-alert-tag {
+    font-size: 10px;
     font-weight: 800;
-    color: var(--accent-red);
+    color: #f87171;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.emergency-alert-code {
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(239, 68, 68, 0.25);
+    color: #fca5a5;
+    padding: 2px 7px;
+    border-radius: 4px;
+}
+
+.emergency-alert-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 6px 0;
+    line-height: 1.25;
+}
+
+.emergency-alert-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 11px;
+    color: #94a3b8;
+    flex-wrap: wrap;
+}
+
+.emergency-alert-meta strong {
+    color: #f1f5f9;
+}
+
+.emergency-steps-block {
+    margin-bottom: 12px;
+}
+
+.emergency-steps-heading {
+    font-size: 11px;
+    font-weight: 800;
+    color: #fbbf24;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
     display: flex;
     align-items: center;
     gap: 6px;
 }
 
-.emergency-steps {
-    background: rgba(239, 68, 68, 0.08);
-    border: 1px solid rgba(239, 68, 68, 0.25);
-    border-radius: var(--radius-md);
-    padding: 9px 12px;
-    margin: 8px 0;
-    font-size: 11px;
-    line-height: 1.4;
-}
-
-.emergency-steps strong {
-    color: #fff;
-}
-
-.emergency-actions {
+.emergency-valves-container {
     display: flex;
+    flex-direction: column;
     gap: 8px;
-    margin-top: 10px;
 }
 
-.btn-act {
-    flex: 1;
-    padding: 7px;
-    border-radius: var(--radius-sm);
-    font-weight: 700;
+.emergency-valve-row {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-left: 4px solid #ef4444;
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.emergency-valve-num {
+    background: #ef4444;
+    color: #ffffff;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 11px;
-    cursor: pointer;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.emergency-valve-info {
+    flex: 1;
+}
+
+.emergency-valve-name {
+    font-size: 13px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.2;
+}
+
+.emergency-valve-sub {
+    font-size: 11px;
+    color: #cbd5e1;
+    margin-top: 2px;
+}
+
+.emergency-valve-badge {
+    font-size: 9.5px;
+    font-weight: 800;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    padding: 3px 7px;
+    border-radius: 5px;
+    letter-spacing: 0.5px;
+}
+
+.emergency-impact-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(2, 6, 23, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 14px;
+}
+
+.impact-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #cbd5e1;
+    display: block;
+}
+
+.impact-sub {
+    font-size: 10px;
+    color: #94a3b8;
+}
+
+.emergency-impact-number {
+    font-size: 16px;
+    font-weight: 800;
+    color: #ef4444;
+}
+
+.emergency-impact-number small {
+    font-size: 11px;
+    font-weight: 600;
+    color: #fca5a5;
+}
+
+.btn-emergency-normalize {
+    width: 100%;
+    padding: 13px 16px;
+    background: linear-gradient(135deg, #059669, #10b981);
     border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
 }
 
-.btn-act.btn-cut {
-    background: var(--accent-red);
-    color: #fff;
+.btn-emergency-normalize:active {
+    transform: scale(0.98);
 }
 
-.btn-act.btn-repair {
-    background: var(--accent-green);
-    color: #fff;
+/* Toast Notifier Flotante */
+.aquavisor-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(30px);
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(16, 185, 129, 0.5);
+    border-left: 4px solid #10b981;
+    color: #ffffff;
+    padding: 10px 18px;
+    border-radius: 30px;
+    font-size: 12.5px;
+    font-weight: 700;
+    z-index: 9999;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(12px);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.btn-act.btn-cancel {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
+.aquavisor-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
 
 /* Animaciones */
@@ -1350,18 +1632,7 @@ header.app-header {
         white-space: nowrap;
     }
 
-    /* TARJETA DE EMERGENCIA EN MÓVILES */
-    .emergency-card-bottom {
-        bottom: 8px;
-        left: 8px;
-        right: 8px;
-        width: auto;
-        max-width: calc(100vw - 16px);
-        padding: 12px;
-        border-radius: 14px;
-        z-index: 1300;
-    }
-
+    
     .emergency-header h2 {
         font-size: 12px;
     }
@@ -1826,25 +2097,39 @@ header.app-header {
 /* Ajustes Responsive para Móviles */
 @media (max-width: 768px) {
     .valve-outage-hud {
-        bottom: 10px;
-        left: 10px;
-        right: 10px;
-        max-width: calc(100vw - 20px);
-        justify-content: space-between;
-        padding: 4px 8px;
+        bottom: 74px !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+        width: auto !important;
+        max-width: calc(100vw - 24px) !important;
+        justify-content: space-between !important;
+        padding: 5px 12px !important;
+        background: rgba(15, 23, 42, 0.94) !important;
+        backdrop-filter: blur(14px) !important;
+        border: 1.5px solid rgba(239, 68, 68, 0.8) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 10px rgba(239, 68, 68, 0.35) !important;
+        border-radius: 30px !important;
+        z-index: 1400 !important;
+        gap: 8px !important;
+        transition: opacity 0.25s ease, transform 0.25s ease !important;
     }
     
     .hud-pill-content {
-        font-size: 9.5px;
+        font-size: 10px !important;
+        max-width: 170px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
     }
     
     .outage-pill-num {
-        font-size: 13px;
+        font-size: 12px !important;
     }
     
     .btn-outage-sm {
-        font-size: 8.5px;
-        padding: 4px 3px;
+        font-size: 9px !important;
+        padding: 4px 6px !important;
     }
 }
 
@@ -1907,51 +2192,67 @@ header.app-header {
     font-size: 11px;
 }
 
-/* Ribbon de KPIs Ejecutivos (Modo Directorio) */
-.executive-kpi-ribbon {
+/* Tarjeta Ejecutiva de KPIs SSR (Consolidada en Drawer Lateral / Bottom Sheet) */
+.executive-kpi-card {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.exec-card-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    background: linear-gradient(90deg, #091326 0%, #0d1e3d 50%, #091326 100%);
-    border-bottom: 1px solid rgba(2, 132, 199, 0.35);
-    padding: 6px 16px;
-    z-index: 999;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-    overflow-x: auto;
-    gap: 12px;
+    align-items: center;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 8px;
 }
 
-.kpi-ribbon-item {
+.exec-card-title {
+    font-size: 11px;
+    font-weight: 800;
+    color: #38bdf8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     display: flex;
     align-items: center;
+    gap: 6px;
+}
+
+.exec-kpis-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
-    white-space: nowrap;
 }
 
-.kpi-ribbon-icon {
-    font-size: 18px;
-}
-
-.kpi-ribbon-content {
+.exec-kpi-cell {
+    background: rgba(2, 6, 23, 0.55);
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
     display: flex;
     flex-direction: column;
+    justify-content: center;
 }
 
-.kpi-ribbon-val {
-    font-size: 13.5px;
-    font-weight: 800;
-    line-height: 1.1;
-}
-
-.kpi-ribbon-lbl {
-    font-size: 9px;
+.exec-kpi-lbl {
+    font-size: 9.5px;
     color: #94a3b8;
     text-transform: uppercase;
     font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
-.kpi-ribbon-action {
-    margin-left: auto;
+.exec-kpi-val {
+    font-size: 14px;
+    font-weight: 800;
+    margin-top: 2px;
+    line-height: 1.2;
 }
 
 .btn-ribbon-action {
@@ -1979,6 +2280,17 @@ header.app-header {
 .text-green { color: #10b981 !important; }
 .text-yellow { color: #f59e0b !important; }
 .text-red { color: #ef4444 !important; }
+
+.directorio-legal-card {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    transition: border-color 0.2s ease;
+}
+
+.directorio-legal-card:hover {
+    border-color: rgba(56, 189, 248, 0.3);
+}
 
 /* ------------------------------------------------------------------------------
    11. PESTAÑA 3: GEOGESTIÓN COMERCIAL & ANF
@@ -2259,63 +2571,280 @@ header.app-header {
 }
 
 /* ------------------------------------------------------------------------------
-   12. PESTAÑA 4: COPILOTO IA INTELIGENTE
+   12. COPILOTO IA INTELIGENTE: ASISTENTE FLOTANTE DEDICADO (OPCIÓN 2)
    ------------------------------------------------------------------------------ */
-.copilot-section {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+
+/* BOTÓN FLOTANTE INTELIGENTE (BEACON SOBRE EL MAPA) */
+.copilot-floating-beacon {
+    position: fixed;
+    bottom: 125px;
+    right: 14px;
+    z-index: 1100;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 14px 7px 10px;
+    background: rgba(11, 19, 41, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1.5px solid rgba(0, 210, 255, 0.45);
+    border-radius: 30px;
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.55), 0 0 16px rgba(0, 210, 255, 0.3);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
-.copilot-header-card {
-    background: rgba(15, 23, 42, 0.7);
-    border: 1px solid rgba(2, 132, 199, 0.3);
-    border-radius: var(--radius-sm);
-    padding: 8px 10px;
-    margin-bottom: 8px;
+.copilot-floating-beacon:hover {
+    background: rgba(15, 28, 60, 0.98);
+    border-color: #00d2ff;
+    box-shadow: 0 8px 28px rgba(0, 210, 255, 0.55), 0 0 24px rgba(0, 210, 255, 0.4);
+    transform: translateY(-2px);
 }
 
-.copilot-avatar {
-    width: 26px;
-    height: 26px;
+.copilot-floating-beacon:active,
+.copilot-floating-beacon.active {
+    transform: scale(0.96);
+    background: rgba(2, 132, 199, 0.35);
+    border-color: #38bdf8;
+    box-shadow: 0 0 22px rgba(56, 189, 248, 0.6);
+}
+
+.beacon-avatar-wrap {
+    position: relative;
+    width: 28px;
+    height: 28px;
     background: linear-gradient(135deg, #0284c7, #a855f7);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 15px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 
-.btn-copilot-clear {
+.beacon-robot-icon {
+    line-height: 1;
+}
+
+.beacon-pulse-dot {
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    border: 1.5px solid #0f172a;
+    box-shadow: 0 0 8px #10b981;
+    animation: pulseDot 2s infinite;
+}
+
+.beacon-meta {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    line-height: 1.15;
+}
+
+.beacon-title {
+    font-size: 10.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #38bdf8;
+}
+
+.beacon-role-desc {
+    font-size: 10px;
+    font-weight: 600;
+    color: #cbd5e1;
+    white-space: nowrap;
+}
+
+/* BACKDROP MÓVIL DEL ASISTENTE FLOTANTE */
+.copilot-sheet-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(5, 10, 24, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 2190;
+    animation: fadeIn 0.2s ease;
+}
+
+/* DIÁLOGO / BOTTOM SHEET ASISTENTE INDEPENDIENTE (MINIMALISTA) */
+.copilot-assistant-sheet {
+    position: fixed;
+    bottom: 85px;
+    right: 20px;
+    width: 375px;
+    max-height: 540px;
+    height: auto;
+    z-index: 2200;
+    background: rgba(11, 18, 33, 0.94);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 1px rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: copilotAppear 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes copilotAppear {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.copilot-sheet-grabber {
+    display: none;
+    width: 100%;
+    padding: 8px 0 2px 0;
+    cursor: pointer;
+    text-align: center;
+}
+
+.copilot-sheet-grabber .grabber-pill {
+    display: inline-block;
+    width: 36px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 2px;
+}
+
+/* CABECERA MINIMALISTA (LIMPIA, SIN RUIDO NI BORDES GRUESOS) */
+.copilot-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.copilot-card-identity {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.copilot-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
+    flex-shrink: 0;
+}
+
+.copilot-card-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.2px;
+    margin: 0;
+}
+
+.copilot-card-role-badge {
+    font-size: 10px;
+    font-weight: 600;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 2px 7px;
+    border-radius: 10px;
+    margin-left: 2px;
+}
+
+.copilot-card-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.btn-copilot-icon {
     background: transparent;
     border: none;
     color: #94a3b8;
-    font-size: 14px;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
     cursor: pointer;
-    padding: 2px 6px;
-    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    padding: 0;
 }
 
-.btn-copilot-clear:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.1);
+.btn-copilot-icon:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
 }
 
+.btn-copilot-close:hover {
+    color: #f87171;
+    background: rgba(239, 68, 68, 0.12);
+}
+
+/* BIENVENIDA MINIMALISTA (ESTADO INICIAL CALMO) */
+.copilot-welcome-box {
+    padding: 16px 8px 10px 8px;
+    text-align: left;
+}
+
+.welcome-sparkle {
+    font-size: 17px;
+    color: #38bdf8;
+    margin-bottom: 8px;
+    line-height: 1;
+}
+
+.welcome-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.3px;
+    margin-bottom: 4px;
+}
+
+.welcome-sub {
+    font-size: 12px;
+    color: #94a3b8;
+    line-height: 1.45;
+    margin: 0;
+}
+
+/* CONTENEDOR DE MENSAJES */
 .copilot-chat-container {
     flex: 1;
     overflow-y: auto;
-    padding: 6px 2px;
+    padding: 12px 16px;
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 280px;
+    max-height: 290px;
     min-height: 140px;
 }
 
 .copilot-msg {
     display: flex;
     flex-direction: column;
-    max-width: 90%;
+    max-width: 86%;
 }
 
 .bot-msg {
@@ -2326,72 +2855,97 @@ header.app-header {
     align-self: flex-end;
 }
 
-.msg-sender {
-    font-size: 9px;
-    color: #94a3b8;
-    margin-bottom: 2px;
-    font-weight: 700;
-}
-
-.user-msg .msg-sender {
-    text-align: right;
-    color: var(--accent-cyan);
-}
-
 .msg-bubble {
-    padding: 8px 11px;
-    border-radius: 10px;
-    font-size: 11px;
-    line-height: 1.4;
+    padding: 9px 13px;
+    border-radius: 14px;
+    font-size: 12px;
+    line-height: 1.48;
     word-break: break-word;
 }
 
 .bot-msg .msg-bubble {
-    background: rgba(15, 23, 42, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #f1f5f9;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+    border-top-left-radius: 4px;
 }
 
 .user-msg .msg-bubble {
-    background: linear-gradient(135deg, #0284c7, #0369a1);
+    background: #0284c7;
     color: #ffffff;
-    border-bottom-right-radius: 2px;
+    border-bottom-right-radius: 4px;
 }
 
+.btn-copilot-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 12px;
+    background: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.35);
+    border-radius: 8px;
+    color: #4ade80;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: all 0.15s ease;
+}
+
+.btn-copilot-action:hover {
+    background: #16a34a;
+    color: #ffffff;
+    border-color: #16a34a;
+    transform: translateY(-1px);
+}
+
+/* SUGERENCIAS RÁPIDAS (PILLS MINIMALISTAS) */
 .copilot-quick-pills {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
-    margin: 8px 0;
+    gap: 6px;
+    padding: 6px 16px 10px 16px;
 }
 
 .quick-pill {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(2, 132, 199, 0.3);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.09);
     color: #cbd5e1;
-    font-size: 9.5px;
-    padding: 4px 8px;
-    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 11px;
+    border-radius: 16px;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all 0.15s ease;
     white-space: nowrap;
 }
 
 .quick-pill:hover {
-    background: rgba(2, 132, 199, 0.2);
+    background: rgba(56, 189, 248, 0.1);
     color: #ffffff;
-    border-color: var(--accent-cyan);
+    border-color: rgba(56, 189, 248, 0.35);
 }
 
+.quick-pill:active {
+    transform: scale(0.96);
+}
+
+/* BARRA DE ENTRADA */
 .copilot-input-bar {
     display: flex;
     align-items: center;
-    gap: 5px;
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(2, 132, 199, 0.4);
-    border-radius: 20px;
-    padding: 3px 6px 3px 12px;
-    margin-top: 4px;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 22px;
+    padding: 3px 6px 3px 14px;
+    margin: 6px 16px 14px 16px;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.copilot-input-bar:focus-within {
+    border-color: rgba(56, 189, 248, 0.45);
+    background: rgba(255, 255, 255, 0.07);
 }
 
 .copilot-input-bar input {
@@ -2399,24 +2953,36 @@ header.app-header {
     background: transparent;
     border: none;
     color: #ffffff;
-    font-size: 11px;
+    font-size: 12px;
     outline: none;
 }
 
-.btn-copilot-mic, .btn-copilot-send {
+.copilot-input-bar input::placeholder {
+    color: #64748b;
+}
+
+.btn-input-action {
     background: transparent;
     border: none;
     cursor: pointer;
-    font-size: 13px;
-    padding: 4px 6px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
-    transition: all 0.2s;
-    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    transition: all 0.15s ease;
+    padding: 0;
 }
 
-.btn-copilot-mic:hover, .btn-copilot-send:hover {
-    color: #00d2ff;
-    transform: scale(1.1);
+.btn-input-action:hover {
+    color: #38bdf8;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.btn-input-send:hover {
+    color: #38bdf8;
 }
 
 /* ------------------------------------------------------------------------------
@@ -3184,59 +3750,282 @@ body.role-auditor #tab-btn-copilot {
     box-shadow: 0 4px 18px rgba(245, 158, 11, 0.12) !important;
 }
 
-/* --- C. Pestaña Telemetría SCADA --- */
-.gauge-tank {
-    background: linear-gradient(135deg, rgba(2, 132, 199, 0.16) 0%, rgba(15, 23, 42, 0.92) 100%) !important;
-    border: 1px solid rgba(0, 210, 255, 0.3) !important;
-    border-left: 5px solid #00d2ff !important;
-    border-radius: var(--radius-md) !important;
-    padding: 12px !important;
-    box-shadow: 0 4px 18px rgba(0, 210, 255, 0.12) !important;
+/* --- C. Pestaña Telemetría / Gestión Ejecutiva (Diseño Visual Amable y Limpio) --- */
+.water-hero-card {
+    background: rgba(15, 23, 42, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 14px !important;
+    padding: 13px 15px !important;
+    margin-bottom: 10px !important;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25) !important;
 }
 
-.telemetry-card {
-    border-radius: 8px !important;
-    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+.water-hero-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
 }
 
-.telemetry-card:hover {
-    transform: translateY(-1px);
+.water-hero-title {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #e2e8f0;
 }
 
-/* Card 1: Bomba Pozo (Verde Activo) */
-.telemetry-card:nth-child(1) {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(15, 23, 42, 0.85) 100%) !important;
-    border: 1px solid rgba(16, 185, 129, 0.28) !important;
-    border-left: 4px solid #10b981 !important;
+.water-drop-icon {
+    font-size: 14px;
 }
 
-/* Card 2: Presión Crítica (Cian Hidráulico) */
-.telemetry-card:nth-child(2) {
-    background: linear-gradient(135deg, rgba(0, 210, 255, 0.12) 0%, rgba(15, 23, 42, 0.85) 100%) !important;
-    border: 1px solid rgba(0, 210, 255, 0.28) !important;
-    border-left: 4px solid #00d2ff !important;
+.water-hero-status {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    transition: all 0.3s ease;
 }
 
-/* Card 3: Pérdidas ANF (Ámbar Advertencia) */
-.telemetry-card:nth-child(3) {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(15, 23, 42, 0.85) 100%) !important;
-    border: 1px solid rgba(245, 158, 11, 0.28) !important;
-    border-left: 4px solid #f59e0b !important;
+.water-hero-status.status-good {
+    background: rgba(16, 185, 129, 0.16);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
-/* Card 4: Cobertura (Púrpura Infraestructura) */
-.telemetry-card:nth-child(4) {
-    background: linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(15, 23, 42, 0.85) 100%) !important;
-    border: 1px solid rgba(168, 85, 247, 0.28) !important;
-    border-left: 4px solid #a855f7 !important;
+.water-hero-status.status-warn {
+    background: rgba(245, 158, 11, 0.16);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
-/* Tarjeta Resumen Operativo (Índigo Profundo) */
-.telemetry-summary-box {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(15, 23, 42, 0.92) 100%) !important;
-    border: 1px solid rgba(99, 102, 241, 0.3) !important;
-    border-left: 5px solid #6366f1 !important;
-    box-shadow: 0 4px 18px rgba(99, 102, 241, 0.1) !important;
+.water-gauge-display {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.water-big-pct {
+    font-size: 34px;
+    font-weight: 800;
+    line-height: 1;
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    letter-spacing: -0.8px;
+}
+
+.water-big-pct .pct-symbol {
+    font-size: 18px;
+    font-weight: 600;
+    color: #38bdf8;
+    margin-left: 2px;
+}
+
+.water-sub-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.water-vol-label {
+    font-size: 11.5px;
+    color: #94a3b8;
+}
+
+.water-autonomy-highlight {
+    font-size: 12px;
+    font-weight: 700;
+    color: #38bdf8;
+}
+
+.water-level-track {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.water-level-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0284c7, #38bdf8);
+    border-radius: 4px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.water-level-marker {
+    position: absolute;
+    left: 30%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: rgba(239, 68, 68, 0.85);
+    z-index: 2;
+}
+
+.water-peace-message {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 9px;
+    background: rgba(56, 189, 248, 0.06);
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    border-radius: 7px;
+    font-size: 10px;
+    color: #cbd5e1;
+}
+
+.water-peace-message .peace-dot {
+    color: #38bdf8;
+    font-size: 8px;
+}
+
+/* 2. Tríada de Salud del Servicio */
+.service-health-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(15, 23, 42, 0.65) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 11px !important;
+    padding: 9px 12px !important;
+    margin-bottom: 10px !important;
+}
+
+.health-col {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.health-icon-wrap {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.health-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.health-name {
+    font-size: 8.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #94a3b8;
+}
+
+.health-status {
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.health-val {
+    font-size: 9.5px;
+    color: #cbd5e1;
+}
+
+.health-divider {
+    width: 1px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.08);
+    margin: 0 6px;
+}
+
+/* 3. Balance Amable */
+.friendly-balance-card {
+    background: rgba(15, 23, 42, 0.65) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 11px !important;
+    padding: 10px 12px !important;
+}
+
+.balance-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 7px;
+}
+
+.balance-title {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #e2e8f0;
+}
+
+.balance-pct-badge {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1.5px 6px;
+    border-radius: 8px;
+    background: rgba(0, 210, 255, 0.12);
+    color: #00d2ff;
+    border: 1px solid rgba(0, 210, 255, 0.25);
+}
+
+.friendly-balance-bar {
+    display: flex;
+    height: 8px;
+    width: 100%;
+    border-radius: 4px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.06);
+    margin-bottom: 7px;
+}
+
+.balance-seg-homes {
+    background: linear-gradient(90deg, #0284c7, #00d2ff);
+    transition: width 0.5s ease;
+}
+
+.balance-seg-leaks {
+    background: #f59e0b;
+    transition: width 0.5s ease;
+}
+
+.balance-legend-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9.5px;
+    color: #cbd5e1;
+}
+
+.balance-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.legend-color-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.legend-color-dot.dot-homes {
+    background: #00d2ff;
+    box-shadow: 0 0 6px rgba(0, 210, 255, 0.6);
+}
+
+.legend-color-dot.dot-leaks {
+    background: #f59e0b;
+    box-shadow: 0 0 6px rgba(245, 158, 11, 0.6);
 }
 
 /* --- D. Tarjeta de Emergencia por Rotura (#emergency-card) --- */
@@ -3981,3 +4770,830 @@ body.role-auditor #tab-btn-copilot {
         height: 44px !important;
     }
 }
+
+/* ==============================================================================
+   24. PREFERENCIA DE ACCESO AL PORTAL (MODO DEMO VS MODO OPERATIVO DIRECTO)
+   ============================================================================== */
+.landing-portal-pref {
+    margin: 16px 0 10px 0;
+    padding: 10px 14px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.portal-pref-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 12px;
+    color: #e2e8f0;
+}
+
+.portal-pref-label input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #38bdf8;
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.portal-pref-label input[type="checkbox"]:checked {
+    background: #0284c7;
+    border-color: #38bdf8;
+}
+
+.portal-pref-label input[type="checkbox"]:checked::after {
+    content: "✓";
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.pref-text {
+    line-height: 1.35;
+}
+
+.pref-text strong {
+    color: #38bdf8;
+}
+
+/* ==============================================================================
+   25. TRANSFORMACIÓN BOTTOM SHEET MÓVIL (MAP-FIRST PARA SMARTPHONES)
+   ============================================================================== */
+.bottom-sheet-grabber {
+    display: none;
+    width: 100%;
+    padding: 8px 0 4px 0;
+    text-align: center;
+    cursor: pointer;
+}
+
+.grabber-pill {
+    display: inline-block;
+    width: 42px;
+    height: 4.5px;
+    background: #475569;
+    border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+    /* El panel derecho se transforma en Bottom Sheet deslizable desde abajo */
+    .drawer-right {
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        max-height: 54vh !important;
+        border-radius: 18px 18px 0 0 !important;
+        border-left: none !important;
+        border-top: 1.5px solid rgba(56, 189, 248, 0.4) !important;
+        box-shadow: 0 -10px 35px rgba(0, 0, 0, 0.6) !important;
+        transform: translateY(105%) !important;
+        transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        z-index: 2100 !important;
+        background: rgba(15, 23, 42, 0.96) !important;
+        backdrop-filter: blur(16px) !important;
+    }
+
+    .drawer-right.open {
+        transform: translateY(0) !important;
+    }
+
+    /* MODO ASOMADO TÁCTICO: Durante maniobras en móvil, la ficha queda en barra compacta de ~68px
+       dejando el 88-90% de la pantalla completamente despejada para ver los cambios gráficos del mapa */
+    .drawer-right.open.maneuver-peek {
+        transform: translateY(calc(100% - 68px)) !important;
+        box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.75), 0 -1.5px 0 rgba(239, 68, 68, 0.5) !important;
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    .drawer-right.maneuver-peek .drawer-header {
+        display: none !important;
+    }
+
+    .drawer-right.maneuver-peek .drawer-body {
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+
+    .bottom-sheet-grabber {
+        display: block;
+    }
+
+    .drawer-right .drawer-body {
+        max-height: calc(54vh - 65px) !important;
+        overflow-y: auto !important;
+        padding-bottom: 24px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Ocultar el tirador dock en móvil porque se usa la barra de pulgar */
+    .panel-dock-handle {
+        display: none !important;
+    }
+}
+
+/* ==============================================================================
+   26. BOTONERA TÁCTIL INFERIOR EN ZONA DEL PULGAR (THUMB ZONE BAR - MÓVIL)
+   ============================================================================== */
+
+/* Ocultar suavemente la botonera inferior y el HUD de corte cuando el Bottom Sheet está abierto en móvil */
+body.drawer-open .mobile-thumb-bar,
+.drawer-right.open ~ .mobile-thumb-bar,
+body.drawer-open .valve-outage-hud,
+.drawer-right.open ~ .valve-outage-hud {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateX(-50%) translateY(50px) !important;
+    transition: opacity 0.25s ease, transform 0.25s ease !important;
+}
+
+.mobile-thumb-bar {
+    position: fixed;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: rgba(11, 19, 41, 0.94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 40px;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.6), 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.thumb-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 46px;
+    width: 46px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 22px;
+    color: #f8fafc;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 2px 4px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.thumb-btn:active {
+    transform: scale(0.92);
+    background: rgba(56, 189, 248, 0.22);
+    border-color: #38bdf8;
+}
+
+/* BOTÓN PRINCIPAL POR NATURALEZA (HERO CENTRAL ELEVADO) */
+.thumb-btn-hero {
+    position: relative;
+    min-width: 56px;
+    width: 56px;
+    height: 54px;
+    margin-top: -14px; /* Eleva el botón por encima de la barra */
+    border-radius: 28px;
+    background: linear-gradient(135deg, #0284c7, #00d2ff);
+    border: 2px solid rgba(255, 255, 255, 0.55);
+    box-shadow: 0 6px 20px rgba(0, 210, 255, 0.45);
+    z-index: 10;
+    transition: all 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 4px;
+}
+
+.thumb-btn-hero:active {
+    transform: scale(0.92) translateY(-6px);
+}
+
+.thumb-hero-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    color: #ffffff;
+}
+
+.thumb-hero-icon .thumb-svg {
+    width: 20px;
+    height: 20px;
+    stroke: #ffffff;
+    stroke-width: 2.3;
+}
+
+.thumb-hero-label {
+    font-size: 7.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: #ffffff;
+    margin-top: 1px;
+    white-space: nowrap;
+}
+
+/* Colores temáticos del botón central según rol */
+.thumb-btn-hero.hero-terreno {
+    background: linear-gradient(135deg, #b91c1c, #ef4444);
+    border-color: rgba(254, 202, 202, 0.7);
+    box-shadow: 0 6px 22px rgba(239, 68, 68, 0.55);
+}
+
+.thumb-btn-hero.hero-admin {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    border-color: rgba(233, 213, 255, 0.7);
+    box-shadow: 0 6px 22px rgba(168, 85, 247, 0.55);
+}
+
+.thumb-btn-hero.hero-directorio {
+    background: linear-gradient(135deg, #0284c7, #38bdf8);
+    border-color: rgba(186, 230, 253, 0.7);
+    box-shadow: 0 6px 22px rgba(56, 189, 248, 0.55);
+}
+
+.thumb-btn-hero.hero-auditor {
+    background: linear-gradient(135deg, #0f766e, #14b8a6);
+    border-color: rgba(204, 251, 241, 0.7);
+    box-shadow: 0 6px 22px rgba(20, 184, 166, 0.55);
+}
+
+.thumb-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    margin-bottom: 2px;
+    color: #94a3b8;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.thumb-svg {
+    width: 19px;
+    height: 19px;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    transition: all 0.2s ease;
+}
+
+.thumb-btn:hover .thumb-icon,
+.thumb-btn:active .thumb-icon {
+    color: #ffffff;
+}
+
+.thumb-btn:hover .thumb-label,
+.thumb-btn:active .thumb-label {
+    color: #ffffff;
+}
+
+.thumb-btn-search:hover .thumb-icon,
+.thumb-btn-search:active .thumb-icon {
+    color: #38bdf8;
+}
+
+.thumb-btn-measure:hover .thumb-icon,
+.thumb-btn-measure:active .thumb-icon,
+.thumb-btn-measure.active .thumb-icon {
+    color: #38bdf8;
+}
+
+.thumb-btn-measure.active {
+    background: rgba(56, 189, 248, 0.22);
+    border-color: #38bdf8;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.4);
+}
+
+.thumb-btn-measure.active .thumb-label {
+    color: #38bdf8;
+}
+
+/* HUD flotante superior para Modo Medición */
+.measurement-hud-bar {
+    position: fixed;
+    top: 58px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000;
+    background: rgba(15, 23, 42, 0.94);
+    backdrop-filter: blur(12px);
+    border: 1px solid #38bdf8;
+    border-radius: 24px;
+    padding: 6px 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    font-size: 11px;
+    color: #f1f5f9;
+    white-space: nowrap;
+    animation: fadeInDown 0.25s ease;
+}
+
+.measure-hud-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.measure-hud-close {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 0 2px;
+}
+.measure-hud-close:hover {
+    color: #ffffff;
+}
+
+.thumb-label {
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #cbd5e1;
+    transition: color 0.2s ease;
+}
+
+.thumb-btn-gps:active .thumb-label,
+.thumb-btn-gps.locating .thumb-label {
+    color: #38bdf8;
+}
+
+.thumb-btn-emergency {
+    background: rgba(239, 68, 68, 0.16);
+    border-color: rgba(239, 68, 68, 0.38);
+}
+.thumb-btn-emergency .thumb-icon {
+    color: #f87171;
+}
+.thumb-btn-emergency:hover .thumb-icon,
+.thumb-btn-emergency:active .thumb-icon {
+    color: #ffffff;
+}
+
+.thumb-btn-emergency.active {
+    background: #ef4444;
+    border-color: #f87171;
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.8);
+    animation: thumbPulse 1.2s infinite;
+}
+.thumb-btn-emergency.active .thumb-icon {
+    color: #ffffff;
+}
+
+.thumb-btn-commercial {
+    background: rgba(16, 185, 129, 0.16);
+    border-color: rgba(16, 185, 129, 0.38);
+}
+.thumb-btn-commercial .thumb-icon {
+    color: #34d399;
+}
+.thumb-btn-commercial:hover .thumb-icon,
+.thumb-btn-commercial:active .thumb-icon {
+    color: #ffffff;
+}
+.thumb-btn-commercial:active {
+    background: #10b981;
+    border-color: #34d399;
+}
+
+.thumb-btn-directorio {
+    background: rgba(2, 132, 199, 0.16);
+    border-color: rgba(2, 132, 199, 0.38);
+}
+.thumb-btn-directorio .thumb-icon {
+    color: #38bdf8;
+}
+.thumb-btn-directorio:hover .thumb-icon,
+.thumb-btn-directorio:active .thumb-icon {
+    color: #ffffff;
+}
+.thumb-btn-directorio:active {
+    background: #0284c7;
+    border-color: #38bdf8;
+}
+
+.thumb-btn-auditor {
+    background: rgba(139, 92, 246, 0.16);
+    border-color: rgba(139, 92, 246, 0.38);
+}
+.thumb-btn-auditor .thumb-icon {
+    color: #c084fc;
+}
+.thumb-btn-auditor:hover .thumb-icon,
+.thumb-btn-auditor:active .thumb-icon {
+    color: #ffffff;
+}
+.thumb-btn-auditor:active {
+    background: #8b5cf6;
+    border-color: #a78bfa;
+}
+
+@keyframes thumbPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
+
+@media (min-width: 769px) {
+    .mobile-thumb-bar {
+        display: none !important;
+    }
+}
+
+
+
+/* ==============================================================================
+   CENTRO UNIFICADO DE MANIOBRAS HIDRÁULICAS (MODAL & CARDS)
+   ============================================================================== */
+.btn-maneuvers {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(2, 132, 199, 0.25));
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-maneuvers:hover {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.35), rgba(2, 132, 199, 0.4));
+    border-color: #38bdf8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+}
+
+.maneuvers-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(4, 9, 20, 0.75);
+    backdrop-filter: blur(10px);
+    z-index: 2500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    animation: fadeIn 0.2s ease;
+}
+
+.maneuvers-modal-card {
+    background: rgba(15, 23, 42, 0.96);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 18px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(56, 189, 248, 0.15);
+    width: 100%;
+    max-width: 460px;
+    padding: 20px;
+    animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.maneuvers-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.maneuvers-modal-icon {
+    font-size: 22px;
+}
+
+.maneuvers-modal-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+}
+
+.maneuvers-modal-sub {
+    font-size: 10.5px;
+    color: #38bdf8;
+    font-weight: 600;
+}
+
+.maneuvers-modal-close {
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: #94a3b8;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.maneuvers-modal-close:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.maneuvers-options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.maneuver-option-card {
+    background: rgba(2, 6, 23, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.maneuver-option-card:hover, .maneuver-option-card:active {
+    transform: translateY(-2px);
+    background: rgba(15, 23, 42, 0.9);
+}
+
+.maneuver-option-card.option-burst:hover {
+    border-color: #ef4444;
+    box-shadow: 0 4px 18px rgba(239, 68, 68, 0.25);
+}
+
+.maneuver-option-card.option-valve:hover {
+    border-color: #38bdf8;
+    box-shadow: 0 4px 18px rgba(56, 189, 248, 0.25);
+}
+
+.maneuver-badge-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.maneuver-info {
+    flex: 1;
+}
+
+.maneuver-arrow {
+    color: #64748b;
+    font-size: 15px;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.maneuver-option-card:hover .maneuver-arrow {
+    color: #ffffff;
+    transform: translateX(4px);
+}
+
+.maneuvers-active-bar {
+    margin-top: 14px;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.maneuvers-active-bar span {
+    font-size: 11.5px;
+    color: #fca5a5;
+    font-weight: 700;
+}
+
+.btn-normalize-all {
+    padding: 7px 14px;
+    font-size: 11.5px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn-normalize-all:active {
+    transform: scale(0.96);
+}
+
+/* ==============================================================================
+   28. BARRA TÁCTICA DE MANIOBRA EN MODO ASOMADO (MANEUVER PEEK BAR)
+   ============================================================================== */
+.maneuver-peek-bar {
+    display: none !important; /* En desktop permanece estrictamente oculta */
+}
+
+@media (max-width: 768px) {
+    .drawer-right.maneuver-peek .maneuver-peek-bar,
+    .drawer-right.maneuver-active .maneuver-peek-bar {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 8px 12px;
+        background: linear-gradient(180deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        min-height: 54px;
+        box-sizing: border-box;
+    }
+
+    .maneuver-peek-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+        min-width: 0;
+        cursor: pointer;
+    }
+
+    .peek-beacon {
+        font-size: 18px;
+        line-height: 1;
+        flex-shrink: 0;
+        animation: peekPulse 1.4s ease-in-out infinite;
+    }
+
+    @keyframes peekPulse {
+        0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.6)); }
+        50% { transform: scale(1.18); filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.9)); }
+    }
+
+    .peek-text {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    .peek-title {
+        font-size: 12px;
+        font-weight: 800;
+        color: #ffffff;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        letter-spacing: 0.3px;
+    }
+
+    .peek-sub {
+        font-size: 10.5px;
+        color: #f87171;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .peek-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+    }
+
+    .btn-peek-action {
+        border: none;
+        border-radius: 8px;
+        padding: 7px 11px;
+        font-family: inherit;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-peek-detail {
+        background: rgba(56, 189, 248, 0.15);
+        color: #38bdf8;
+        border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+    .btn-peek-detail:active {
+        background: rgba(56, 189, 248, 0.3);
+    }
+
+    .btn-peek-restore {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
+    }
+    .btn-peek-restore:active {
+        transform: scale(0.96);
+    }
+}
+
+/* ==============================================================================
+   27. COPILOTO FLOTANTE DEDICADO - ADAPTACIÓN RESPONSIVE (MÓVIL)
+   ============================================================================== */
+@media (max-width: 768px) {
+    /* Beacon en móvil: Flotando en el cuadrante inferior izquierdo del mapa */
+    .copilot-floating-beacon {
+        bottom: 76px;
+        left: 14px;
+        right: auto;
+        padding: 6px 12px 6px 8px;
+        border-radius: 24px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.65), 0 0 14px rgba(0, 210, 255, 0.35);
+    }
+
+    /* Ocultar el beacon si el cajón lateral derecho o el Bottom Sheet está abierto */
+    body.drawer-open .copilot-floating-beacon,
+    .drawer-right.open ~ .copilot-floating-beacon {
+        opacity: 0 !important;
+        pointer-events: none !important;
+        transform: translateY(20px) !important;
+        transition: opacity 0.2s ease, transform 0.2s ease !important;
+    }
+
+    /* Asistente en móvil: Bottom Sheet deslizable suave desde abajo */
+    .copilot-assistant-sheet {
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-height: 80vh;
+        border-radius: 22px 22px 0 0;
+        border-bottom: none;
+        border-left: none;
+        border-right: none;
+        border-top: 1.5px solid rgba(0, 210, 255, 0.45);
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 210, 255, 0.25);
+        z-index: 2600;
+        animation: copilotSlideUpMobile 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes copilotSlideUpMobile {
+        from {
+            opacity: 0;
+            transform: translateY(100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .copilot-sheet-grabber {
+        display: block;
+    }
+
+    .copilot-assistant-sheet .copilot-chat-container {
+        max-height: calc(80vh - 190px);
+    }
+
+    .copilot-assistant-sheet .copilot-input-bar {
+        margin: 6px 12px 14px 12px;
+    }
+}
+
+

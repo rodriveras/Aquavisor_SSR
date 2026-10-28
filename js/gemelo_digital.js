@@ -9,6 +9,7 @@ const AppState = {
     isPlaying: false,
     playInterval: null,
     emergencyMode: false,
+    valveSelectMode: false,
     activeBurst: null,
     tankCapacity: 50.0, // m³
     tankCurrentVol: 38.5, // m³
@@ -199,11 +200,9 @@ function initDrawerControls() {
     const btnCloseRight = document.getElementById('btn-close-drawer-right');
     const tabBtnTelemetry = document.getElementById('tab-btn-telemetry');
     const tabBtnCommercial = document.getElementById('tab-btn-commercial');
-    const tabBtnCopilot = document.getElementById('tab-btn-copilot');
     const tabBtnDetail = document.getElementById('tab-btn-detail');
     const tabContentTelemetry = document.getElementById('tab-content-telemetry');
     const tabContentCommercial = document.getElementById('tab-content-commercial');
-    const tabContentCopilot = document.getElementById('tab-content-copilot');
     const tabContentDetail = document.getElementById('tab-content-detail');
 
     const backdrop = document.getElementById('drawer-backdrop');
@@ -218,6 +217,7 @@ function initDrawerControls() {
             btnCollapseLeft.title = drawerLeft.classList.contains('collapsed') ? 'Expandir panel de capas' : 'Minimizar panel de capas';
         }
     }
+    window.toggleLayersDrawer = toggleCollapseLayers;
 
     if (btnCollapseLeft) btnCollapseLeft.addEventListener('click', toggleCollapseLayers);
     if (drawerLeftHeader) {
@@ -239,7 +239,12 @@ function initDrawerControls() {
 
     function syncBackdrop() {
         if (!backdrop) return;
-        if (window.innerWidth < 1024 && drawerRight && drawerRight.classList.contains('open')) {
+        const isManeuver = !!(AppState.activeBurst || AppState.activeValveOutage || (drawerRight && (drawerRight.classList.contains('maneuver-peek') || drawerRight.classList.contains('maneuver-active'))));
+        if (isManeuver) {
+            backdrop.classList.remove('active');
+            return;
+        }
+        if (window.innerWidth < 1024 && drawerRight && drawerRight.classList.contains('open') && !drawerRight.classList.contains('maneuver-peek')) {
             backdrop.classList.add('active');
         } else {
             backdrop.classList.remove('active');
@@ -257,6 +262,7 @@ function initDrawerControls() {
     function openRightDrawer(tabName = 'telemetry') {
         lastDrawerActionTime = Date.now();
         drawerRight.classList.add('open');
+        document.body.classList.add('drawer-open');
         const dockBtn = document.getElementById('btn-panel-dock');
         if (dockBtn) dockBtn.style.display = 'none';
         if (btnToggleTelemetry) btnToggleTelemetry.classList.add('active');
@@ -266,6 +272,9 @@ function initDrawerControls() {
 
     function closeRightDrawer() {
         drawerRight.classList.remove('open');
+        drawerRight.classList.remove('maneuver-peek');
+        drawerRight.classList.remove('maneuver-active');
+        document.body.classList.remove('drawer-open');
         const dockBtn = document.getElementById('btn-panel-dock');
         if (dockBtn) dockBtn.style.display = 'flex';
         if (btnToggleTelemetry) btnToggleTelemetry.classList.remove('active');
@@ -280,8 +289,15 @@ function initDrawerControls() {
     window.closeRightDrawer = closeRightDrawer;
 
     function switchRightTab(tabName) {
-        const allBtns = [tabBtnTelemetry, tabBtnCommercial, tabBtnCopilot, tabBtnDetail];
-        const allContents = [tabContentTelemetry, tabContentCommercial, tabContentCopilot, tabContentDetail];
+        if (tabName === 'copilot') {
+            if (typeof window.openCopilotAssistant === 'function') {
+                window.openCopilotAssistant();
+            }
+            return;
+        }
+
+        const allBtns = [tabBtnTelemetry, tabBtnCommercial, tabBtnDetail];
+        const allContents = [tabContentTelemetry, tabContentCommercial, tabContentDetail];
 
         allBtns.forEach(btn => { if (btn) btn.classList.remove('active'); });
         allContents.forEach(cnt => { if (cnt) cnt.style.display = 'none'; });
@@ -292,11 +308,11 @@ function initDrawerControls() {
         } else if (tabName === 'commercial') {
             if (tabBtnCommercial) tabBtnCommercial.classList.add('active');
             if (tabContentCommercial) tabContentCommercial.style.display = 'block';
-        } else if (tabName === 'copilot') {
-            if (tabBtnCopilot) tabBtnCopilot.classList.add('active');
-            if (tabContentCopilot) tabContentCopilot.style.display = 'flex';
         } else {
-            if (tabBtnDetail) tabBtnDetail.classList.add('active');
+            if (tabBtnDetail) {
+                tabBtnDetail.style.display = 'inline-flex';
+                tabBtnDetail.classList.add('active');
+            }
             if (tabContentDetail) tabContentDetail.style.display = 'block';
         }
     }
@@ -314,7 +330,6 @@ function initDrawerControls() {
     if (btnCloseRight) btnCloseRight.addEventListener('click', closeRightDrawer);
     if (tabBtnTelemetry) tabBtnTelemetry.addEventListener('click', () => switchRightTab('telemetry'));
     if (tabBtnCommercial) tabBtnCommercial.addEventListener('click', () => switchRightTab('commercial'));
-    if (tabBtnCopilot) tabBtnCopilot.addEventListener('click', () => switchRightTab('copilot'));
     if (tabBtnDetail) tabBtnDetail.addEventListener('click', () => switchRightTab('detail'));
 
     window.switchRightTab = switchRightTab;
@@ -410,6 +425,7 @@ function initLayers() {
 
         // Agrupación unificada: Máscara Spotlight + Halo + Límite de Precisión (100% pasivo)
         layers.concesion = L.featureGroup([spotlightMaskLayer, haloLayer, boundaryLayer]).addTo(map);
+        layers.concesionBoundary = boundaryLayer;
     }
 
     // B. Localidad Censal Santa Juana
@@ -676,59 +692,11 @@ function onEachPipeFeature(feature, layer) {
     const badgeBg = isImpulsion ? 'rgba(99,102,241,0.2)' : (isTroncal ? 'rgba(2,132,199,0.25)' : 'rgba(0,229,255,0.18)');
     const headerTitle = isImpulsion ? '🟣 LÍNEA DE IMPULSIÓN' : (isTroncal ? '🌊 MATRIZ TRONCAL (EPANET)' : '💧 RED RAMAL SECUNDARIA');
 
-    // Ficha resumida interactiva sobre el mapa (mismo principio que arranques para móviles y escritorio)
-    const popupHtml = `
-        <div class="popup-consumer">
-            <div class="popup-header-row" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px; padding-right:28px; gap:6px;">
-                <span style="font-size:10px; font-weight:800; color:${tipoColor}; letter-spacing:0.4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${headerTitle}</span>
-                <span style="font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:10px; background:${badgeBg}; color:${tipoColor}; border:1px solid ${tipoColor}; white-space:nowrap; flex-shrink:0;">
-                    ● ${tipoBadge}
-                </span>
-            </div>
-            <div style="font-size:13px; font-weight:800; color:#ffffff; margin-bottom:3px; line-height:1.2;">
-                ${p.id_tramo || 'Tubería'} - ${p.sector || 'Red Distribución'}
-            </div>
-            <div style="font-size:11px; color:#94a3b8; margin-bottom:6px;">
-                Material: <strong style="color:#f1f5f9;">${p.material || 'PVC'}</strong> (${p.clase || 'Clase 10'})
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; background:rgba(255,255,255,0.06); padding:7px 9px; border-radius:8px; margin-bottom:8px;">
-                <div>
-                    <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Diámetro Nom.</div>
-                    <div style="font-size:13px; font-weight:800; color:${tipoColor};">
-                        ${p.diametro_nominal || '-'}
-                    </div>
-                </div>
-                <div>
-                    <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Caudal Diseño</div>
-                    <div style="font-size:13px; font-weight:800; color:#ffffff;">
-                        ${p.caudal_diseno_lps || '-'} <small style="font-size:9px; font-weight:500; color:#cbd5e1;">L/s</small>
-                    </div>
-                </div>
-            </div>
-            <div style="font-size:10px; color:#cbd5e1; margin-bottom:8px; line-height:1.4;">
-                • D. Interior: <strong style="color:#f1f5f9;">${p.diametro_interior_mm ? p.diametro_interior_mm + ' mm' : '-'}</strong><br>
-                • Prof. Tapada: <strong style="color:#f1f5f9;">${p.profundidad_tapada_m ? p.profundidad_tapada_m + ' m' : '1.0 m'}</strong><br>
-                • Rugosidad: <span>C = ${p.rugosidad_hazen_williams || 145} (Hazen-Williams)</span><br>
-                • Estado Operativo: <strong style="color:var(--accent-green);">● ${p.estado_tuberia || 'Bueno / En Servicio'}</strong>
-            </div>
-            <button class="btn-popup-view-detail" onclick="openPipeDrawerFromPopup('${p.id_tramo}')" style="
-                width: 100%;
-                padding: 7px 10px;
-                background: linear-gradient(135deg, #0284c7, #00d2ff);
-                border: none;
-                border-radius: 8px;
-                color: #ffffff;
-                font-size: 11px;
-                font-weight: 700;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 5px;
-                box-shadow: 0 2px 8px rgba(0, 210, 255, 0.4);
-            ">
-                <span>📋</span> Ver Ficha Técnica Completa
-            </button>
+    // Ficha resumida interactiva sobre el mapa (evaluada dinámicamente según perfil)
+    layer.bindPopup(() => {
+        if (AppState.emergencyMode || AppState.activeBurst) return '';
+        const canSimulate = typeof currentAppRole !== 'undefined' && currentAppRole === 'terreno';
+        const burstButtonHtml = canSimulate ? `
             <button class="btn-popup-burst" onclick="simulateBurstByPipeId('${p.id_tramo}')" style="
                 width: 100%;
                 margin-top: 6px;
@@ -747,10 +715,70 @@ function onEachPipeFeature(feature, layer) {
             ">
                 <span>🚨</span> Simular Rotura en este Tramo
             </button>
-        </div>
-    `;
+        ` : '';
 
-    layer.bindPopup(popupHtml, {
+        return `
+            <div class="popup-consumer">
+                <div class="popup-header-row" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px; padding-right:28px; gap:6px;">
+                    <span style="font-size:10px; font-weight:800; color:${tipoColor}; letter-spacing:0.4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${headerTitle}</span>
+                    <span style="font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:10px; background:${badgeBg}; color:${tipoColor}; border:1px solid ${tipoColor}; white-space:nowrap; flex-shrink:0;">
+                        ● ${tipoBadge}
+                    </span>
+                </div>
+                <div style="font-size:13px; font-weight:800; color:#ffffff; margin-bottom:3px; line-height:1.2;">
+                    ${p.id_tramo || 'Tubería'} - ${p.sector || 'Red Distribución'}
+                </div>
+                <div style="font-size:11px; color:#94a3b8; margin-bottom:6px;">
+                    Material: <strong style="color:#f1f5f9;">${p.material || 'PVC'}</strong> (${p.clase || 'Clase 10'})
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; background:rgba(255,255,255,0.06); padding:7px 9px; border-radius:8px; margin-bottom:8px;">
+                    <div>
+                        <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Diámetro Nom.</div>
+                        <div style="font-size:13px; font-weight:800; color:${tipoColor};">
+                            ${p.diametro_nominal || '-'}
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Caudal Diseño</div>
+                        <div style="font-size:13px; font-weight:800; color:#ffffff;">
+                            ${p.caudal_diseno_lps || '-'} <small style="font-size:9px; font-weight:500; color:#cbd5e1;">L/s</small>
+                        </div>
+                    </div>
+                </div>
+                <div style="font-size:10px; color:#cbd5e1; margin-bottom:8px; line-height:1.4;">
+                    • D. Interior: <strong style="color:#f1f5f9;">${p.diametro_interior_mm ? p.diametro_interior_mm + ' mm' : '-'}</strong><br>
+                    • Prof. Tapada: <strong style="color:#f1f5f9;">${p.profundidad_tapada_m ? p.profundidad_tapada_m + ' m' : '1.0 m'}</strong><br>
+                    • Rugosidad: <span>C = ${p.rugosidad_hazen_williams || 145} (Hazen-Williams)</span><br>
+                    • Estado Operativo: <strong style="color:var(--accent-green);">● ${p.estado_tuberia || 'Bueno / En Servicio'}</strong>
+                </div>
+                ${canSimulate ? `
+                <button class="btn-popup-view-detail" onclick="openPipeDrawerFromPopup('${p.id_tramo}')" style="
+                    width: 100%;
+                    padding: 7px 10px;
+                    background: linear-gradient(135deg, #0284c7, #00d2ff);
+                    border: none;
+                    border-radius: 8px;
+                    color: #ffffff;
+                    font-size: 11px;
+                    font-weight: 700;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 5px;
+                    box-shadow: 0 2px 8px rgba(0, 210, 255, 0.4);
+                ">
+                    <span>📋</span> Ver Ficha Técnica Completa
+                </button>
+                ${burstButtonHtml}
+                ` : `
+                <div style="font-size:10px; color:#94a3b8; background:rgba(255,255,255,0.04); padding:6px 8px; border-radius:6px; margin-top:6px; border:1px solid rgba(255,255,255,0.08); line-height:1.35;">
+                    🔒 <em>Tramo de distribución hidráulica. Fichas de red y simulador de roturas restringidos a <strong>Operación en Terreno</strong>.</em>
+                </div>
+                `}
+            </div>
+        `;
+    }, {
         className: 'aquavisor-popup',
         maxWidth: 290,
         minWidth: 240,
@@ -765,7 +793,9 @@ function onEachPipeFeature(feature, layer) {
         }
 
         if (AppState.emergencyMode) {
+            if (map && map.closePopup) map.closePopup();
             triggerBurstSimulation(feature, layer);
+            return;
         } else {
             // Modo normal: aplicar principio de ficha resumida (popup en el mapa)
             // Cerrar el drawer lateral derecho si estuviese abierto para despejar el mapa
@@ -951,7 +981,6 @@ function createSourceMarker(feature, latlng) {
                 <div class="source-icon-core tank-core">
                     <span class="source-core-sym">🗼</span>
                 </div>
-                <span class="source-float-tag">ESTANQUE ${p.capacidad || '50m³'}</span>
             </div>
         `;
     } else {
@@ -961,7 +990,6 @@ function createSourceMarker(feature, latlng) {
                 <div class="source-icon-core well-core">
                     <span class="source-core-sym">⚡</span>
                 </div>
-                <span class="source-float-tag tag-emerald">POZO DGA 6.8 L/s</span>
             </div>
         `;
     }
@@ -975,46 +1003,81 @@ function createSourceMarker(feature, latlng) {
 
     const marker = L.marker(latlng, { icon: customIcon, zIndexOffset: 1000 });
 
-    marker.bindPopup(`
-        <div class="popup-consumer">
-            <div style="font-size:10px; font-weight:800; color:${color}; margin-bottom:4px; text-transform:uppercase;">
-                ${isTank ? '🚰 Estanque de Regulación' : '⚡ Captación / Pozo'}
+    marker.bindPopup(() => {
+        return `
+            <div class="popup-consumer">
+                <div class="popup-header-row" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px; padding-right:28px; gap:6px;">
+                    <span style="font-size:10px; font-weight:800; color:${color}; letter-spacing:0.4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        ${isTank ? '🚰 ESTANQUE DE REGULACIÓN' : '🌊 PUNTO DE CAPTACIÓN'}
+                    </span>
+                    <span style="font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:10px; background:rgba(0,210,255,0.18); color:${color}; border:1px solid ${color}; white-space:nowrap; flex-shrink:0;">
+                        ● ${p.estado || 'En Servicio'}
+                    </span>
+                </div>
+                <div style="font-size:13px; font-weight:800; color:#ffffff; margin-bottom:3px; line-height:1.2;">
+                    ${p.name || 'Infraestructura Principal'}
+                </div>
+                <div style="font-size:11px; color:#94a3b8; margin-bottom:6px;">
+                    Tipo: <strong style="color:#f1f5f9;">${p.tipo_obra || (isTank ? 'Estanque Semienterrado' : 'Captación Subterránea')}</strong>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; background:rgba(255,255,255,0.06); padding:7px 9px; border-radius:8px; margin-bottom:8px;">
+                    <div>
+                        <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">${isTank ? 'Capacidad' : 'Caudal Concesión'}</div>
+                        <div style="font-size:13px; font-weight:800; color:${color};">
+                            ${isTank ? (p.capacidad_m3 || '50') + ' m³' : (p.caudal_lps || '6.8') + ' L/s'}
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Cota Terreno</div>
+                        <div style="font-size:13px; font-weight:800; color:#ffffff;">
+                            ${p.cota_terreno_m || '142'} <small style="font-size:9px; font-weight:500; color:#cbd5e1;">m.s.n.m.</small>
+                        </div>
+                    </div>
+                </div>
+                <div style="font-size:10px; color:#cbd5e1; margin-bottom:8px; line-height:1.4;">
+                    • Sector: <strong style="color:#f1f5f9;">${p.sector || 'Santa Juana Nº9'}</strong><br>
+                    • Material: <span>${p.material_construccion || 'Hormigón Armado'}</span><br>
+                    • Operación: <strong style="color:var(--accent-green);">● Telemetría en Tiempo Real Activa</strong>
+                </div>
+                <button class="btn-popup-view-detail" onclick="${(typeof currentAppRole !== 'undefined' && currentAppRole === 'directorio') ? `if(window.openRightDrawer) window.openRightDrawer('telemetry');` : `openSourceDrawerFromPopup('${p.fid || p.name}')`}" style="
+                    width: 100%;
+                    padding: 7px 10px;
+                    background: linear-gradient(135deg, #0284c7, #00d2ff);
+                    border: none;
+                    border-radius: 8px;
+                    color: #ffffff;
+                    font-size: 11px;
+                    font-weight: 700;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 5px;
+                    box-shadow: 0 2px 8px rgba(0, 210, 255, 0.4);
+                ">
+                    <span>${(typeof currentAppRole !== 'undefined' && currentAppRole === 'directorio') ? '📊' : '📋'}</span> ${(typeof currentAppRole !== 'undefined' && currentAppRole === 'directorio') ? 'Ver en Panel de Gestión' : 'Ver Ficha Técnica Completa'}
+                </button>
             </div>
-            <div style="font-size:13px; font-weight:800; color:#ffffff; margin-bottom:4px; line-height:1.2;">
-                ${p.name || 'Infraestructura'}
-            </div>
-            <div style="font-size:11px; color:#94a3b8; margin-bottom:4px;">
-                Sistema: <strong style="color:#f1f5f9;">${p.sistema || 'SSR San Ignacio'}</strong>
-            </div>
-            <div style="font-size:11px; color:#cbd5e1; margin-bottom:6px;">
-                Capacidad: <strong style="color:#00d2ff;">${p.capacidad || '-'}</strong>
-            </div>
-            <div style="font-size:10.5px; font-weight:600; color:${isProyectado ? '#f59e0b' : '#10b981'}; margin-bottom:8px;">
-                ● ${p.estado || 'Operativo / En Servicio'}
-            </div>
-            <button class="btn-popup-view-detail" onclick="showSourceDetailsFromPopup('${p.fid || ''}')" style="
-                width: 100%;
-                padding: 6px 10px;
-                background: linear-gradient(135deg, #0284c7, #00d2ff);
-                border: none;
-                border-radius: 6px;
-                color: #ffffff;
-                font-size: 11px;
-                font-weight: 700;
-                cursor: pointer;
-            ">
-                📋 Ver Ficha Técnica
-            </button>
-        </div>
-    `, { className: 'aquavisor-popup', maxWidth: 280 });
+        `;
+    }, {
+        className: 'aquavisor-popup',
+        maxWidth: 290,
+        minWidth: 240,
+        autoPan: true,
+        autoPanPadding: [20, 20]
+    });
 
     marker.on('click', (e) => {
         if (e) {
             if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
             L.DomEvent.stopPropagation(e);
         }
-        marker.openPopup();
-        showSourceDetails(feature.properties, isTank);
+        if (window.closeRightDrawer) {
+            window.closeRightDrawer();
+        } else {
+            const drawerRight = document.getElementById('drawer-right');
+            if (drawerRight) drawerRight.classList.remove('open');
+        }
     });
     return marker;
 }
@@ -1034,12 +1097,13 @@ function getArranqueWeightForZoom(zoom) {
 }
 
 function createValveMarker(feature, latlng) {
-    const vId = feature.properties.id;
+    const p = feature.properties;
+    const vId = p.id;
     const isOpen = AppState.valvesState[vId] !== false;
 
     const icon = L.divIcon({
         className: 'custom-valve-icon',
-        html: `<div class="valve-diamond ${isOpen ? 'valve-open' : 'valve-closed'}" title="${feature.properties.id}: ${feature.properties.ubicacion || 'Válvula de Sectorización'} (${isOpen ? 'Abierta' : 'Cerrada'})">
+        html: `<div class="valve-diamond ${isOpen ? 'valve-open' : 'valve-closed'}" title="${p.id}: ${p.ubicacion || 'Válvula de Sectorización'} (${isOpen ? 'Abierta' : 'Cerrada'})">
             <span class="valve-inner-symbol">${isOpen ? '⚙' : '🔒'}</span>
         </div>`,
         iconSize: [22, 22],
@@ -1047,13 +1111,126 @@ function createValveMarker(feature, latlng) {
     });
 
     const marker = L.marker(latlng, { icon: icon });
+
+    marker.bindPopup(() => {
+        const currentlyOpen = AppState.valvesState[p.id] !== false;
+        const canManeuver = typeof currentAppRole !== 'undefined' && currentAppRole === 'terreno';
+        const maneuverBtnHtml = canManeuver ? `
+            <button class="btn-popup-maneuver" onclick="toggleValveStateFromPopup('${p.id}')" style="
+                width: 100%;
+                margin-top: 6px;
+                padding: 6px 10px;
+                background: ${currentlyOpen ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(185, 28, 28, 0.35))' : 'linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.35))'};
+                border: 1px solid ${currentlyOpen ? '#ef4444' : '#10b981'};
+                border-radius: 8px;
+                color: ${currentlyOpen ? '#fca5a5' : '#a7f3d0'};
+                font-size: 10.5px;
+                font-weight: 700;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+            ">
+                <span>${currentlyOpen ? '🔒' : '🔓'}</span> ${currentlyOpen ? 'Simular Maniobra: CERRAR' : 'Simular Maniobra: ABRIR'}
+            </button>
+        ` : '';
+
+        return `
+            <div class="popup-consumer">
+                <div class="popup-header-row" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px; padding-right:28px; gap:6px;">
+                    <span style="font-size:10px; font-weight:800; color:#38bdf8; letter-spacing:0.4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        ⚙️ VÁLVULA DE SECTORIZACIÓN
+                    </span>
+                    <span style="font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:10px; background:${currentlyOpen ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}; color:${currentlyOpen ? '#10b981' : '#ef4444'}; border:1px solid ${currentlyOpen ? '#10b981' : '#ef4444'}; white-space:nowrap; flex-shrink:0;">
+                        ● ${currentlyOpen ? 'ABIERTA' : 'CERRADA'}
+                    </span>
+                </div>
+                <div style="font-size:13px; font-weight:800; color:#ffffff; margin-bottom:3px; line-height:1.2;">
+                    ${p.id} - ${p.nombre || p.ubicacion || 'Válvula de Red'}
+                </div>
+                <div style="font-size:11px; color:#94a3b8; margin-bottom:6px;">
+                    Tipo: <strong style="color:#f1f5f9;">${p.tipo || 'Compuerta Cierre Elástico'}</strong> (${p.marca || 'AVK'})
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; background:rgba(255,255,255,0.06); padding:7px 9px; border-radius:8px; margin-bottom:8px;">
+                    <div>
+                        <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Diámetro Nom.</div>
+                        <div style="font-size:13px; font-weight:800; color:#38bdf8;">
+                            ${p.diametro || '75 mm'}
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Carrera Cierre</div>
+                        <div style="font-size:13px; font-weight:800; color:#ffffff;">
+                            ${p.vueltas_cierre || '18'} <small style="font-size:9px; font-weight:500; color:#cbd5e1;">vueltas</small>
+                        </div>
+                    </div>
+                </div>
+                <div style="font-size:10px; color:#cbd5e1; margin-bottom:8px; line-height:1.4;">
+                    • Sentido Giro: <strong style="color:#f1f5f9;">${p.sentido_giro || 'Horario (CW)'}</strong><br>
+                    • Función: <span>${p.funcion || 'Sectorización Red'}</span><br>
+                    • Profundidad Cámara: <span>${p.profundidad_camara_m ? p.profundidad_camara_m + ' m' : '1.1 m'}</span><br>
+                    • Estado Operativo: <strong style="color:var(--accent-green);">● Bueno / Mantenida</strong>
+                </div>
+                ${canManeuver ? `
+                <button class="btn-popup-view-detail" onclick="openValveDrawerFromPopup('${p.id}')" style="
+                    width: 100%;
+                    padding: 7px 10px;
+                    background: linear-gradient(135deg, #0284c7, #00d2ff);
+                    border: none;
+                    border-radius: 8px;
+                    color: #ffffff;
+                    font-size: 11px;
+                    font-weight: 700;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 5px;
+                    box-shadow: 0 2px 8px rgba(0, 210, 255, 0.4);
+                ">
+                    <span>📋</span> Ver Ficha Técnica Completa
+                </button>
+                ${maneuverBtnHtml}
+                ` : `
+                <div style="font-size:10px; color:#94a3b8; background:rgba(255,255,255,0.04); padding:6px 8px; border-radius:6px; margin-top:6px; border:1px solid rgba(255,255,255,0.08); line-height:1.35;">
+                    🔒 <em>Activo de red física. Las fichas de fontanería y maniobras operativas están restringidas al perfil <strong>Operación en Terreno</strong>.</em>
+                </div>
+                `}
+            </div>
+        `;
+    }, {
+        className: 'aquavisor-popup',
+        maxWidth: 290,
+        minWidth: 240,
+        autoPan: true,
+        autoPanPadding: [20, 20]
+    });
+
     marker.on('click', (e) => {
         if (e) {
             if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
             L.DomEvent.stopPropagation(e);
         }
-        showValveDetails(feature.properties);
+        if (AppState.valveSelectMode) {
+            AppState.valveSelectMode = false;
+            const b = document.getElementById('emergency-mode-banner');
+            if (b) b.style.display = 'none';
+            document.getElementById('map').style.cursor = '';
+            toggleValveState(p.id);
+            return;
+        }
+
+        // Modo normal: aplicar principio de ficha resumida (popup en el mapa)
+        // Cerrar el drawer lateral derecho si estuviese abierto para despejar el mapa
+        if (window.closeRightDrawer) {
+            window.closeRightDrawer();
+        } else {
+            const drawerRight = document.getElementById('drawer-right');
+            if (drawerRight) drawerRight.classList.remove('open');
+        }
     });
+
     return marker;
 }
 
@@ -1095,13 +1272,79 @@ function createAccessoryMarker(feature, latlng) {
     });
 
     const marker = L.marker(latlng, { icon: icon });
+
+    marker.bindPopup(() => {
+        return `
+            <div class="popup-consumer">
+                <div class="popup-header-row" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px; padding-right:28px; gap:6px;">
+                    <span style="font-size:10px; font-weight:800; color:${bgColor}; letter-spacing:0.4px;">
+                        ${symbol} ${label.toUpperCase()}
+                    </span>
+                    <span style="font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:10px; background:rgba(255,255,255,0.08); color:#f1f5f9; border:1px solid rgba(255,255,255,0.2);">
+                        ● Operativo
+                    </span>
+                </div>
+                <div style="font-size:13px; font-weight:800; color:#ffffff; margin-bottom:3px; line-height:1.2;">
+                    ${feature.properties.id || 'Accesorio'} - ${feature.properties.tipo || label}
+                </div>
+                <div style="font-size:11px; color:#94a3b8; margin-bottom:6px;">
+                    Ubicación: <strong style="color:#f1f5f9;">${feature.properties.ubicacion || 'Red General'}</strong>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; background:rgba(255,255,255,0.06); padding:7px 9px; border-radius:8px; margin-bottom:8px;">
+                    <div>
+                        <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Diámetro</div>
+                        <div style="font-size:13px; font-weight:800; color:${bgColor};">
+                            ${feature.properties.diametro || '75 mm'}
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size:8.5px; color:#94a3b8; text-transform:uppercase; font-weight:600;">Presión Din.</div>
+                        <div style="font-size:13px; font-weight:800; color:var(--accent-green);">
+                            ${feature.properties.presion_dinamica || '24 m.c.a.'}
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-popup-view-detail" onclick="openAccessoryDrawerFromPopup('${feature.properties.id}')" style="
+                    width: 100%;
+                    padding: 7px 10px;
+                    background: linear-gradient(135deg, #0284c7, #00d2ff);
+                    border: none;
+                    border-radius: 8px;
+                    color: #ffffff;
+                    font-size: 11px;
+                    font-weight: 700;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 5px;
+                    box-shadow: 0 2px 8px rgba(0, 210, 255, 0.4);
+                ">
+                    <span>📋</span> Ver Ficha Técnica Completa
+                </button>
+            </div>
+        `;
+    }, {
+        className: 'aquavisor-popup',
+        maxWidth: 290,
+        minWidth: 240,
+        autoPan: true,
+        autoPanPadding: [20, 20]
+    });
+
     marker.on('click', (e) => {
         if (e) {
             if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
             L.DomEvent.stopPropagation(e);
         }
-        showAccessoryDetails(feature.properties);
+        if (window.closeRightDrawer) {
+            window.closeRightDrawer();
+        } else {
+            const drawerRight = document.getElementById('drawer-right');
+            if (drawerRight) drawerRight.classList.remove('open');
+        }
     });
+
     return marker;
 }
 
@@ -1158,8 +1401,66 @@ function createConsumerMarker(feature, latlng) {
     const isInsideServ = typeof json_Conexiones_Domiciliarias !== 'undefined' && 
                          json_Conexiones_Domiciliarias.features.some(f => f.properties.id_arranque === p.id_arranque);
 
-    // Popup interactivo sobre el mapa (Ficha Resumida por defecto para vista móvil y escritorio)
-    const popupHtml = `
+    // Popup interactivo sobre el mapa evaluado dinámicamente según el perfil activo
+    marker.bindPopup(() => {
+        const isCommercial = typeof currentAppRole !== 'undefined' && currentAppRole === 'administracion';
+        const isDirectorio = typeof currentAppRole !== 'undefined' && currentAppRole === 'directorio';
+        const comm = (typeof COMMERCIAL_DB !== 'undefined') ? COMMERCIAL_DB[p.id_arranque] : null;
+        const debtMonths = comm ? comm.debtMonths : 0;
+        const debtAmount = comm ? comm.debtAmount : 0;
+
+        // VISTA A: PERFIL COMITÉ Y DIRECTORIO (CREDENCIAL EJECUTIVA MÍNIMA DE GOBERNANZA)
+        if (isDirectorio) {
+            const hasSubsidy = (p.id_arranque === 'ARR-012' || p.id_arranque === 'ARR-018' || (parseInt(p.id_arranque.replace('ARR-','')) % 3 === 0));
+            const statusColor = debtMonths >= 3 ? '#ef4444' : (debtMonths > 0 ? '#f59e0b' : '#10b981');
+            const statusLabel = debtMonths >= 3 ? '● ORDEN DE CORTE' : (debtMonths > 0 ? '⚠️ AVISO MORA' : '● AL DÍA');
+            const debtText = debtMonths > 0 ? `$${debtAmount.toLocaleString('es-CL')} (${debtMonths} mes${debtMonths > 1 ? 'es' : ''})` : 'Al Día ($0)';
+
+            return `
+            <div class="popup-consumer">
+                <div class="popup-header-row" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px; padding-right:28px; gap:6px;">
+                    <span style="font-size:10px; font-weight:800; color:#38bdf8; letter-spacing:0.4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        🏛️ CONSULTA SOCIO SSR
+                    </span>
+                    <span style="font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:10px; background:${debtMonths >= 3 ? 'rgba(239,68,68,0.2)' : (debtMonths > 0 ? 'rgba(245,158,11,0.2)' : 'rgba(16,185,129,0.2)')}; color:${statusColor}; border:1px solid ${statusColor}; white-space:nowrap; flex-shrink:0;">
+                        ${statusLabel}
+                    </span>
+                </div>
+                <div style="font-size:13px; font-weight:800; color:#ffffff; margin-bottom:2px; line-height:1.2;">
+                    ${p.socio || 'Socio Sin Nombre'}
+                </div>
+                <div style="font-size:11px; color:#94a3b8; margin-bottom:6px;">
+                    RUT: <strong style="color:#f1f5f9;">${p.rut || '-'}</strong> · Uso: <strong style="color:#38bdf8;">${p.tipo_uso || 'Residencial'}</strong>
+                </div>
+
+                <div style="background:rgba(255,255,255,0.05); padding:8px 10px; border-radius:8px; margin-bottom:6px; border:1px solid rgba(255,255,255,0.08);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; margin-bottom:4px;">
+                        <span style="color:#cbd5e1;">Situación Cuotas:</span>
+                        <strong style="color:${statusColor};">${debtText}</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:10.5px;">
+                        <span style="color:#94a3b8;">Subsidio Municipal SAP:</span>
+                        <span style="color:${hasSubsidy ? '#10b981' : '#94a3b8'}; font-weight:600;">
+                            ${hasSubsidy ? '✓ Activo (50% SAP)' : 'Sin Subsidio'}
+                        </span>
+                    </div>
+                </div>
+
+                <div style="font-size:9.5px; color:#10b981; margin-bottom:4px; font-weight:600; display:flex; align-items:center; gap:4px;">
+                    <span>✓ Concesión Oficial DOH (Ley 20.998)</span>
+                </div>
+
+                <div style="font-size:9.5px; color:#94a3b8; margin-top:6px; background:rgba(255,255,255,0.03); padding:5px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.06); line-height:1.35;">
+                    🏛️ <em>Consulta directiva de socio. Cobranza, emisión de boletas y convenios corresponden al perfil <strong>Gestión Comercial</strong>.</em>
+                </div>
+            </div>
+            `;
+        }
+
+        // VISTA B: OTROS PERFILES (COMERCIAL Y TERRENO)
+        const btnIcon = isCommercial ? '👤' : '📋';
+        const btnLabel = isCommercial ? 'Ver Ficha del Socio y Cobranza' : 'Ver Ficha del Arranque';
+        return `
         <div class="popup-consumer">
             <div class="popup-header-row" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:5px; padding-right:28px; gap:6px;">
                 <span style="font-size:10px; font-weight:800; color:#00d2ff; letter-spacing:0.4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">💧 ARRANQUE DOMICILIARIO</span>
@@ -1207,12 +1508,11 @@ function createConsumerMarker(feature, latlng) {
                 gap: 5px;
                 box-shadow: 0 2px 8px rgba(0, 210, 255, 0.4);
             ">
-                <span>📋</span> Ver Ficha Técnica Completa
+                <span>${btnIcon}</span> ${btnLabel}
             </button>
         </div>
-    `;
-
-    marker.bindPopup(popupHtml, {
+        `;
+    }, {
         className: 'aquavisor-popup',
         maxWidth: 290,
         minWidth: 240,
@@ -1303,25 +1603,73 @@ function updateDigitalTwin(hour) {
     const timelineMinPress = document.getElementById('timeline-min-press');
     const timelineTankVol = document.getElementById('timeline-tank-vol');
 
-    if (tankPctLabel) tankPctLabel.innerText = tankPercent + '%';
-    if (tankVolLabel) tankVolLabel.innerText = `${AppState.tankCurrentVol} m³ / 50 m³`;
+    if (tankPctLabel) tankPctLabel.innerText = tankPercent;
+    if (tankVolLabel) tankVolLabel.innerText = `${AppState.tankCurrentVol} m³`;
+    const tankAutonomyVal = document.getElementById('tank-autonomy-val');
+    const autonomyHours = Math.round((AppState.tankCurrentVol / 4.3) * 10) / 10;
+    if (tankAutonomyVal) {
+        tankAutonomyVal.innerText = `~${autonomyHours} hrs de autonomía`;
+    }
+
+    // Hora límite estimada de corte para toma de decisiones ejecutivas
+    const tankCutoffTime = document.getElementById('tank-cutoff-time');
+    if (tankCutoffTime) {
+        const totalMinutes = Math.round(autonomyHours * 60);
+        const endHour = (hour + Math.floor(totalMinutes / 60)) % 24;
+        const endMin = totalMinutes % 60;
+        const period = endHour >= 12 ? 'PM' : 'AM';
+        const displayH = endHour % 12 === 0 ? 12 : endHour % 12;
+        const timeStr = `${String(displayH).padStart(2, '0')}:${String(endMin).padStart(2, '0')} ${period}`;
+        tankCutoffTime.innerText = timeStr;
+    }
+
+    // Tendencia de Flujo del Estanque (Llenando vs Consumo Punta)
+    const tankTrendBadge = document.getElementById('tank-trend-badge');
+    if (tankTrendBadge) {
+        const isFilling = AppState.pumpFlow > 4.3;
+        if (isFilling) {
+            tankTrendBadge.className = 'water-hero-status status-good';
+            tankTrendBadge.innerText = '▲ Llenando';
+        } else {
+            tankTrendBadge.className = 'water-hero-status status-warn';
+            tankTrendBadge.innerText = '▼ Vaciando';
+        }
+    }
+
+    // Micro-semáforo normativo NCh 691 para la Presión en Punto Escuela
+    const minPressSub = document.getElementById('min-press-sub');
+    if (minPressSub) {
+        if (minPressure < 14.0) {
+            minPressSub.innerHTML = '● Crítica';
+            minPressSub.style.color = '#ef4444';
+        } else if (minPressure < 15.5) {
+            minPressSub.innerHTML = '⚠️ Límite';
+            minPressSub.style.color = '#fbbf24';
+        } else {
+            minPressSub.innerHTML = '● Normal';
+            minPressSub.style.color = '#34d399';
+        }
+    }
+
     if (tankFillBar) {
         tankFillBar.style.width = tankPercent + '%';
-        if (tankPercent < 40) tankFillBar.style.background = 'linear-gradient(90deg, #ef4444, #f59e0b)';
-        else tankFillBar.style.background = 'linear-gradient(90deg, #0284c7, #00d2ff)';
+        if (tankPercent < 30) tankFillBar.style.background = '#ef4444';
+        else if (tankPercent < 50) tankFillBar.style.background = 'linear-gradient(90deg, #f59e0b, #38bdf8)';
+        else tankFillBar.style.background = 'linear-gradient(90deg, #0284c7, #38bdf8)';
     }
     if (pumpStateLabel) {
-        pumpStateLabel.innerText = AppState.pumpStatus;
-        pumpStateLabel.style.color = AppState.pumpStatus.includes('ENCENDIDA') ? 'var(--accent-green)' : 'var(--text-muted)';
+        const isPumping = AppState.pumpStatus.includes('ENCENDIDA');
+        pumpStateLabel.innerText = isPumping ? '● Bombeando' : '○ En Reposo';
+        pumpStateLabel.style.color = isPumping ? '#34d399' : '#94a3b8';
     }
     if (pumpFlowLabel) pumpFlowLabel.innerText = AppState.pumpFlow + ' L/s';
     if (minPressLabel) {
-        minPressLabel.innerText = minPressure + ' m.c.a.';
-        minPressLabel.style.color = minPressure < 14.0 ? 'var(--accent-yellow)' : 'var(--accent-green)';
+        minPressLabel.innerText = minPressure + ' mca';
+        minPressLabel.style.color = minPressure < 14.0 ? '#ef4444' : (minPressure < 15.5 ? '#fbbf24' : '#cbd5e1');
     }
     if (timelineMinPress) {
-        timelineMinPress.innerText = minPressure + ' m.c.a.';
-        timelineMinPress.style.color = minPressure < 14.0 ? 'var(--accent-yellow)' : 'var(--accent-green)';
+        timelineMinPress.innerText = minPressure + ' mca';
+        timelineMinPress.style.color = minPressure < 14.0 ? '#ef4444' : '#34d399';
     }
     if (timelineTankVol) timelineTankVol.innerText = AppState.tankCurrentVol + ' m³';
 }
@@ -1329,24 +1677,250 @@ function updateDigitalTwin(hour) {
 // ------------------------------------------------------------------------------
 // 5. SIMULADOR DE ROTURA COMPACTO (NO BLOQUEA EL MAPA)
 // ------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------
+// CENTRO UNIFICADO DE MANIOBRAS HIDRÁULICAS (ROTURAS Y VÁLVULAS)
+// ------------------------------------------------------------------------------
+function openManeuversModal() {
+    if (typeof currentAppRole !== 'undefined' && currentAppRole !== 'terreno') {
+        if (typeof showToastNotification === 'function') {
+            showToastNotification('🔒 El Centro de Maniobras Hidráulicas es exclusivo del perfil Operación en Terreno');
+        }
+        return;
+    }
+
+    const modal = document.getElementById('maneuvers-modal');
+    if (!modal) return;
+
+    // Verificar si hay alguna rotura o válvula cerrada activa
+    const isBurstActive = !!AppState.activeBurst;
+    let closedValvesCount = 0;
+    if (AppState.valvesState) {
+        for (const k in AppState.valvesState) {
+            if (AppState.valvesState[k] === false) closedValvesCount++;
+        }
+    }
+
+    const statusBar = document.getElementById('maneuvers-active-status');
+    const statusDesc = document.getElementById('maneuvers-active-desc');
+    if (statusBar && statusDesc) {
+        if (isBurstActive || closedValvesCount > 0) {
+            statusBar.style.display = 'flex';
+            let descParts = [];
+            if (isBurstActive) descParts.push(`Rotura activa en ${AppState.activeBurst.id}`);
+            if (closedValvesCount > 0) descParts.push(`${closedValvesCount} válvula(s) cerrada(s)`);
+            statusDesc.textContent = '⚠️ ' + descParts.join(' · ');
+        } else {
+            statusBar.style.display = 'none';
+        }
+    }
+
+    modal.style.display = 'flex';
+}
+window.openManeuversModal = openManeuversModal;
+
+function closeManeuversModal(e) {
+    if (e && e.target && e.target.id !== 'maneuvers-modal' && !e.target.classList.contains('maneuvers-modal-close')) {
+        return;
+    }
+    const modal = document.getElementById('maneuvers-modal');
+    if (modal) modal.style.display = 'none';
+}
+window.closeManeuversModal = closeManeuversModal;
+
+function startManeuverMode(mode) {
+    closeManeuversModal();
+
+    if (mode === 'burst') {
+        AppState.valveSelectMode = false;
+        if (!AppState.emergencyMode) {
+            toggleEmergencyMode();
+        }
+        const bannerText = document.getElementById('emergency-banner-text');
+        if (bannerText) {
+            bannerText.innerHTML = '🚨 <strong>Modo Rotura Activo:</strong> Toca la tubería averiada en el mapa';
+        }
+    } else if (mode === 'valve') {
+        if (AppState.emergencyMode) {
+            toggleEmergencyMode();
+        }
+        AppState.valveSelectMode = true;
+
+        // Asegurar que la capa de válvulas esté activa en el mapa
+        if (layers.valvulas && !map.hasLayer(layers.valvulas)) {
+            map.addLayer(layers.valvulas);
+            const chk = document.getElementById('chk-valvulas');
+            if (chk) chk.checked = true;
+        }
+
+        const banner = document.getElementById('emergency-mode-banner');
+        const bannerText = document.getElementById('emergency-banner-text');
+        if (banner && bannerText) {
+            bannerText.innerHTML = '◈ <strong>Modo Válvula Activo:</strong> Toca una válvula en el mapa para simular maniobra';
+            banner.style.display = 'flex';
+        }
+
+        if (window.closeRightDrawer) window.closeRightDrawer();
+        if (typeof map !== 'undefined' && map.closePopup) map.closePopup();
+        document.getElementById('map').style.cursor = 'pointer';
+        showToastNotification('◈ Modo Válvulas: Toca una válvula para simular su corte');
+    }
+}
+window.startManeuverMode = startManeuverMode;
+
+function cancelActiveManeuverMode() {
+    if (AppState.emergencyMode) {
+        toggleEmergencyMode();
+    }
+    AppState.valveSelectMode = false;
+    const banner = document.getElementById('emergency-mode-banner');
+    if (banner) banner.style.display = 'none';
+    document.getElementById('map').style.cursor = '';
+}
+window.cancelActiveManeuverMode = cancelActiveManeuverMode;
+
+function resetAllManeuvers() {
+    closeManeuversModal();
+
+    // 1. Restaurar tuberías si había rotura
+    if (typeof clearBurstSimulation === 'function') {
+        clearBurstSimulation();
+    }
+
+    // 2. Abrir todas las válvulas cerradas
+    if (AppState.valvesState) {
+        AppState.valvesState = {};
+    }
+    if (layers.valvulas && json_Valvulas_GeoConecta) {
+        layers.valvulas.clearLayers();
+        layers.valvulas.addData(json_Valvulas_GeoConecta);
+    }
+    if (layers.outageLayer) {
+        layers.outageLayer.clearLayers();
+    }
+
+    // 3. Ocultar banners y cerrar drawer
+    cancelActiveManeuverMode();
+    if (window.closeRightDrawer) window.closeRightDrawer();
+
+    showToastNotification('✓ Todas las maniobras restablecidas. Red en régimen normal.');
+}
+window.resetAllManeuvers = resetAllManeuvers;
+
 function toggleEmergencyMode() {
     AppState.emergencyMode = !AppState.emergencyMode;
     const btn = document.getElementById('btn-emergency-mode');
+    const thumbBtn = document.querySelector('.thumb-btn-emergency');
+    const banner = document.getElementById('emergency-mode-banner');
     
     if (AppState.emergencyMode) {
-        btn.classList.add('active');
-        btn.innerHTML = '🚨 MODO ACTIVO: Pincha una Tubería';
+        if (btn) {
+            btn.classList.add('active');
+            btn.innerHTML = '🚨 MODO ACTIVO: Pincha una Tubería';
+        }
+        if (thumbBtn) thumbBtn.classList.add('active');
+        if (banner) banner.style.display = 'flex';
         document.getElementById('map').style.cursor = 'crosshair';
+        if (typeof map !== 'undefined' && map.closePopup) map.closePopup();
     } else {
-        btn.classList.remove('active');
-        btn.innerHTML = '🚨 Simular Rotura';
+        if (btn) {
+            btn.classList.remove('active');
+            btn.innerHTML = '🚨 Simular Rotura';
+        }
+        if (thumbBtn) thumbBtn.classList.remove('active');
+        if (banner) banner.style.display = 'none';
         document.getElementById('map').style.cursor = '';
         clearBurstSimulation();
     }
 }
+window.toggleEmergencyMode = toggleEmergencyMode;
+
+// ==============================================================================
+// GESTIÓN DE MODO ASOMADO TÁCTICO (MANEUVER PEEK BAR) EN MÓVIL
+// ==============================================================================
+function setupManeuverPeekBar(config) {
+    const drawer = document.getElementById('drawer-right');
+    if (!drawer) return;
+
+    const iconEl = document.getElementById('peek-icon');
+    const titleEl = document.getElementById('peek-title');
+    const subEl = document.getElementById('peek-sub');
+    const restoreBtn = document.getElementById('btn-peek-restore');
+    const toggleIcon = document.getElementById('peek-toggle-icon');
+    const toggleText = document.getElementById('peek-toggle-text');
+
+    if (iconEl) iconEl.textContent = config.icon || '🚨';
+    if (titleEl) titleEl.textContent = config.title || 'Maniobra Activa';
+    if (subEl) subEl.textContent = config.sub || '';
+    if (restoreBtn) {
+        restoreBtn.textContent = config.restoreText || '✓ Normalizar';
+        if (config.onRestore) {
+            restoreBtn.setAttribute('onclick', config.onRestore);
+        } else {
+            restoreBtn.setAttribute('onclick', 'handlePeekRestore()');
+        }
+    }
+    if (toggleIcon) toggleIcon.textContent = '▲';
+    if (toggleText) toggleText.textContent = 'Detalle';
+
+    drawer.classList.add('open');
+    drawer.classList.add('maneuver-peek');
+    drawer.classList.add('maneuver-active');
+    document.body.classList.add('drawer-open');
+
+    // Desactivar backdrop explícitamente para dejar el mapa visible e interactivo
+    const backdrop = document.getElementById('drawer-backdrop');
+    if (backdrop) backdrop.classList.remove('active');
+}
+window.setupManeuverPeekBar = setupManeuverPeekBar;
+
+function toggleManeuverSheetPeek() {
+    const drawer = document.getElementById('drawer-right');
+    const toggleIcon = document.getElementById('peek-toggle-icon');
+    const toggleText = document.getElementById('peek-toggle-text');
+    if (!drawer) return;
+
+    const isPeek = drawer.classList.contains('maneuver-peek');
+    if (isPeek) {
+        // Expandir a ficha completa (54vh)
+        drawer.classList.remove('maneuver-peek');
+        if (toggleIcon) toggleIcon.textContent = '🗺️';
+        if (toggleText) toggleText.textContent = 'Ver Mapa';
+    } else {
+        // Plegar a modo asomado compacto (68px)
+        drawer.classList.add('maneuver-peek');
+        if (toggleIcon) toggleIcon.textContent = '▲';
+        if (toggleText) toggleText.textContent = 'Detalle';
+    }
+
+    // Mantener backdrop desactivado para mapa 100% interactivo
+    const backdrop = document.getElementById('drawer-backdrop');
+    if (backdrop) backdrop.classList.remove('active');
+}
+window.toggleManeuverSheetPeek = toggleManeuverSheetPeek;
+
+function handlePeekRestore() {
+    if (AppState.activeBurst) {
+        repairAndRestore();
+    } else if (AppState.activeValveOutage) {
+        toggleValveState(AppState.activeValveOutage);
+    } else {
+        if (window.closeRightDrawer) window.closeRightDrawer();
+    }
+}
+window.handlePeekRestore = handlePeekRestore;
 
 function triggerBurstSimulation(feature, layer) {
     const props = feature.properties;
+
+    // Asegurar cierre estricto de cualquier popup en el mapa
+    if (typeof map !== 'undefined' && map.closePopup) {
+        map.closePopup();
+    }
+
+    // Ocultar banner superior si estaba activo
+    const banner = document.getElementById('emergency-mode-banner');
+    if (banner) banner.style.display = 'none';
 
     // Si se pincha la misma tubería que ya está rota, se deselecciona y desactiva
     if (activeBurstLayer === layer) {
@@ -1412,33 +1986,143 @@ function triggerBurstSimulation(feature, layer) {
         affectedHomes = 22;
     }
 
-    // Centrar mapa suavemente en la rotura sin tapar la vista
-    map.flyTo(layer.getBounds().getCenter(), 15, { duration: 0.8 });
+    // Centrar mapa suavemente en la rotura con encuadre óptimo en móvil (dejando libre el 88% del mapa)
+    const bounds = layer.getBounds();
+    if (window.innerWidth < 768) {
+        map.fitBounds(bounds.pad(0.35), {
+            maxZoom: 16,
+            paddingTopLeft: [20, 20],
+            paddingBottomRight: [20, 85],
+            duration: 0.8
+        });
+    } else {
+        map.flyTo(bounds.getCenter(), 16, { duration: 0.8 });
+    }
 
-    // Mostrar Tarjeta Compacta en la esquina inferior izquierda
-    const card = document.getElementById('emergency-card');
-    document.getElementById('burst-pipe-id').innerText = `${props.id_tramo} (${props.sector || 'Red'})`;
-    document.getElementById('burst-valves-rec').innerHTML = valvesToClose.map(v => `<li>Cerrar <strong>${v}</strong> en sentido HORARIO.</li>`).join('');
-    document.getElementById('burst-affected-count').innerText = `${affectedHomes} familias`;
-    
-    card.style.display = 'block';
+    // Mostrar el protocolo de emergencia integrado en la Ficha Técnica (Bottom Sheet)
+    showEmergencyProtocol(props, valvesToClose, affectedHomes);
 }
 
-function executeEmergencyCut() {
-    alert('PROTOCOLO EJECUTADO:\nSe instruyó al fontanero el cierre de válvulas recomendadas.\nSector aislado correctamente.');
-    clearBurstSimulation();
-    if (AppState.emergencyMode) {
-        toggleEmergencyMode();
+function showEmergencyProtocol(props, valvesToClose, affectedHomes) {
+    const badge = '<span class="drawer-badge" style="background:rgba(239,68,68,0.25); color:#ef4444; border:1px solid #ef4444;">🚨 PROTOCOLO DE CORTE</span>';
+
+    const valvesHtml = valvesToClose.map((v, idx) => {
+        const valveCode = v.split('(')[0].trim();
+        const valveLoc = v.includes('(') ? v.split('(')[1].replace(')', '') : 'Sector troncal';
+        return `
+            <div class="emergency-valve-row">
+                <div class="emergency-valve-num">${idx + 1}</div>
+                <div class="emergency-valve-info">
+                    <div class="emergency-valve-name">Cerrar <strong>${valveCode}</strong></div>
+                    <div class="emergency-valve-sub">📍 ${valveLoc} · Girar en sentido <strong>HORARIO</strong></div>
+                </div>
+                <span class="emergency-valve-badge">CERRAR</span>
+            </div>
+        `;
+    }).join('');
+
+    const html = `
+        <div class="ficha-container emergency-protocol-wrap">
+            <!-- Bloque 1: Alerta y Localización -->
+            <div class="ficha-card emergency-alert-card">
+                <div class="emergency-alert-header">
+                    <span class="emergency-alert-tag">🚨 ROTURA EN MATRIZ DETECTADA</span>
+                    <span class="emergency-alert-code font-mono">${props.id_tramo}</span>
+                </div>
+                <h3 class="emergency-alert-title">${props.id_tramo} · ${props.sector || 'Red de Distribución'}</h3>
+                <div class="emergency-alert-meta">
+                    <span>Diámetro: <strong>${props.diametro_nominal || '75 mm'}</strong></span>
+                    <span>Material: <strong>${props.material || 'HDPE'}</strong></span>
+                    <span>Caudal: <strong>${props.caudal_diseno_lps || '6.8'} L/s</strong></span>
+                </div>
+            </div>
+
+            <!-- Bloque 2: Maniobras de Fontanería Obligatorias -->
+            <div class="emergency-steps-block">
+                <div class="emergency-steps-heading">
+                    <span>🛑</span> MANIOBRAS DE AISLAMIENTO INMEDIATO
+                </div>
+                <div class="emergency-valves-container">
+                    ${valvesHtml}
+                </div>
+            </div>
+
+            <!-- Bloque 3: Impacto Social / Familias sin agua -->
+            <div class="emergency-impact-card">
+                <div class="emergency-impact-text">
+                    <span class="impact-label">Viviendas Sin Suministro:</span>
+                    <span class="impact-sub">Población aislada en sector</span>
+                </div>
+                <div class="emergency-impact-number">
+                    ${affectedHomes} <small>familias</small>
+                </div>
+            </div>
+
+            <!-- Bloque Interacción Comunitaria: Notificación WhatsApp -->
+            <div class="emergency-action-block" style="margin-top:8px;">
+                <button class="btn-emergency-whatsapp" onclick="openWhatsAppBroadcastModal('${valvesToClose[0] ? valvesToClose[0].split('(')[0].trim() : 'VALV-16'}')" style="
+                    width: 100%;
+                    padding: 9px 12px;
+                    background: linear-gradient(135deg, #15803d, #22c55e);
+                    border: 1px solid rgba(255,255,255,0.2);
+                    border-radius: 8px;
+                    color: #ffffff;
+                    font-size: 11.5px;
+                    font-weight: 700;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 7px;
+                    box-shadow: 0 3px 10px rgba(34, 197, 94, 0.35);
+                    transition: all 0.2s ease;
+                ">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#ffffff" style="vertical-align:middle; display:inline-block;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    <span>📲 Notificar Corte a la Comunidad por WhatsApp</span>
+                </button>
+            </div>
+
+            <!-- Bloque 4: Acción Única - Normalizar / Reparado -->
+            <div class="emergency-action-block">
+                <button class="btn-emergency-normalize" onclick="repairAndRestore()">
+                    <span>✓</span> Concluir Reparación y Normalizar Red
+                </button>
+            </div>
+        </div>
+    `;
+
+    setDrawerDetail(props.id_tramo + ' (Emergencia)', badge, html);
+
+    // En móvil: activar Peek Mode (barra compacta de 68px) para no tapar el mapa
+    if (window.innerWidth < 768) {
+        setupManeuverPeekBar({
+            mode: 'burst',
+            icon: '🚨',
+            title: `Rotura: ${props.id_tramo}`,
+            sub: `${affectedHomes} familias sin agua`,
+            restoreText: '✓ Reparado',
+            onRestore: 'repairAndRestore()'
+        });
+        showToastNotification(`🚨 Rotura en ${props.id_tramo}: 88% del mapa despejado para maniobra`);
     }
 }
 
 function repairAndRestore() {
-    alert('REPARACIÓN CONCLUIDA:\nAbrazadera instalada y válvulas normalizadas.\nPresión en red restablecida.');
     clearBurstSimulation();
     if (AppState.emergencyMode) {
         toggleEmergencyMode();
     }
+    if (window.closeRightDrawer) {
+        window.closeRightDrawer();
+    }
+    showToastNotification('✓ Red normalizada y servicio restablecido.');
 }
+window.repairAndRestore = repairAndRestore;
+
+function executeEmergencyCut() {
+    repairAndRestore();
+}
+window.executeEmergencyCut = executeEmergencyCut;
 
 function clearBurstSimulation() {
     const burstLayerToReset = activeBurstLayer || (AppState.activeBurst ? AppState.activeBurst.layer : null);
@@ -1449,7 +2133,6 @@ function clearBurstSimulation() {
         layers.redes.resetStyle(burstLayerToReset);
     }
 
-    // Resetear todas las tuberías de la red para asegurar que ninguna quede roja pegada
     if (layers.redes) {
         layers.redes.eachLayer(l => {
             if (layers.redes.resetStyle) {
@@ -1458,9 +2141,36 @@ function clearBurstSimulation() {
         });
     }
 
-    const card = document.getElementById('emergency-card');
-    if (card) card.style.display = 'none';
+    const drawer = document.getElementById('drawer-right');
+    if (drawer) {
+        drawer.classList.remove('maneuver-peek');
+        drawer.classList.remove('maneuver-active');
+    }
+
+    // Ocultar banner si quedó abierto
+    const banner = document.getElementById('emergency-mode-banner');
+    if (banner) banner.style.display = 'none';
 }
+window.clearBurstSimulation = clearBurstSimulation;
+
+// Toast Notifier Global
+function showToastNotification(message, duration = 3000) {
+    let toast = document.getElementById('aquavisor-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'aquavisor-toast';
+        toast.className = 'aquavisor-toast';
+        document.body.appendChild(toast);
+    }
+    toast.innerHTML = message;
+    toast.classList.add('show');
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(() => {
+        toast.classList.remove('show');
+    }, duration);
+}
+window.showToastNotification = showToastNotification;
+
 
 // ------------------------------------------------------------------------------
 // 6. DETALLE DE ELEMENTOS EN DRAWER DERECHO
@@ -1472,10 +2182,20 @@ function setDrawerDetail(title, badgeHtml, contentHtml) {
     if (content) {
         content.innerHTML = contentHtml;
     }
+    // Cierre estricto de cualquier popup emergente para evitar duplicidad visual
+    if (typeof map !== 'undefined' && map) {
+        map.closePopup();
+    }
     window.openDetailTab();
 }
 
 function showValveDetails(props) {
+    if (typeof currentAppRole !== 'undefined' && currentAppRole !== 'terreno') {
+        if (typeof showToastNotification === 'function') {
+            showToastNotification('🔒 Ficha de maniobra reservada exclusivamente a Operación en Terreno');
+        }
+        return;
+    }
     const isOpen = AppState.valvesState[props.id] !== false;
     const badge = '<span class="drawer-badge badge-valve">VÁLVULA DE SECTORIZACIÓN</span>';
     const sim = (typeof VALVE_OUTAGE_SIMULATION_DB !== 'undefined') ? VALVE_OUTAGE_SIMULATION_DB[props.id] : null;
@@ -1484,6 +2204,49 @@ function showValveDetails(props) {
     const pipesCount = sim ? sim.pipesCount : 0;
     const sectorAfectado = sim ? sim.sector : props.sector_afectado;
     const recoveryTime = sim ? sim.recovery_time : '20 min';
+
+    // Restricción estricta por Perfil: solo Operación en Terreno puede maniobrar
+    const canManeuver = typeof currentAppRole !== 'undefined' && currentAppRole === 'terreno';
+    let maneuverBlockHtml = '';
+
+    if (canManeuver) {
+        maneuverBlockHtml = `
+            <div class="ficha-card ficha-block-maneuver">
+                <div class="ficha-card-label"><span class="block-icon">🔄</span> PROTOCOLO DE MANIOBRA EN TERRENO</div>
+                <div class="maneuver-flex">
+                    <div class="maneuver-item">
+                        <span class="maneuver-val">${props.sentido_giro || 'Horario'}</span>
+                        <span class="maneuver-lbl">Sentido Cierre</span>
+                    </div>
+                    <div class="maneuver-sep">|</div>
+                    <div class="maneuver-item">
+                        <span class="maneuver-val font-mono">${props.vueltas_cierre || '18'} vueltas</span>
+                        <span class="maneuver-lbl">Carrera Total</span>
+                    </div>
+                </div>
+
+                <!-- Botón táctil de maniobra (EXCLUSIVO TERRENO) -->
+                <button class="btn-toggle-valve-tactil ${isOpen ? 'btn-valve-close' : 'btn-valve-open'}" onclick="toggleValveState('${props.id}')">
+                    ${isOpen ? '🔒 Simular Maniobra: CERRAR' : '🔓 Simular Maniobra: ABRIR (Restablecer)'}
+                </button>
+            </div>
+        `;
+    } else {
+        maneuverBlockHtml = `
+            <div class="ficha-card" style="margin-top:8px; padding:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px;">
+                <div class="ficha-card-label"><span class="block-icon">ℹ️</span> ESTADO OPERATIVO (MODO LECTURA)</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+                    <span style="font-size:12px; color:#cbd5e1;">Régimen de Válvula:</span>
+                    <span style="font-weight:700; font-size:12px; color:${isOpen ? '#10b981' : '#ef4444'};">
+                        ${isOpen ? '● ABIERTA (Flujo Activo)' : '🔒 CERRADA (Aislada)'}
+                    </span>
+                </div>
+                <div style="font-size:10px; color:#64748b; margin-top:6px; line-height:1.4;">
+                    🔒 <em>La simulación de cierre y maniobras está restringida exclusivamente al perfil <strong>Operación en Terreno</strong>.</em>
+                </div>
+            </div>
+        `;
+    }
 
     let outagePanelHtml = '';
     if (!isOpen) {
@@ -1523,6 +2286,26 @@ function showValveDetails(props) {
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; display:inline-block;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                     </button>
                 </div>
+                <button class="btn-outage-wsp-banner" onclick="openWhatsAppBroadcastModal('${props.id}')" style="
+                    width: 100%;
+                    margin-top: 8px;
+                    padding: 8px 10px;
+                    background: linear-gradient(135deg, #15803d, #22c55e);
+                    border: 1px solid rgba(255,255,255,0.2);
+                    border-radius: 6px;
+                    color: #ffffff;
+                    font-size: 11px;
+                    font-weight: 700;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 6px;
+                    box-shadow: 0 2px 6px rgba(34, 197, 94, 0.3);
+                ">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="#ffffff" style="vertical-align:middle;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    <span>📲 Redactar Comunicado de Corte (WhatsApp)</span>
+                </button>
                 <div id="outage-clients-scroll-${props.id}" class="outage-clients-scroll" style="display:none; margin-top:8px;">
                     ${renderOutageClientsList(props.id)}
                 </div>
@@ -1548,26 +2331,8 @@ function showValveDetails(props) {
                 </div>
             </div>
 
-            <!-- Bloque 2: Maniobra de Terreno -->
-            <div class="ficha-card ficha-block-maneuver">
-                <div class="ficha-card-label"><span class="block-icon">🔄</span> PROTOCOLO DE MANIOBRA</div>
-                <div class="maneuver-flex">
-                    <div class="maneuver-item">
-                        <span class="maneuver-val">${props.sentido_giro || 'Horario'}</span>
-                        <span class="maneuver-lbl">Sentido Cierre</span>
-                    </div>
-                    <div class="maneuver-sep">|</div>
-                    <div class="maneuver-item">
-                        <span class="maneuver-val font-mono">${props.vueltas_cierre || '18'} vueltas</span>
-                        <span class="maneuver-lbl">Carrera Total</span>
-                    </div>
-                </div>
-
-                <!-- Botón táctil grande de maniobra -->
-                <button class="btn-toggle-valve-tactil ${isOpen ? 'btn-valve-close' : 'btn-valve-open'}" onclick="toggleValveState('${props.id}')">
-                    ${isOpen ? '🔒 Simular Maniobra: CERRAR' : '🔓 Simular Maniobra: ABRIR (Restablecer)'}
-                </button>
-            </div>
+            <!-- Bloque 2: Maniobra según Rol -->
+            ${maneuverBlockHtml}
 
             <!-- Bloque 3: Afectación si está cerrada -->
             ${outagePanelHtml}
@@ -1579,9 +2344,33 @@ function showValveDetails(props) {
     `;
 
     setDrawerDetail(props.id + ' - ' + (props.nombre || props.id), badge, html);
+
+    if (window.innerWidth < 768 && !isOpen) {
+        setupManeuverPeekBar({
+            mode: 'valve',
+            icon: '🔒',
+            title: `Válvula ${props.id} CERRADA`,
+            sub: `${affectedCount} familias sin agua`,
+            restoreText: '🔓 Abrir Válvula',
+            onRestore: `toggleValveState('${props.id}')`
+        });
+        showToastNotification(`🔒 Válvula ${props.id} aislada: 88% del mapa despejado`);
+    } else if (isOpen) {
+        const drawer = document.getElementById('drawer-right');
+        if (drawer) {
+            drawer.classList.remove('maneuver-peek');
+            drawer.classList.remove('maneuver-active');
+        }
+    }
 }
 
 function toggleValveState(valveId) {
+    if (typeof currentAppRole !== 'undefined' && currentAppRole !== 'terreno') {
+        if (typeof showToastNotification === 'function') {
+            showToastNotification('🔒 La maniobra de válvulas es exclusiva del perfil Operación en Terreno');
+        }
+        return;
+    }
     const isCurrentlyOpen = AppState.valvesState[valveId] !== false;
     const newState = !isCurrentlyOpen;
     AppState.valvesState[valveId] = newState;
@@ -1713,7 +2502,16 @@ function activateValveOutage(valveId) {
 
     if (boundsPoints.length > 0) {
         const bounds = L.latLngBounds(boundsPoints);
-        map.fitBounds(bounds.pad(0.12), { maxZoom: 16, duration: 1.0 });
+        if (window.innerWidth < 768) {
+            map.fitBounds(bounds.pad(0.18), {
+                maxZoom: 16,
+                paddingTopLeft: [20, 20],
+                paddingBottomRight: [20, 85],
+                duration: 1.0
+            });
+        } else {
+            map.fitBounds(bounds.pad(0.12), { maxZoom: 16, duration: 1.0 });
+        }
     }
 }
 
@@ -1728,6 +2526,12 @@ function clearValveOutage(valveId) {
         }
         const hud = document.getElementById('valve-outage-hud');
         if (hud) hud.remove();
+
+        const drawer = document.getElementById('drawer-right');
+        if (drawer) {
+            drawer.classList.remove('maneuver-peek');
+            drawer.classList.remove('maneuver-active');
+        }
     }
 }
 
@@ -1754,8 +2558,18 @@ function showOutageHUD(valveId, sim) {
 
 function focusValveOutage(valveId) {
     if (layers.outageLayer && layers.outageLayer.getLayers().length > 0) {
-        if (window.innerWidth < 768 && typeof closeRightDrawer === 'function') {
-            closeRightDrawer();
+        if (window.innerWidth < 768) {
+            const drawer = document.getElementById('drawer-right');
+            if (drawer && !drawer.classList.contains('maneuver-peek')) {
+                toggleManeuverSheetPeek();
+            }
+            map.fitBounds(layers.outageLayer.getBounds().pad(0.18), {
+                maxZoom: 16,
+                paddingTopLeft: [20, 20],
+                paddingBottomRight: [20, 85],
+                duration: 0.8
+            });
+            return;
         }
         map.fitBounds(layers.outageLayer.getBounds().pad(0.12), { maxZoom: 16, duration: 0.8 });
     }
@@ -1812,6 +2626,14 @@ function exportOutageClientsCSV(valveId) {
 }
 
 function showConsumerDetails(props) {
+    if (typeof currentAppRole !== 'undefined' && currentAppRole === 'directorio') {
+        return;
+    }
+    const tabDetail = document.getElementById('tab-btn-detail');
+    if (tabDetail) {
+        tabDetail.style.display = 'inline-flex';
+        tabDetail.innerHTML = (typeof currentAppRole !== 'undefined' && currentAppRole === 'administracion') ? '👤 Ficha Socio' : 'ℹ️ Ficha';
+    }
     const estado = props.estado_comercial || 'Al Día';
     const isAlDia = estado.includes('Al Día');
     const isAviso = estado.includes('Aviso') || estado.includes('Moroso');
@@ -1912,6 +2734,9 @@ function showConsumerDetails(props) {
 }
 
 window.openConsumerDrawerFromPopup = function(arranqueId) {
+    if (typeof currentAppRole !== 'undefined' && currentAppRole === 'directorio') {
+        return;
+    }
     if (typeof json_Arranques_GeoConecta !== 'undefined') {
         const item = json_Arranques_GeoConecta.features.find(f => f.properties.id_arranque === arranqueId);
         if (item) {
@@ -1921,19 +2746,52 @@ window.openConsumerDrawerFromPopup = function(arranqueId) {
     }
 };
 
-window.showSourceDetailsFromPopup = function(fid) {
-    if (typeof json_Fuentefuente__output_point_layer_6 !== 'undefined') {
-        const item = json_Fuentefuente__output_point_layer_6.features.find(f => f.properties.fid === fid);
-        if (item) {
-            const p = item.properties;
-            const isTank = (p.name && (p.name.includes('50') || p.name.includes('25') || p.name.includes('Estanque') || p.name.includes('SE'))) || 
-                           (p.tipo_obra && p.tipo_obra.includes('Estanque'));
-            showSourceDetails(p, isTank);
-        }
+window.openSourceDrawerFromPopup = function(idOrName) {
+    if (typeof map !== 'undefined' && map && map.closePopup) map.closePopup();
+    let item = null;
+    if (typeof json_Fuentefuente__output_point_layer_6 !== 'undefined' && json_Fuentefuente__output_point_layer_6.features) {
+        item = json_Fuentefuente__output_point_layer_6.features.find(f => {
+            if (!f.properties) return false;
+            if (f.properties.fid === idOrName) return true;
+            if (f.properties.name === idOrName) return true;
+            if (typeof idOrName === 'string' && f.properties.name && f.properties.name.toLowerCase().includes(idOrName.toLowerCase())) return true;
+            return false;
+        });
+    }
+    if (!item && typeof json_Obras_Captacion_Almacenamiento !== 'undefined' && json_Obras_Captacion_Almacenamiento.features) {
+        item = json_Obras_Captacion_Almacenamiento.features.find(f => {
+            if (!f.properties) return false;
+            return f.properties.fid === idOrName || f.properties.name === idOrName;
+        });
+    }
+    if (item) {
+        const p = item.properties;
+        const isTank = (p.name && (p.name.includes('50') || p.name.includes('25') || p.name.includes('Estanque') || p.name.includes('SE'))) || 
+                       (p.tipo_obra && p.tipo_obra.includes('Estanque'));
+        showSourceDetails(p, isTank);
+    } else {
+        showSourceDetails({
+            fid: 'INF-CALV-01',
+            name: 'Estanque El Calvario (50 m³)',
+            tipo_obra: 'Estanque de Regulación Semienterrado',
+            capacidad: '50.0 m³',
+            sistema: 'SSR Santa Juana Nº9 - El Calvario',
+            estado: 'Operativo / En Servicio',
+            cota_terreno: 364.0,
+            altura_torre: 15.0,
+            salida: 'PVC 110 mm'
+        }, true);
     }
 };
+window.showSourceDetailsFromPopup = window.openSourceDrawerFromPopup;
 
 function showSourceDetails(props, isTank) {
+    const isDirectorio = typeof currentAppRole !== 'undefined' && currentAppRole === 'directorio';
+    const tabDetail = document.getElementById('tab-btn-detail');
+    if (tabDetail) {
+        tabDetail.style.display = 'inline-flex';
+        tabDetail.innerHTML = isDirectorio ? '🏛️ Ficha Patrimonial' : 'ℹ️ Ficha';
+    }
     const isProyectado = props.estado && props.estado.includes('Proyectado');
     const badgeText = isTank ? (isProyectado ? 'ESTANQUE PROYECTADO' : 'ESTANQUE DE REGULACIÓN') : (isProyectado ? 'CAPTACIÓN PROYECTADA' : 'CAPTACIÓN POZO');
     const badgeBg = isProyectado ? 'rgba(245,158,11,0.2)' : 'rgba(2,132,199,0.3)';
@@ -1986,6 +2844,12 @@ function showSourceDetails(props, isTank) {
 }
 
 function showPipeDetails(props) {
+    if (typeof currentAppRole !== 'undefined' && currentAppRole !== 'terreno') {
+        if (typeof showToastNotification === 'function') {
+            showToastNotification('🔒 Ficha técnica de tubería reservada a Operación en Terreno');
+        }
+        return;
+    }
     const diam = props.diametro_nominal || '75 mm';
     const isTroncal = diam.includes('110') || diam.includes('90');
     const isImpulsion = props.id_tramo === 'TUB-11' || (props.sector && props.sector.includes('Impulsión'));
@@ -2036,7 +2900,8 @@ function showPipeDetails(props) {
                 </div>
             </div>
 
-            <!-- Bloque 4: Operación y Aislamiento de Red -->
+            <!-- Bloque 4: Operación y Aislamiento de Red (Exclusivo Terreno) -->
+            ${(typeof currentAppRole !== 'undefined' && currentAppRole === 'terreno') ? `
             <div class="ficha-card ficha-block-maneuver" style="margin-top:10px;">
                 <div class="ficha-card-label"><span class="block-icon">🚨</span> GESTIÓN DE INCIDENCIAS</div>
                 <div style="font-size:10px; color:var(--text-secondary); margin-bottom:8px; line-height:1.4;">
@@ -2046,6 +2911,7 @@ function showPipeDetails(props) {
                     <span>🚨</span> Simular Rotura en este Tramo
                 </button>
             </div>
+            ` : ''}
         </div>
     `;
 
@@ -2054,16 +2920,61 @@ function showPipeDetails(props) {
 }
 
 window.openPipeDrawerFromPopup = function(pipeId) {
+    if (typeof currentAppRole !== 'undefined' && currentAppRole !== 'terreno') {
+        if (typeof showToastNotification === 'function') {
+            showToastNotification('🔒 Ficha de red reservada exclusivamente al perfil Operación en Terreno');
+        }
+        return;
+    }
+    if (typeof map !== 'undefined' && map.closePopup) map.closePopup();
     if (typeof json_Redes_Enriquecidas !== 'undefined') {
         const item = json_Redes_Enriquecidas.features.find(f => f.properties.id_tramo === pipeId);
         if (item) {
-            map.closePopup();
             showPipeDetails(item.properties);
         }
     }
 };
 
+window.openValveDrawerFromPopup = function(valveId) {
+    if (typeof currentAppRole !== 'undefined' && currentAppRole !== 'terreno') {
+        if (typeof showToastNotification === 'function') {
+            showToastNotification('🔒 Ficha técnica y maniobras reservadas a Operación en Terreno');
+        }
+        return;
+    }
+    if (typeof map !== 'undefined' && map.closePopup) map.closePopup();
+    if (typeof json_Valvulas_GeoConecta !== 'undefined') {
+        const item = json_Valvulas_GeoConecta.features.find(f => f.properties.id === valveId);
+        if (item) {
+            showValveDetails(item.properties);
+        }
+    }
+};
+
+window.toggleValveStateFromPopup = function(valveId) {
+    if (typeof map !== 'undefined' && map.closePopup) map.closePopup();
+    toggleValveState(valveId);
+};
+
+// window.openSourceDrawerFromPopup está unificado y expuesto previamente en el gestor de fuentes
+
+window.openAccessoryDrawerFromPopup = function(accId) {
+    if (typeof map !== 'undefined' && map.closePopup) map.closePopup();
+    if (typeof json_Accesorios_GeoConecta !== 'undefined') {
+        const item = json_Accesorios_GeoConecta.features.find(f => f.properties.id === accId);
+        if (item) {
+            showAccessoryDetails(item.properties);
+        }
+    }
+};
+
 window.simulateBurstByPipeId = function(pipeId) {
+    if (typeof currentAppRole !== 'undefined' && currentAppRole !== 'terreno') {
+        if (typeof showToastNotification === 'function') {
+            showToastNotification('🔒 La simulación de rotura está reservada a Operación en Terreno');
+        }
+        return;
+    }
     if (!layers || !layers.redes) return;
     let foundLayer = null;
     layers.redes.eachLayer(l => {
@@ -2074,7 +2985,6 @@ window.simulateBurstByPipeId = function(pipeId) {
     if (foundLayer) {
         if (map && map.closePopup) map.closePopup();
         triggerBurstSimulation(foundLayer.feature, foundLayer);
-        map.fitBounds(foundLayer.getBounds(), { maxZoom: 17, padding: [60, 60] });
     }
 };
 
@@ -2294,7 +3204,19 @@ function onSearchResultClick(type, propsEncoded, lng, lat) {
 
     setTimeout(() => {
         if (type === 'valve') {
-            showValveDetails(props);
+            if (layers.valvulas) {
+                if (!map.hasLayer(layers.valvulas)) {
+                    map.addLayer(layers.valvulas);
+                    const chk = document.getElementById('chk-valvulas');
+                    if (chk) chk.checked = true;
+                }
+                layers.valvulas.eachLayer(layer => {
+                    if (layer.feature && layer.feature.properties.id === props.id) {
+                        layer.openPopup();
+                    }
+                });
+            }
+            if (window.closeRightDrawer) window.closeRightDrawer();
         } else if (type === 'consumer') {
             if (layers.arranques) {
                 if (!map.hasLayer(layers.arranques)) {
@@ -2356,6 +3278,10 @@ window.openLandingPortal = function() {
     if (portal) {
         portal.classList.remove('portal-hidden');
     }
+    const chkDirect = document.getElementById('chk-remember-direct-mode');
+    if (chkDirect) {
+        chkDirect.checked = localStorage.getItem('aquavisor_skip_portal') === 'true';
+    }
 };
 
 window.closeLandingPortal = function() {
@@ -2366,6 +3292,12 @@ window.closeLandingPortal = function() {
 };
 
 window.enterAppWithRole = function(role) {
+    const chkDirect = document.getElementById('chk-remember-direct-mode');
+    if (chkDirect && chkDirect.checked) {
+        localStorage.setItem('aquavisor_skip_portal', 'true');
+    } else {
+        localStorage.removeItem('aquavisor_skip_portal');
+    }
     setAppRole(role);
     window.closeLandingPortal();
     if (typeof map !== 'undefined' && map) {
@@ -2374,10 +3306,26 @@ window.enterAppWithRole = function(role) {
 };
 
 function initRoleManager() {
-    const savedRole = localStorage.getItem('aquavisor_role') || 'terreno';
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlRole = urlParams.get('role');
+    const directAccess = urlParams.get('direct') === '1' || urlParams.get('map') === '1' || window.location.hash === '#map';
+    const savedDirectPref = localStorage.getItem('aquavisor_skip_portal') === 'true';
+    const savedRole = urlRole || localStorage.getItem('aquavisor_role') || 'terreno';
+
     setAppRole(savedRole);
-    // La página de inicio aparece SIEMPRE por defecto al ingresar o recargar la plataforma
-    window.openLandingPortal();
+
+    // Acceso inteligente: si viene por URL (?direct=1) o si el usuario guardó "Modo Terreno Directo", salta el portal
+    if (directAccess || savedDirectPref) {
+        window.closeLandingPortal();
+    } else {
+        // En modo DEMO normal de presentación (por defecto), muestra el portal de bienvenida
+        window.openLandingPortal();
+    }
+
+    const chkDirect = document.getElementById('chk-remember-direct-mode');
+    if (chkDirect) {
+        chkDirect.checked = savedDirectPref;
+    }
 }
 
 function setAppRole(role) {
@@ -2387,7 +3335,7 @@ function setAppRole(role) {
     const meta = ROLE_METADATA[role] || { icon: '👷', name: 'Operación Terreno', short: 'Operador' };
     const roleIcon = document.getElementById('header-role-icon');
     const roleName = document.getElementById('header-role-name');
-    const ribbon = document.getElementById('executive-kpi-ribbon');
+    const execKpiCard = document.getElementById('executive-kpi-card');
 
     if (roleIcon) roleIcon.textContent = meta.icon;
     if (roleName) roleName.textContent = meta.name;
@@ -2395,40 +3343,392 @@ function setAppRole(role) {
     document.body.classList.remove('role-terreno', 'role-administracion', 'role-directorio', 'role-auditor');
     document.body.classList.add('role-' + role);
 
-    // 1. Modo Directorio (Comité) -> Muestra Ribbon Superior de KPIs y pestaña SCADA
-    if (role === 'directorio') {
-        if (ribbon) ribbon.style.display = 'flex';
-        if (window.openRightDrawer) window.openRightDrawer('telemetry');
-    } else {
-        if (ribbon) ribbon.style.display = 'none';
-    }
+    // 1. Limpieza rigurosa de paneles y estado residual entre perfiles
+    if (window.closeRightDrawer) window.closeRightDrawer();
+    const drawerContent = document.getElementById('drawer-content');
+    if (drawerContent) drawerContent.innerHTML = '';
+    const drawerBadgeContainer = document.getElementById('drawer-badge-container');
+    if (drawerBadgeContainer) drawerBadgeContainer.innerHTML = '';
+    const drawerTitle = document.getElementById('drawer-title');
+    if (drawerTitle) drawerTitle.textContent = 'Detalle de Infraestructura';
 
-    // 2. Modo Administración (Secretaria / Cobranza) -> Solo Cobranza y Ficha
-    if (role === 'administracion') {
-        if (window.openRightDrawer) window.openRightDrawer('commercial');
-    }
+    // Desactivar peek bar si existía
+    document.body.classList.remove('maneuver-peek');
+    const peekBar = document.getElementById('maneuver-peek-bar');
+    if (peekBar) peekBar.remove();
 
-    // 3. Modo Terreno (Operador) -> Pantalla limpia, Ficha y Copiloto
+    // Filtrado estricto de Pestañas del Panel Lateral según el Perfil
+    const tabTelemetry = document.getElementById('tab-btn-telemetry');
+    const tabCommercial = document.getElementById('tab-btn-commercial');
+    const tabDetail = document.getElementById('tab-btn-detail');
+
+    const legalCard = document.getElementById('directorio-legal-card');
+    const scadaGrid = document.getElementById('scada-telemetry-grid');
+    const scadaSummary = document.getElementById('scada-summary-box');
+
     if (role === 'terreno') {
-        if (window.openRightDrawer) {
-            window.openRightDrawer('detail');
+        if (tabTelemetry) tabTelemetry.style.display = 'none';
+        if (tabCommercial) tabCommercial.style.display = 'none';
+        if (tabDetail) {
+            tabDetail.style.display = 'inline-flex';
+            tabDetail.innerHTML = 'ℹ️ Ficha';
         }
-        if (window.innerWidth < 768 && window.closeRightDrawer) {
-            window.closeRightDrawer();
+        if (window.switchRightTab) window.switchRightTab('detail');
+        if (window.innerWidth < 768 && window.closeRightDrawer) window.closeRightDrawer();
+        if (execKpiCard) execKpiCard.style.display = 'none';
+        if (legalCard) legalCard.style.display = 'none';
+    } else if (role === 'administracion') {
+        if (tabTelemetry) tabTelemetry.style.display = 'none';
+        if (tabCommercial) tabCommercial.style.display = 'inline-flex';
+        // En administración comercial, la vista primaria es Cobranza; la Ficha se oculta hasta seleccionar un Socio/Arranque
+        if (tabDetail) {
+            tabDetail.style.display = 'none';
+            tabDetail.innerHTML = '👤 Ficha Socio';
         }
+        if (window.switchRightTab) window.switchRightTab('commercial');
+        if (execKpiCard) execKpiCard.style.display = 'none';
+        if (legalCard) legalCard.style.display = 'none';
+    } else if (role === 'directorio') {
+        if (tabTelemetry) {
+            tabTelemetry.style.display = 'inline-flex';
+            tabTelemetry.innerHTML = '📊 Gestión';
+        }
+        if (tabCommercial) tabCommercial.style.display = 'none';
+        // Ficha oculta por defecto en Directorio para máxima simplicidad visual
+        if (tabDetail) tabDetail.style.display = 'none';
+        if (window.switchRightTab) window.switchRightTab('telemetry');
+
+        // Modo Directorio: Exclusivamente métricas maestras de gobernanza (Minimalismo puro)
+        if (execKpiCard) execKpiCard.style.display = 'block';
+        if (legalCard) legalCard.style.display = 'block';
+        if (scadaGrid) scadaGrid.style.display = 'none';
+        if (scadaSummary) scadaSummary.style.display = 'none';
+    } else if (role === 'auditor') {
+        if (tabTelemetry) {
+            tabTelemetry.style.display = 'inline-flex';
+            tabTelemetry.innerHTML = '🚰 Estanque';
+        }
+        if (tabCommercial) tabCommercial.style.display = 'none';
+        if (tabDetail) tabDetail.style.display = 'none';
+        if (window.switchRightTab) window.switchRightTab('telemetry');
+
+        // Modo Auditor (DOH / Fiscalización): Monitoreo de estanque y red
+        if (execKpiCard) execKpiCard.style.display = 'none';
+        if (legalCard) legalCard.style.display = 'none';
+        if (scadaGrid) scadaGrid.style.display = 'flex';
+        if (scadaSummary) scadaSummary.style.display = 'block';
     }
 
-    // 4. Modo Auditor (DOH / Ley 20.998) -> Garantiza capa oficial activa y telemetría
+    // Cancelar simulaciones operativas si se cambia a un rol no operativo
+    if (role !== 'terreno') {
+        if (AppState.emergencyMode && typeof toggleEmergencyMode === 'function') {
+            toggleEmergencyMode();
+        }
+        if (AppState.activeBurst && typeof clearBurstSimulation === 'function') {
+            clearBurstSimulation();
+        }
+        if (typeof AppState !== 'undefined' && AppState.valvesState) {
+            const hasOverriddenValves = Object.keys(AppState.valvesState).some(k => AppState.valvesState[k] === false);
+            if (hasOverriddenValves) {
+                AppState.valvesState = {};
+                if (layers && layers.valvulas && typeof json_Valvulas_GeoConecta !== 'undefined') {
+                    layers.valvulas.clearLayers();
+                    layers.valvulas.addData(json_Valvulas_GeoConecta);
+                }
+                if (layers && layers.redes && typeof stylePipes === 'function') {
+                    layers.redes.setStyle(stylePipes);
+                }
+                if (layers && layers.outageLayer) {
+                    layers.outageLayer.clearLayers();
+                }
+            }
+        }
+        const emCard = document.getElementById('emergency-card');
+        if (emCard) emCard.style.display = 'none';
+        const outageHud = document.getElementById('valve-outage-hud');
+        if (outageHud) outageHud.remove();
+    }
+
+    // 2. Modo Auditor (DOH / Ley 20.998) -> Garantiza capa oficial activa
     if (role === 'auditor') {
         if (layers && layers.concesion && !map.hasLayer(layers.concesion)) {
             map.addLayer(layers.concesion);
             const chk = document.getElementById('chk-concesion');
             if (chk) chk.checked = true;
         }
-        if (window.openRightDrawer) window.openRightDrawer('telemetry');
     }
+
+    // Actualizar la botonera inferior móvil según el perfil activo
+    
+    const desktopManeuversBtn = document.getElementById('btn-desktop-maneuvers');
+    if (desktopManeuversBtn) {
+        desktopManeuversBtn.style.display = (role === 'terreno') ? 'inline-flex' : 'none';
+    }
+
+    updateThumbBarRole(role);
 }
 window.onRoleSelectChange = setAppRole;
+
+// ------------------------------------------------------------------------------
+// ICONOGRAFÍA VECTORIAL SOBRIA Y PROFESIONAL PARA BARRA TÁCTIL MÓVIL (THUMB ZONE)
+// ------------------------------------------------------------------------------
+const THUMB_SVGS = {
+    search: `<svg class="thumb-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`,
+    measure: `<svg class="thumb-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="10" rx="2"></rect><line x1="6" y1="7" x2="6" y2="12"></line><line x1="10" y1="7" x2="10" y2="10"></line><line x1="14" y1="7" x2="14" y2="12"></line><line x1="18" y1="7" x2="18" y2="10"></line></svg>`,
+    // Botón 3: Panel adaptativo según perfil (Términos comprensibles en SSR)
+    ficha: `<svg class="thumb-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`,
+    cobranza: `<svg class="thumb-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><line x1="6" y1="15" x2="10" y2="15"></line><line x1="14" y1="15" x2="18" y2="15"></line></svg>`,
+    gestion: `<svg class="thumb-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>`,
+    estanque: `<svg class="thumb-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="9" rx="2"></rect><line x1="4" y1="7.5" x2="20" y2="7.5"></line><line x1="6" y1="12" x2="4" y2="21"></line><line x1="18" y1="12" x2="20" y2="21"></line><line x1="12" y1="12" x2="12" y2="21"></line><line x1="5" y1="17" x2="19" y2="17"></line></svg>`,
+    // Botón 4: Acción operativa según perfil
+    maneuvers: `<svg class="thumb-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>`,
+    semaphore: `<svg class="thumb-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="5"></rect><circle cx="12" cy="6.5" r="1.5" fill="currentColor"></circle><circle cx="12" cy="12" r="1.5" fill="currentColor"></circle><circle cx="12" cy="17.5" r="1.5" fill="currentColor"></circle></svg>`,
+    minuta: `<svg class="thumb-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`,
+    concesion: `<svg class="thumb-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 7 21 17 12 22 3 17 3 7 12 2"></polygon><circle cx="12" cy="12" r="2.5" fill="currentColor"></circle></svg>`
+};
+
+function updateThumbBarRole(role) {
+    const btnHero = document.getElementById('thumb-btn-hero');
+    const iconHero = document.getElementById('thumb-hero-icon');
+    const labelHero = document.getElementById('thumb-hero-label');
+
+    const btnSub = document.getElementById('thumb-btn-subaction');
+    const iconSub = document.getElementById('thumb-subaction-icon');
+    const labelSub = document.getElementById('thumb-subaction-label');
+
+    const beaconCopilotDesc = document.getElementById('beacon-copilot-role-text');
+    const copilotStatus = document.getElementById('copilot-status-indicator');
+
+    if (btnHero && iconHero && labelHero) {
+        btnHero.classList.remove('hero-terreno', 'hero-admin', 'hero-directorio', 'hero-auditor');
+
+        // 1. Jerarquía Principal según rol en el Centro Elevado
+        if (role === 'terreno') {
+            btnHero.classList.add('hero-terreno');
+            iconHero.innerHTML = THUMB_SVGS.maneuvers;
+            labelHero.textContent = 'Maniobras';
+            btnHero.title = 'Centro de Maniobras de Red (Roturas y Válvulas)';
+
+            if (btnSub && iconSub && labelSub) {
+                iconSub.innerHTML = THUMB_SVGS.estanque;
+                labelSub.textContent = 'Estanque';
+                btnSub.title = 'Nivel del Estanque de Regulación y Reserva';
+            }
+            if (beaconCopilotDesc) beaconCopilotDesc.textContent = 'Asistencia Terreno';
+            if (copilotStatus) copilotStatus.textContent = 'Terreno';
+        } else if (role === 'administracion') {
+            btnHero.classList.add('hero-admin');
+            iconHero.innerHTML = THUMB_SVGS.cobranza;
+            labelHero.textContent = 'Cobranza';
+            btnHero.title = 'Panel Comercial y Gestión de Cobranza';
+
+            if (btnSub && iconSub && labelSub) {
+                iconSub.innerHTML = THUMB_SVGS.semaphore;
+                labelSub.textContent = 'Semáforo';
+                btnSub.title = 'Activar / Desactivar Semáforo de Cobranza en Mapa';
+            }
+            if (beaconCopilotDesc) beaconCopilotDesc.textContent = 'Asistencia Cobranza';
+            if (copilotStatus) copilotStatus.textContent = 'Cobranza';
+        } else if (role === 'directorio') {
+            btnHero.classList.add('hero-directorio');
+            iconHero.innerHTML = THUMB_SVGS.gestion;
+            labelHero.textContent = 'Gestión';
+            btnHero.title = 'Panel Ejecutivo de Gestión, Continuidad y Pérdidas';
+
+            if (btnSub && iconSub && labelSub) {
+                iconSub.innerHTML = THUMB_SVGS.minuta;
+                labelSub.textContent = 'Minuta';
+                btnSub.title = 'Descargar Minuta Oficial de Asamblea';
+            }
+            if (beaconCopilotDesc) beaconCopilotDesc.textContent = 'Asistencia Ejecutiva';
+            if (copilotStatus) copilotStatus.textContent = 'Directorio';
+        } else if (role === 'auditor') {
+            btnHero.classList.add('hero-auditor');
+            iconHero.innerHTML = THUMB_SVGS.estanque;
+            labelHero.textContent = 'Estanque';
+            btnHero.title = 'Monitoreo de Estanque, Reserva y Cumplimiento Normativo';
+
+            if (btnSub && iconSub && labelSub) {
+                iconSub.innerHTML = THUMB_SVGS.concesion;
+                labelSub.textContent = 'Concesión';
+                btnSub.title = 'Enfocar Área de Servicio Oficial (Ley 20.998)';
+            }
+            if (beaconCopilotDesc) beaconCopilotDesc.textContent = 'Asistencia Normativa';
+            if (copilotStatus) copilotStatus.textContent = 'Fiscalización';
+        }
+    }
+}
+
+// ------------------------------------------------------------------------------
+// HERRAMIENTAS MÓVILES NO DUPLICADAS (BÚSQUEDA RÁPIDA Y MEDICIÓN DE DISTANCIAS)
+// ------------------------------------------------------------------------------
+window.toggleMobileSearch = function() {
+    const searchContainer = document.getElementById('search-container');
+    const input = document.getElementById('search-input');
+    if (searchContainer && input) {
+        searchContainer.classList.toggle('mobile-active');
+        if (searchContainer.classList.contains('mobile-active')) {
+            input.focus();
+        }
+    }
+};
+
+let isMeasuring = false;
+let measurePoints = [];
+let measureMarkers = [];
+let measurePolyline = null;
+
+window.toggleMeasurementTool = function() {
+    isMeasuring = !isMeasuring;
+    const measureBtn = document.getElementById('thumb-btn-measure');
+
+    if (isMeasuring) {
+        if (measureBtn) measureBtn.classList.add('active');
+        measurePoints = [];
+        measureMarkers = [];
+        if (measurePolyline && typeof map !== 'undefined') { map.removeLayer(measurePolyline); measurePolyline = null; }
+
+        if (typeof map !== 'undefined' && map) {
+            map.getContainer().style.cursor = 'crosshair';
+            map.on('click', handleMeasureClick);
+        }
+
+        showMeasurementHud('📏 <strong>Modo Medición:</strong> Toca 2 o más puntos en el mapa para calcular distancias.');
+    } else {
+        resetMeasurementTool();
+    }
+};
+
+function handleMeasureClick(e) {
+    if (!isMeasuring || !e || !e.latlng) return;
+    const latlng = e.latlng;
+    measurePoints.push(latlng);
+
+    const marker = L.circleMarker(latlng, {
+        radius: 5,
+        fillColor: '#38bdf8',
+        color: '#ffffff',
+        weight: 2,
+        fillOpacity: 1
+    }).addTo(map);
+    measureMarkers.push(marker);
+
+    if (measurePoints.length > 1) {
+        if (measurePolyline) map.removeLayer(measurePolyline);
+        measurePolyline = L.polyline(measurePoints, {
+            color: '#38bdf8',
+            weight: 3,
+            dashArray: '6, 6',
+            opacity: 0.95
+        }).addTo(map);
+
+        let totalMeters = 0;
+        for (let i = 0; i < measurePoints.length - 1; i++) {
+            totalMeters += measurePoints[i].distanceTo(measurePoints[i + 1]);
+        }
+        const distText = totalMeters >= 1000 
+            ? `${(totalMeters / 1000).toFixed(2)} km` 
+            : `${Math.round(totalMeters * 10) / 10} m`;
+
+        showMeasurementHud(`📏 Distancia: <strong>${distText}</strong> (${measurePoints.length} puntos) · <span onclick="resetMeasurementTool()" style="text-decoration:underline; cursor:pointer;">Finalizar</span>`);
+    } else {
+        showMeasurementHud('📏 Primer punto fijado. Toca el siguiente punto en el mapa para medir.');
+    }
+}
+
+function showMeasurementHud(html) {
+    let hud = document.getElementById('measurement-hud-bar');
+    if (!hud) {
+        hud = document.createElement('div');
+        hud.id = 'measurement-hud-bar';
+        hud.className = 'measurement-hud-bar';
+        document.body.appendChild(hud);
+    }
+    hud.innerHTML = `
+        <div class="measure-hud-content">
+            <span>${html}</span>
+            <button class="measure-hud-close" onclick="resetMeasurementTool()">✕</button>
+        </div>
+    `;
+    hud.style.display = 'block';
+}
+
+function resetMeasurementTool() {
+    isMeasuring = false;
+    const measureBtn = document.getElementById('thumb-btn-measure');
+    if (measureBtn) measureBtn.classList.remove('active');
+
+    if (typeof map !== 'undefined' && map) {
+        map.getContainer().style.cursor = '';
+        map.off('click', handleMeasureClick);
+        if (measurePolyline) { map.removeLayer(measurePolyline); measurePolyline = null; }
+        if (measureMarkers) {
+            measureMarkers.forEach(m => map.removeLayer(m));
+            measureMarkers = [];
+        }
+    }
+    measurePoints = [];
+    const hud = document.getElementById('measurement-hud-bar');
+    if (hud) hud.style.display = 'none';
+}
+window.resetMeasurementTool = resetMeasurementTool;
+
+// ------------------------------------------------------------------------------
+// MANEJADORES DE ACCIÓN TÁCTIL MÓVIL (JERARQUÍA ELEVADA: BOTÓN CENTRAL HERO)
+// ------------------------------------------------------------------------------
+window.handleThumbHeroClick = function() {
+    const role = typeof currentAppRole !== 'undefined' ? currentAppRole : 'terreno';
+    if (role === 'terreno') {
+        if (window.openManeuversModal) window.openManeuversModal();
+    } else if (role === 'administracion') {
+        if (window.openRightDrawer) window.openRightDrawer('commercial');
+    } else if (role === 'directorio') {
+        if (window.openRightDrawer) window.openRightDrawer('telemetry');
+    } else if (role === 'auditor') {
+        if (window.openRightDrawer) window.openRightDrawer('telemetry');
+    }
+};
+
+window.handleThumbSubActionClick = function() {
+    const role = typeof currentAppRole !== 'undefined' ? currentAppRole : 'terreno';
+    if (role === 'terreno') {
+        // En Terreno: acción complementaria es supervisar el nivel del Estanque de reserva
+        if (window.openRightDrawer) window.openRightDrawer('telemetry');
+    } else if (role === 'administracion') {
+        // En Administración: acción complementaria es activar/desactivar el Semáforo de morosidad
+        const chkSem = document.getElementById('chk-commercial-semaphore');
+        if (chkSem) {
+            chkSem.checked = !chkSem.checked;
+            toggleCommercialSemaphore(chkSem.checked);
+        } else {
+            toggleCommercialSemaphore(true);
+        }
+    } else if (role === 'directorio') {
+        // En Directorio: acción complementaria es la descarga de la Minuta de asamblea
+        if (window.exportAssemblyReport) window.exportAssemblyReport();
+    } else if (role === 'auditor') {
+        // En Auditoría: acción complementaria es enfocar el polígono oficial de concesión
+        if (layers && layers.concesion) {
+            if (!map.hasLayer(layers.concesion)) map.addLayer(layers.concesion);
+            const boundaryTarget = layers.concesionBoundary || (layers.redes ? layers.redes : null);
+            if (boundaryTarget && boundaryTarget.getBounds) {
+                map.fitBounds(boundaryTarget.getBounds(), { padding: [40, 40] });
+            }
+        }
+    }
+};
+
+window.handleThumbDetailClick = function() {
+    if (window.openDetailTab) {
+        window.openDetailTab();
+    } else if (window.openRightDrawer) {
+        window.openRightDrawer('detail');
+    }
+};
+
+// Compatibilidad con invocaciones previas
+window.handleThumbActionClick = window.handleThumbHeroClick;
+window.toggleRightDrawer = window.handleThumbHeroClick;
 
 // ------------------------------------------------------------------------------
 // B. GEOGESTIÓN COMERCIAL Y BALANCE DE PÉRDIDAS (ANF)
@@ -2589,8 +3889,68 @@ function handleCommercialFileSelect(event) {
 window.handleCommercialFileSelect = handleCommercialFileSelect;
 
 // ------------------------------------------------------------------------------
-// C. COPILOTO INTELIGENTE SSR (IA GENERATIVA OPERATIVA)
+// C. COPILOTO INTELIGENTE SSR (IA GENERATIVA OPERATIVA - ASISTENTE FLOTANTE DEDICADO)
 // ------------------------------------------------------------------------------
+function initCopilotEngine() {
+    // Escuchar Escape para cerrar el asistente flotante
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const sheet = document.getElementById('copilot-assistant-sheet');
+            if (sheet && sheet.style.display !== 'none') {
+                closeCopilotAssistant();
+            }
+        }
+    });
+}
+window.initCopilotEngine = initCopilotEngine;
+
+function openCopilotAssistant() {
+    const sheet = document.getElementById('copilot-assistant-sheet');
+    const backdrop = document.getElementById('copilot-sheet-backdrop');
+    const beacon = document.getElementById('copilot-floating-beacon');
+    if (!sheet) return;
+
+    sheet.style.display = 'flex';
+    if (backdrop && window.innerWidth <= 768) {
+        backdrop.style.display = 'block';
+    }
+    if (beacon) beacon.classList.add('active');
+
+    // Desplazar chat al último mensaje
+    const container = document.getElementById('copilot-chat-messages');
+    if (container) {
+        setTimeout(() => { container.scrollTop = container.scrollHeight; }, 60);
+    }
+
+    // Foco en input en pantallas no móviles
+    setTimeout(() => {
+        const input = document.getElementById('copilot-input-text');
+        if (input && window.innerWidth > 768) input.focus();
+    }, 150);
+}
+window.openCopilotAssistant = openCopilotAssistant;
+
+function closeCopilotAssistant() {
+    const sheet = document.getElementById('copilot-assistant-sheet');
+    const backdrop = document.getElementById('copilot-sheet-backdrop');
+    const beacon = document.getElementById('copilot-floating-beacon');
+
+    if (sheet) sheet.style.display = 'none';
+    if (backdrop) backdrop.style.display = 'none';
+    if (beacon) beacon.classList.remove('active');
+}
+window.closeCopilotAssistant = closeCopilotAssistant;
+
+function toggleCopilotAssistant() {
+    const sheet = document.getElementById('copilot-assistant-sheet');
+    if (sheet && sheet.style.display !== 'none' && sheet.style.display !== '') {
+        closeCopilotAssistant();
+    } else {
+        openCopilotAssistant();
+    }
+}
+window.toggleCopilotAssistant = toggleCopilotAssistant;
+
 const COPILOT_KNOWLEDGE = [
     {
         keywords: ['hijuelas', 'callejon hijuelas', 'valv-16', 'valvula 16'],
@@ -2601,8 +3961,8 @@ const COPILOT_KNOWLEDGE = [
         response: 'En el sector <strong>Santa Juana Nº9</strong>, las cotas varían entre 285 y 310 m.s.n.m. Con el estanque de regulación a cota 340 m, las presiones dinámicas de grifo se encuentran entre <strong>20.5 y 34.8 m.c.a.</strong>, cumpliendo holgadamente la norma chilena NCh 691 (mínimo exigido 14.0 m.c.a.).'
     },
     {
-        keywords: ['comunicado', 'whatsapp', 'redactar aviso', 'aviso de corte'],
-        response: 'Para redactar un comunicado a los vecinos, simula el corte de la válvula correspondiente en el mapa y presiona el botón <strong>"📲 WhatsApp"</strong>. El sistema redactará automáticamente el texto con los pasajes y viviendas afectadas listo para copiar.'
+        keywords: ['comunicado', 'whatsapp', 'redactar aviso', 'aviso de corte', 'comunidad', 'notificar'],
+        response: 'He preparado el generador de comunicados para vecinos.<br><br><button class="btn-copilot-action" onclick="openWhatsAppBroadcastModal()">💬 Abrir Generador WhatsApp</button>'
     },
     {
         keywords: ['anf', 'perdida', 'perdidas', 'agua no facturada', 'fuga'],
@@ -2653,12 +4013,13 @@ function appendCopilotMessage(sender, htmlText) {
     const container = document.getElementById('copilot-chat-messages');
     if (!container) return;
 
+    // Ocultar bienvenida inicial al comenzar la conversación para no saturar la pantalla
+    const welcome = document.getElementById('copilot-welcome-box');
+    if (welcome) welcome.style.display = 'none';
+
     const div = document.createElement('div');
     div.className = `copilot-msg ${sender === 'user' ? 'user-msg' : 'bot-msg'}`;
-    div.innerHTML = `
-        <div class="msg-sender">${sender === 'user' ? '👤 Operador / Usuario' : '🤖 Copiloto SSR'}</div>
-        <div class="msg-bubble">${htmlText}</div>
-    `;
+    div.innerHTML = `<div class="msg-bubble">${htmlText}</div>`;
     container.appendChild(div);
     container.scrollTop = container.scrollHeight;
 }
@@ -2667,11 +4028,10 @@ function clearCopilotChat() {
     const container = document.getElementById('copilot-chat-messages');
     if (container) {
         container.innerHTML = `
-            <div class="copilot-msg bot-msg">
-                <div class="msg-sender">🤖 Copiloto SSR</div>
-                <div class="msg-bubble">
-                    Conversación reiniciada. ¿En qué te puedo asesorar respecto a la red de agua o la cobranza?
-                </div>
+            <div id="copilot-welcome-box" class="copilot-welcome-box">
+                <div class="welcome-sparkle">✦</div>
+                <h4 class="welcome-title">¿En qué puedo ayudarte?</h4>
+                <p class="welcome-sub">Consulta maniobras, fugas, presiones o cobranza de la red.</p>
             </div>
         `;
     }
@@ -2693,6 +4053,15 @@ window.toggleCopilotVoiceSim = toggleCopilotVoiceSim;
 let currentOutageValveForWhatsApp = null;
 
 function openWhatsAppBroadcastModal(valveId) {
+    if (!valveId) {
+        if (AppState.activeBurst && AppState.activeBurst.isolationValves && AppState.activeBurst.isolationValves.length > 0) {
+            valveId = AppState.activeBurst.isolationValves[0].split('(')[0].trim();
+        } else if (AppState.valvesState) {
+            valveId = Object.keys(AppState.valvesState).find(k => AppState.valvesState[k] === false) || 'VALV-16';
+        } else {
+            valveId = 'VALV-16';
+        }
+    }
     currentOutageValveForWhatsApp = valveId;
     const modal = document.getElementById('whatsapp-broadcast-modal');
     if (!modal) return;
@@ -2700,7 +4069,7 @@ function openWhatsAppBroadcastModal(valveId) {
     const textarea = document.getElementById('whatsapp-message-text');
     const sim = typeof VALVE_OUTAGE_SIMULATION_DB !== 'undefined' ? VALVE_OUTAGE_SIMULATION_DB[valveId] : null;
 
-    const sectorName = sim ? sim.sector : 'Sector Red Matriz';
+    const sectorName = sim ? sim.sector : 'Sector Santa Juana Nº9 - El Calvario';
     const affectedCount = sim ? sim.affectedCount : 25;
     const recoveryTime = sim ? (sim.recovery_time || '15 a 30 minutos') : '20 minutos';
 
@@ -2726,11 +4095,18 @@ window.closeWhatsAppModal = closeWhatsAppModal;
 
 function adjustWhatsAppTone(tone) {
     const textarea = document.getElementById('whatsapp-message-text');
-    if (!textarea || !currentOutageValveForWhatsApp) return;
+    if (!textarea) return;
+    if (!currentOutageValveForWhatsApp) {
+        if (AppState.activeBurst && AppState.activeBurst.isolationValves && AppState.activeBurst.isolationValves.length > 0) {
+            currentOutageValveForWhatsApp = AppState.activeBurst.isolationValves[0].split('(')[0].trim();
+        } else {
+            currentOutageValveForWhatsApp = 'VALV-16';
+        }
+    }
 
     const sim = typeof VALVE_OUTAGE_SIMULATION_DB !== 'undefined' ? VALVE_OUTAGE_SIMULATION_DB[currentOutageValveForWhatsApp] : null;
-    const sector = sim ? sim.sector : 'Sector Red';
-    const count = sim ? sim.affectedCount : 20;
+    const sector = sim ? sim.sector : 'Sector Santa Juana Nº9';
+    const count = sim ? sim.affectedCount : 25;
 
     if (tone === 'breve') {
         textarea.value = `⚠️ *CORTE DE AGUA PREVENTIVO • SSR SANTA JUANA*\nSector: ${sector} (${count} viviendas).\nMotivo: Reparación válvula ${currentOutageValveForWhatsApp}.\nReposición estimada: 20-30 min.\nDisculpen las molestias.`;
@@ -2763,10 +4139,13 @@ let gpsMarker = null;
 
 function locateUserGPS() {
     const gpsBtn = document.querySelector('.leaflet-control-gps-btn');
+    const thumbGps = document.querySelector('.thumb-btn-gps');
     if (gpsBtn) gpsBtn.classList.add('locating');
+    if (thumbGps) thumbGps.classList.add('locating');
 
     if (!navigator.geolocation) {
         if (gpsBtn) gpsBtn.classList.remove('locating');
+        if (thumbGps) thumbGps.classList.remove('locating');
         alert('La geolocalización no está soportada en este navegador.');
         return;
     }
@@ -2774,6 +4153,7 @@ function locateUserGPS() {
     navigator.geolocation.getCurrentPosition(
         (pos) => {
             if (gpsBtn) gpsBtn.classList.remove('locating');
+            if (thumbGps) thumbGps.classList.remove('locating');
             const lat = pos.coords.latitude;
             const lng = pos.coords.longitude;
 
@@ -2796,6 +4176,7 @@ function locateUserGPS() {
         },
         (err) => {
             if (gpsBtn) gpsBtn.classList.remove('locating');
+            if (thumbGps) thumbGps.classList.remove('locating');
             map.flyTo([-36.8480, -71.9380], 15, { duration: 1.0 });
             alert('Modo Terreno: Centrado en la red central de Santa Juana - El Calvario.');
         },
@@ -2852,6 +4233,15 @@ window.exportAssemblyReport = exportAssemblyReport;
 window.toggleRightDrawer = function() {
     const drawer = document.getElementById('drawer-right');
     if (!drawer) return;
+
+    // Si hay una maniobra activa en móvil, alternar entre modo asomado y expandido
+    if (drawer.classList.contains('maneuver-active') && window.innerWidth < 768) {
+        if (typeof toggleManeuverSheetPeek === 'function') {
+            toggleManeuverSheetPeek();
+            return;
+        }
+    }
+
     if (drawer.classList.contains('open')) {
         if (window.closeRightDrawer) {
             window.closeRightDrawer();
